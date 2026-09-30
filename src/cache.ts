@@ -21,6 +21,11 @@ export class PanelCache {
     return value;
   }
   set(key: string, value: { markup: string; height: number }) {
+    const previous = this.entries.get(key);
+    if (previous) {
+      this.size -= previous.bytes;
+      this.entries.delete(key);
+    }
     const bytes = (key.length + value.markup.length) * 2;
     if (bytes > this.maxBytes) return;
     while (this.size + bytes > this.maxBytes && this.entries.size) {
