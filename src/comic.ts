@@ -7,6 +7,7 @@ export interface RenderOptions {
   width?: number;
   font?: string;
   fontVersion?: string;
+  panelFormat?: "compact" | "phone";
 }
 export interface RenderResult {
   svg: string;
@@ -16,6 +17,12 @@ export interface RenderResult {
   cache?: { hits: number; misses: number; bytes: number };
 }
 let fontEpoch = 0;
+export interface PanelResult extends RenderResult {
+  index: number;
+}
+export interface PanelsResult extends RenderResult {
+  panels: PanelResult[];
+}
 document.fonts.addEventListener("loadingdone", (event) => {
   if (event.fontfaces.length) fontEpoch++;
 });
@@ -24,10 +31,13 @@ function render(
   source: string,
   options: RenderOptions,
   cache: PanelCache,
-): RenderResult {
+): PanelsResult {
   try {
     const comic = readComic(source);
     const width = options.width ?? 720;
+    const format = options.panelFormat ?? "compact";
+    if (format !== "compact" && format !== "phone")
+      throw new Error("panelFormat은 compact 또는 phone이어야 합니다.");
     if (!Number.isFinite(width) || width < 480 || width > 2400)
       throw new Error("너비는 480~2400 사이여야 합니다.");
     const font =
@@ -35,6 +45,9 @@ function render(
     if (typeof font !== "string" || font.length > 300 || /[<>]/.test(font))
       throw new Error("올바른 글꼴 이름이 필요합니다.");
     const fragments: string[] = [];
+    const panels: PanelResult[] = [];
+    const makeSvg = (content: string, svgHeight: number, title: string) =>
+      `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${svgHeight}" viewBox="0 0 ${width} ${svgHeight}" role="img" aria-label="${escapeXml(title)}"><title>${escapeXml(title)}</title><rect width="100%" height="100%" fill="#f5f7fb"/><g font-family="${escapeXml(font)}" fill="#303341"><text x="24" y="42" font-size="24" font-weight="700">${escapeXml(title)}</text>${content}</g></svg>`;
     let hits = 0,
       misses = 0;
     let y = 68;
@@ -51,11 +64,12 @@ function render(
         fontEpoch,
         fontVersion: options.fontVersion,
         assetVersion,
-        layoutVersion: 1,
+        layoutVersion: 2,
+        format,
       });
       const existing = cache.get(key);
       const { markup, height } =
-        existing ?? renderPanel(panel, comic.cast, width, font);
+        existing ?? renderPanel(panel, comic.cast, width, font, format);
       if (existing) hits++;
       else {
         misses++;
@@ -64,16 +78,33 @@ function render(
       fragments.push(
         `<g data-panel="${index}" transform="translate(0 ${y})">${markup}</g>`,
       );
+      panels.push({
+        index,
+        svg: makeSvg(
+          `<g data-panel="${index}" transform="translate(0 68)">${markup}</g>`,
+          height + 92,
+          `${comic.title} · ${index + 1}/${comic.panels.length}`,
+        ),
+        width,
+        height: height + 92,
+        diagnostics: [],
+        cache: {
+          hits: existing ? 1 : 0,
+          misses: existing ? 0 : 1,
+          bytes: cache.bytes,
+        },
+      });
       y += height + 24;
     }
     const height = y;
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeXml(comic.title)}"><title>${escapeXml(comic.title)}</title><rect width="100%" height="100%" fill="#f5f7fb"/><g font-family="${escapeXml(font)}" fill="#303341"><text x="24" y="42" font-size="24" font-weight="700">${escapeXml(comic.title)}</text>${fragments.join("")}</g></svg>`;
+    const svg = makeSvg(fragments.join(""), height, comic.title);
     return {
       svg,
       width,
       height,
       diagnostics: [],
       cache: { hits, misses, bytes: cache.bytes },
+      panels,
     };
   } catch (error) {
     return {
@@ -81,6 +112,7 @@ function render(
       width: 0,
       height: 0,
       diagnostics: [error instanceof Error ? error.message : "렌더링 실패"],
+      panels: [],
     };
   }
 }
@@ -90,7 +122,15 @@ export function createRenderer(maxCacheBytes = 2_000_000) {
   return {
     render: (source: string, options: RenderOptions = {}) =>
       render(source, options, cache),
+    renderPanels: (source: string, options: RenderOptions = {}) =>
+      render(
+        source,
+        { ...options, panelFormat: options.panelFormat ?? "phone" },
+        cache,
+      ),
     clearCache: () => cache.clear(),
   };
 }
-export const renderComic = createRenderer().render;
+const defaultRenderer = createRenderer();
+export const renderComic = defaultRenderer.render;
+export const renderPanels = defaultRenderer.renderPanels;

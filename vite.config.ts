@@ -11,6 +11,8 @@ export default defineConfig({
         app: resolve("index.html"),
         document: resolve("embed.html"),
         cdn: resolve("cdn.html"),
+        gallery: resolve("gallery.html"),
+        guide: resolve("guide.html"),
         "comic-gen": resolve("src/index.ts"),
       },
       output: {

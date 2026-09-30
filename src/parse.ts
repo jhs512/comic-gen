@@ -72,10 +72,73 @@ export function readComic(source: string): Comic {
           : text(member.label, `cast.${id}.label`),
     };
   }
+  let previous: Panel | undefined;
   const panels = list(root.panels, "panels").map((raw, index): Panel => {
     const ctx = `컷 ${index + 1}`;
-    const panel = record(raw, ctx);
-    known(panel, ["actors", "dialogue", "transfer"], ctx);
+    const panel = { ...record(raw, ctx) };
+    known(
+      panel,
+      ["actors", "dialogue", "transfer", "mode", "removeActors"],
+      ctx,
+    );
+    if (
+      panel.mode !== undefined &&
+      panel.mode !== "before" &&
+      panel.mode !== "full"
+    )
+      throw new Error(`${ctx}: mode는 full 또는 before여야 합니다.`);
+    if (panel.mode === "before") {
+      if (!previous)
+        throw new Error(
+          `${ctx}: 첫 컷에서는 before 모드를 사용할 수 없습니다.`,
+        );
+      const inherited: Record<string, unknown>[] = previous.actors.map(
+        (actor) => ({ ...actor }),
+      );
+      const removed = list(panel.removeActors ?? [], `${ctx}.removeActors`).map(
+        (id) => text(id, `${ctx}.removeActors`),
+      );
+      for (const id of removed) {
+        if (!inherited.some((actor) => actor.id === id))
+          throw new Error(`${ctx}: 제거할 인물 '${id}'가 이전 컷에 없습니다.`);
+      }
+      const next = inherited.filter(
+        (actor) => !removed.some((id) => id === actor.id),
+      );
+      const patches = list(panel.actors ?? [], `${ctx}.actors`);
+      const changed = new Set<string>();
+      for (const item of patches) {
+        const patch =
+          typeof item === "string"
+            ? { id: item }
+            : record(item, `${ctx}.actors`);
+        known(
+          patch,
+          ["id", "expression", "gesture", "holding", "x", "y", "scale"],
+          `${ctx}.actors`,
+        );
+        const id = text(patch.id, `${ctx}.actor.id`);
+        if (changed.has(id))
+          throw new Error(`${ctx}: 캐릭터 식별자가 중복됩니다.`);
+        changed.add(id);
+        const slot = next.findIndex((actor) => actor.id === id);
+        const merged: Record<string, unknown> = {
+          ...(slot < 0 ? {} : next[slot]),
+          ...patch,
+        };
+        // null clears optional state; no object belonging to the previous panel is mutated.
+        for (const [key, value] of Object.entries(patch))
+          if (key !== "id" && value === null) delete merged[key];
+        if (slot < 0) next.push(merged);
+        else next[slot] = merged;
+      }
+      panel.actors =
+        panel.actors !== undefined && patches.length === 0 ? [] : next;
+    } else if (panel.removeActors !== undefined) {
+      throw new Error(
+        `${ctx}: removeActors는 before 모드에서만 사용할 수 있습니다.`,
+      );
+    }
     const actors = list(panel.actors, `${ctx}.actors`).map((item): Actor => {
       const actor =
         typeof item === "string" ? { id: item } : record(item, `${ctx}.actors`);
@@ -169,7 +232,8 @@ export function readComic(source: string): Comic {
     );
     if (transfer.length > 6)
       throw new Error(`${ctx}: 소품 전달은 6개 이내로 작성하세요.`);
-    return { actors, dialogue, transfer };
+    previous = { actors, dialogue, transfer };
+    return previous;
   });
   if (panels.length < 1 || panels.length > 30)
     throw new Error("컷은 1~30개여야 합니다.");

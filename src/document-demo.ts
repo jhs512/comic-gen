@@ -1,5 +1,7 @@
 import { renderCodeBlocks } from "./embed";
 import "./style.css";
+import { navigation } from "./navigation";
+document.querySelector("header")!.outerHTML = navigation;
 
 const update = () => renderCodeBlocks();
 await document.fonts.ready;

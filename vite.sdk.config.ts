@@ -2,6 +2,8 @@ import { defineConfig } from "vite";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
+const { version } = JSON.parse(readFileSync(resolve("package.json"), "utf8"));
+
 export default defineConfig({
   build: {
     target: "es2022",
@@ -13,7 +15,7 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
-        banner: `/*! Comic Gen browser SDK v0.1.0\nBundled yaml license:\n${readFileSync(resolve("node_modules/yaml/LICENSE"), "utf8")}\n*/`,
+        banner: `/*! Comic Gen browser SDK v${version}\nBundled yaml license:\n${readFileSync(resolve("node_modules/yaml/LICENSE"), "utf8")}\n*/`,
       },
     },
   },

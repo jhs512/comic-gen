@@ -34,7 +34,10 @@
   <body>
     <a href="./">← Comic Gen 편집기</a>
     <h1>CDN으로 만화 넣기</h1>
-    <p>이 페이지는 버전이 고정된 외부 CDN에서 단일 SDK 파일을 불러옵니다.</p>
+    <p>
+      이 페이지는 main 브랜치의 최신 CDN에서 단일 SDK 파일을 불러옵니다. CDN
+      캐시 때문에 갱신이 지연될 수 있습니다.
+    </p>
     <pre data-comic><code>title: CDN에서 불러온 만화
 cast:
   client: {asset: client, label: 방문자}
@@ -44,12 +47,21 @@ panels:
     dialogue:
       - {from: client, to: server, text: "설치 없이 문서에 만화를 넣었어!"}
       - {from: server, to: client, text: "그림은 네 브라우저에서 만들고 있어."}
+  - mode: before
+    actors: [{id: server, expression: happy}]
+    dialogue: [{from: server, to: client, text: "두 번째 컷은 이전 상태에서 시작해."}]
+  - mode: before
+    transfer: [{from: server, to: client, prop: data}]
+    dialogue: [{from: server, to: client, text: "이 컷도 단독 SVG야."}]
+  - mode: before
+    actors: [{id: client, gesture: wave}]
+    dialogue: [{from: client, to: server, text: "네 컷 완성! 각각 저장할 수 있어."}]
 </code></pre>
     <p id="status" role="status">CDN에서 SDK를 불러오는 중…</p>
     <script type="module">
       try {
         const { renderCodeBlocks } =
-          await import("https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.1.0/cdn/comic-gen.js");
+          await import("https://cdn.jsdelivr.net/gh/jhs512/comic-gen@main/cdn/comic-gen.js");
         await document.fonts.ready;
         const results = renderCodeBlocks();
         if (results.some((result) => result.diagnostics.length))
@@ -57,7 +69,7 @@ panels:
             results.flatMap((result) => result.diagnostics).join("\n"),
           );
         document.querySelector("#status").textContent =
-          "v0.1.0 · CDN에서 불러오기와 브라우저 렌더링 완료";
+          "최신 main SDK · CDN에서 불러오기와 브라우저 렌더링 완료";
       } catch (error) {
         const status = document.querySelector("#status");
         status.setAttribute("role", "alert");

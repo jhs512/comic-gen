@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 
 test("author downloads a real PNG at the selected scale", async ({ page }) => {
   await page.goto("/");
+  await page.getByLabel("시작 예제").selectOption("basic");
   const size = await page.locator("#preview svg").evaluate((svg) => ({
     width: Number(svg.getAttribute("width")),
     height: Number(svg.getAttribute("height")),

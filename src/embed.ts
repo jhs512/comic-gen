@@ -10,10 +10,10 @@ export function renderCodeBlocks(
 ) {
   const results = [];
   for (const block of root.querySelectorAll<HTMLElement>(
-    "pre[data-comic], pre:has(code.language-comic)",
+    "pre[data-comic], pre:has(code.language-comic), pre:has(code.language-comic-gen)",
   )) {
     const source = (block.querySelector("code") ?? block).textContent ?? "";
-    const result = documentRenderer.render(source, options);
+    const result = documentRenderer.renderPanels(source, options);
     let figure = figures.get(block);
     if (!figure) {
       figure = document.createElement("figure");
@@ -22,7 +22,7 @@ export function renderCodeBlocks(
       figures.set(block, figure);
     }
     if (result.svg) {
-      figure.innerHTML = result.svg;
+      figure.innerHTML = result.panels.map((panel) => panel.svg).join("");
       block.hidden = true;
     } else {
       figure.replaceChildren();

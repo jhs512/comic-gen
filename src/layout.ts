@@ -31,6 +31,7 @@ export function renderPanel(
   cast: Comic["cast"],
   width: number,
   font: string,
+  format: "compact" | "phone" = "compact",
 ): { markup: string; height: number } {
   const bubbleWidth = Math.min(width - 80, 390);
   const bubbles = panel.dialogue.map((line) => ({
@@ -42,7 +43,7 @@ export function renderPanel(
     (sum, bubble) => sum + 60 + bubble.lines.length * bubble.lineHeight,
     20,
   );
-  const height = dialogueHeight + 254 + panel.transfer.length * 38;
+  const height = dialogueHeight + 254;
   const radius = Math.max(
     ...panel.actors.map((actor) => (actor.holding || actor.gesture ? 92 : 60)),
   );
@@ -96,9 +97,16 @@ export function renderPanel(
       line.y === undefined
         ? y
         : clamp(line.y * height, 20, dialogueHeight - bubbleHeight);
-    const tailX = Math.max(x + 20, Math.min(x + bubbleWidth - 20, center));
+    const tailX = Math.max(x + 24, Math.min(x + bubbleWidth - 24, center));
+    const right = x + bubbleWidth;
+    const bottom = bubbleY + bubbleHeight;
+    const actorIndex = panel.actors.findIndex(
+      (actor) => actor.id === line.from,
+    );
+    const tipY = actorYs[actorIndex] - 65 * scales[actorIndex];
+    const outline = `M${x + 14} ${bubbleY}H${right - 14}Q${right} ${bubbleY} ${right} ${bubbleY + 14}V${bottom - 14}Q${right} ${bottom} ${right - 14} ${bottom}H${tailX + 9}L${center} ${tipY}L${tailX - 9} ${bottom}H${x + 14}Q${x} ${bottom} ${x} ${bottom - 14}V${bubbleY + 14}Q${x} ${bubbleY} ${x + 14} ${bubbleY}Z`;
     markup.push(
-      `<g data-dialogue="${escapeXml(line.from)}" data-to="${escapeXml(line.to ?? "")}"><path d="M${tailX - 9} ${bubbleY + bubbleHeight - 1}L${center} ${actorYs[panel.actors.findIndex((actor) => actor.id === line.from)] - 65} ${tailX + 9} ${bubbleY + bubbleHeight - 1}" fill="#fffaf0" stroke="#303341" stroke-width="1.5"/><rect x="${x}" y="${bubbleY}" width="${bubbleWidth}" height="${bubbleHeight}" rx="14" fill="#fffaf0" stroke="#303341" stroke-width="2"/><text x="${x + 18}" y="${bubbleY + 18 + line.fontSize}" font-size="${line.fontSize}">${lines.map((part, index) => `<tspan x="${x + 18}" dy="${index ? lineHeight : 0}">${escapeXml(part)}</tspan>`).join("")}</text></g>`,
+      `<g data-dialogue="${escapeXml(line.from)}" data-to="${escapeXml(line.to ?? "")}"><path d="${outline}" fill="#fffaf0" stroke="#303341" stroke-width="2" stroke-linejoin="round"/><text x="${x + 18}" y="${bubbleY + 18 + line.fontSize}" font-size="${line.fontSize}">${lines.map((part, index) => `<tspan x="${x + 18}" dy="${index ? lineHeight : 0}">${escapeXml(part)}</tspan>`).join("")}</text></g>`,
     );
     y += bubbleHeight + 32;
   });
@@ -132,17 +140,29 @@ export function renderPanel(
     );
   });
   panel.transfer.forEach((relation, index) => {
-    const from =
-      centers[panel.actors.findIndex((actor) => actor.id === relation.from)];
-    const to =
-      centers[panel.actors.findIndex((actor) => actor.id === relation.to)];
+    const fromIndex = panel.actors.findIndex(
+      (actor) => actor.id === relation.from,
+    );
+    const toIndex = panel.actors.findIndex((actor) => actor.id === relation.to);
+    const from = centers[fromIndex];
+    const to = centers[toIndex];
     const direction = Math.sign(to - from);
-    const start = from + 66 * direction,
-      end = to - 66 * direction;
-    const row = dialogueHeight + 28 + index * 38;
+    const start = from + 62 * scales[fromIndex] * direction;
+    const end = to - 62 * scales[toIndex] * direction;
+    const offset = 20 + (index - (panel.transfer.length - 1) / 2) * 12;
+    const startY = actorYs[fromIndex] + offset * scales[fromIndex];
+    const endY = actorYs[toIndex] + offset * scales[toIndex];
+    const angle = (Math.atan2(endY - startY, end - start) * 180) / Math.PI;
     markup.push(
-      `<g data-transfer="${escapeXml(relation.from)}" data-to="${escapeXml(relation.to)}" stroke="#586c8c" stroke-width="2.5"><path d="M${start} ${row}H${end}m${-direction * 8} -5 ${direction * 8} 5 ${-direction * 8} 5" fill="none"/><circle data-hand="transfer" cx="${start}" cy="${row}" r="9" fill="white"/><g data-prop="${relation.prop}" transform="translate(${(from + to) / 2} ${row - 16})">${props[relation.prop]}</g></g>`,
+      `<g data-transfer="${escapeXml(relation.from)}" data-to="${escapeXml(relation.to)}" stroke="#586c8c" stroke-width="2.5"><path d="M${start} ${startY}L${end} ${endY}" fill="none"/><circle data-hand="transfer" cx="${start}" cy="${startY}" r="${9 * scales[fromIndex]}" fill="white"/><circle data-hand="receive" cx="${end}" cy="${endY}" r="${9 * scales[toIndex]}" fill="white"/><path transform="translate(${end} ${endY}) rotate(${angle})" d="M-12 -5L-4 0L-12 5" fill="none"/><g data-prop="${relation.prop}" transform="translate(${(start + end) / 2} ${(startY + endY) / 2 - 16})">${props[relation.prop]}</g></g>`,
     );
   });
+  if (format === "phone") {
+    const phoneHeight = height * 2 + 92;
+    return {
+      markup: `<rect x="20" y="0" width="${width - 40}" height="${phoneHeight}" rx="18" fill="white" stroke="#303341" stroke-width="2.5"/><g transform="translate(0 ${(phoneHeight - height) / 2})">${markup.slice(1).join("")}</g>`,
+      height: phoneHeight,
+    };
+  }
   return { markup: markup.join(""), height };
 }

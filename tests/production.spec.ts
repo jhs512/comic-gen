@@ -27,6 +27,7 @@ test("built browser SDK exports a working renderer with bounded and invalidatabl
   expect(outcome.exports).toEqual(
     expect.arrayContaining([
       "renderComic",
+      "renderPanels",
       "createRenderer",
       "renderCodeBlocks",
       "exportPng",

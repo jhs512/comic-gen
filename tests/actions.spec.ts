@@ -4,6 +4,7 @@ test("author adds optional hands, held props and a directed transfer", async ({
   page,
 }) => {
   await page.goto("/");
+  await page.getByLabel("시작 예제").selectOption("basic");
   await expect(page.locator("#preview [data-hand]")).toHaveCount(0);
   await page
     .getByLabel("만화 코드")

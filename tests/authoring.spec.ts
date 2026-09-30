@@ -4,7 +4,7 @@ test("author edits a dialogue and downloads the displayed SVG", async ({
   page,
 }) => {
   await page.goto("/");
-  await expect(page.locator("#preview svg")).toBeVisible();
+  await expect(page.locator("#preview svg").first()).toBeVisible();
   await page
     .getByLabel("만화 코드")
     .fill(
@@ -35,16 +35,15 @@ test("three characters reuse roles across panels and long dialogue stays inside 
     .locator("#preview [data-dialogue]")
     .evaluateAll((groups) =>
       groups.every((group) => {
-        const rect = group.querySelector("rect") as SVGGraphicsElement;
+        const outline = group.querySelector("path") as SVGGeometryElement;
         const text = group.querySelector("text") as SVGGraphicsElement;
-        const a = rect.getBBox(),
-          b = text.getBBox();
-        return (
-          b.x >= a.x &&
-          b.x + b.width <= a.x + a.width &&
-          b.y >= a.y &&
-          b.y + b.height <= a.y + a.height
-        );
+        const b = text.getBBox();
+        return [
+          [b.x, b.y],
+          [b.x + b.width, b.y],
+          [b.x, b.y + b.height],
+          [b.x + b.width, b.y + b.height],
+        ].every(([x, y]) => outline.isPointInFill(new DOMPoint(x, y)));
       }),
     );
   expect(contained).toBe(true);

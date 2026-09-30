@@ -15,5 +15,6 @@ test("editing one panel reuses the other and changing output size refreshes both
   await expect(page.locator("#preview")).toContainText("수정한 컷");
   await page.getByLabel("만화 너비").selectOption("960");
   await expect(page.locator("#cache-status")).toContainText("새로 그린 컷 2");
-  await expect(page.locator("#preview svg")).toHaveAttribute("width", "960");
+  for (const svg of await page.locator("#preview svg").all())
+    await expect(svg).toHaveAttribute("width", "960");
 });
