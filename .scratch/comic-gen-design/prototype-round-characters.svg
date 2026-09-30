@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="460" viewBox="0 0 1000 460">
+  <title>동그란 교육 만화 캐릭터 시각 초안</title>
+  <desc>두 캐릭터가 대화하는 컷과 세 캐릭터 중 하나가 작은 원형 손으로 제스처를 하는 컷. 제품 구현이 아닌 시각 초안.</desc>
+  <rect width="1000" height="460" fill="#fffaf3"/>
+  <g font-family="Malgun Gothic, sans-serif" fill="#303341">
+    <text x="30" y="35" font-size="18">시각 초안 · 이름표 + 역할 아이콘 + 표정</text>
+    <rect x="25" y="58" width="460" height="342" rx="18" fill="white" stroke="#303341" stroke-width="3"/>
+    <rect x="515" y="58" width="460" height="342" rx="18" fill="white" stroke="#303341" stroke-width="3"/>
+    <g fill="white" stroke="#303341" stroke-width="2.5">
+      <path d="M68 88 H232 Q249 88 249 105 V143 Q249 158 232 158 H153 L133 181 L136 158 H68 Q52 158 52 143 V105 Q52 88 68 88Z"/>
+      <path d="M294 112 H443 Q460 112 460 129 V171 Q460 188 443 188 H363 L347 208 L347 188 H294 Q277 188 277 171 V129 Q277 112 294 112Z"/>
+      <path d="M566 88 H762 Q780 88 780 106 V147 Q780 165 762 165 H637 L620 184 L620 165 H566 Q548 165 548 147 V106 Q548 88 566 88Z"/>
+    </g>
+    <g font-size="19" text-anchor="middle">
+      <text x="151" y="128">데이터 줄래?</text>
+      <text x="369" y="155">찾아서 보낼게!</text>
+      <text x="664" y="132">여기를 한번 봐!</text>
+    </g>
+    <g stroke="#303341" stroke-width="3" stroke-linecap="round">
+      <circle cx="151" cy="287" r="70" fill="#b5d9ff"/>
+      <circle cx="354" cy="287" r="70" fill="#ffe2a1"/>
+      <circle cx="611" cy="287" r="53" fill="#b5d9ff"/>
+      <circle cx="753" cy="287" r="53" fill="#ffe2a1"/>
+      <circle cx="893" cy="287" r="53" fill="#d6c8f7"/>
+      <path d="M123 260 Q131 255 139 260 M165 258 Q173 251 181 258" fill="none"/>
+      <circle cx="133" cy="276" r="4" fill="#303341"/>
+      <circle cx="172" cy="276" r="4" fill="#303341"/>
+      <ellipse cx="152" cy="302" rx="6" ry="8" fill="#303341" stroke="none"/>
+      <path d="M324 274 Q333 263 342 274 M364 274 Q373 263 382 274 M337 300 Q354 320 371 300" fill="none"/>
+      <circle cx="596" cy="279" r="3" fill="#303341"/><circle cx="626" cy="279" r="3" fill="#303341"/>
+      <path d="M599 300 Q611 310 623 300" fill="none"/>
+      <path d="M732 278 Q740 269 747 278 M761 278 Q768 269 775 278 M741 299 Q753 313 765 299" fill="none"/>
+      <circle cx="879" cy="279" r="3" fill="#303341"/><circle cx="907" cy="279" r="3" fill="#303341"/>
+      <path d="M884 300 H902" fill="none"/>
+      <circle cx="813" cy="241" r="13" fill="#ffe2a1"/>
+      <path d="M821 218 L827 208 M835 233 L846 229" fill="none"/>
+    </g>
+    <g stroke="#303341" stroke-width="2" fill="white">
+      <rect x="131" y="211" width="40" height="24" rx="5"/>
+      <path d="M137 219 H160 M137 227 H160"/>
+      <circle cx="164" cy="219" r="1" fill="#303341"/>
+      <path d="M335 213 V232 C335 242 373 242 373 232 V213"/>
+      <ellipse cx="354" cy="213" rx="19" ry="6"/>
+      <path d="M335 223 C335 233 373 233 373 223" fill="none"/>
+      <rect x="596" y="227" width="30" height="20" rx="3"/>
+      <path d="M591 250 H631"/>
+      <rect x="738" y="227" width="30" height="20" rx="4"/>
+      <path d="M743 234 H762 M743 240 H762"/>
+      <path d="M878 230 V244 C878 252 908 252 908 244 V230"/>
+      <ellipse cx="893" cy="230" rx="15" ry="5"/>
+    </g>
+    <g font-size="15" text-anchor="middle">
+      <rect x="108" y="323" width="86" height="25" rx="8" fill="white"/>
+      <text x="151" y="341">웹 서버</text>
+      <rect x="333" y="323" width="42" height="25" rx="8" fill="white"/>
+      <text x="354" y="341">DB</text>
+    </g>
+    <g font-size="14" fill="#68707d" text-anchor="middle">
+      <text x="611" y="361">클라이언트</text>
+      <text x="753" y="361">웹 서버</text>
+      <text x="893" y="361">DB</text>
+      <text x="254" y="377">이름표는 개념을, 아이콘은 역할을 표시</text>
+      <text x="745" y="387">같은 동그란 몸에 역할별 특징을 추가</text>
+    </g>
+    <text x="30" y="437" font-size="14" fill="#68707d">색에만 의존하지 않고 이름과 아이콘으로 구분 · 역할과 대사는 예시</text>
+  </g>
+</svg>
