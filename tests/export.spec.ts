@@ -3,12 +3,10 @@ import { readFile } from "node:fs/promises";
 
 test("author downloads a real PNG at the selected scale", async ({ page }) => {
   await page.goto("/");
-  const size = await page
-    .locator("#preview svg")
-    .evaluate((svg) => ({
-      width: Number(svg.getAttribute("width")),
-      height: Number(svg.getAttribute("height")),
-    }));
+  const size = await page.locator("#preview svg").evaluate((svg) => ({
+    width: Number(svg.getAttribute("width")),
+    height: Number(svg.getAttribute("height")),
+  }));
   await page.getByLabel("PNG 배율").selectOption("2");
   const event = page.waitForEvent("download");
   await page.getByRole("button", { name: "PNG 저장" }).click();
