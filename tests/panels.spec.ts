@@ -87,7 +87,7 @@ test("gallery examples open in the phone playground and one panel downloads inde
   for (const card of await page.locator(".gallery-card").all())
     await expect(card.locator("svg").first()).toBeVisible();
   await page.locator("#before summary").click();
-  await expect(page.locator("#before pre")).toContainText("mode: before");
+  await expect(page.locator("#before pre")).toContainText("구성: 이전");
   await page.locator("#before .primary-link").click();
   await expect(page.getByLabel("시작 예제")).toHaveValue("before");
   await expect(page.locator("#preview svg")).toHaveCount(4);

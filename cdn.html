@@ -38,24 +38,51 @@
       이 페이지는 main 브랜치의 최신 CDN에서 단일 SDK 파일을 불러옵니다. CDN
       캐시 때문에 갱신이 지연될 수 있습니다.
     </p>
-    <pre data-comic><code>title: CDN에서 불러온 만화
-cast:
-  client: {asset: client, label: 방문자}
-  server: {asset: server, label: 웹 서버}
-panels:
-  - actors: [{id: client, expression: happy}, server]
-    dialogue:
-      - {from: client, to: server, text: "설치 없이 문서에 만화를 넣었어!"}
-      - {from: server, to: client, text: "그림은 네 브라우저에서 만들고 있어."}
-  - mode: before
-    actors: [{id: server, expression: happy}]
-    dialogue: [{from: server, to: client, text: "두 번째 컷은 이전 상태에서 시작해."}]
-  - mode: before
-    transfer: [{from: server, to: client, prop: data}]
-    dialogue: [{from: server, to: client, text: "이 컷도 단독 SVG야."}]
-  - mode: before
-    actors: [{id: client, gesture: wave}]
-    dialogue: [{from: client, to: server, text: "네 컷 완성! 각각 저장할 수 있어."}]
+    <pre data-comic hidden><code>제목: CDN에서 불러온 만화
+등장인물:
+  client:
+    그림: 클라이언트
+    이름표: 방문자
+  server:
+    그림: 서버
+    이름표: 웹 서버
+컷:
+  - 인물:
+      - 식별자: client
+        표정: 기쁨
+      - server
+    대사:
+      - 화자: client
+        상대: server
+        내용: 설치 없이 문서에 만화를 넣었어!
+      - 화자: server
+        상대: client
+        내용: 그림은 네 브라우저에서 만들고 있어.
+  - 구성: 이전
+    인물:
+      - 식별자: server
+        표정: 기쁨
+    대사:
+      - 화자: server
+        상대: client
+        내용: 두 번째 컷은 이전 상태에서 시작해.
+  - 구성: 이전
+    전달:
+      - 주는인물: server
+        받는인물: client
+        소품: 데이터
+    대사:
+      - 화자: server
+        상대: client
+        내용: 이 컷도 단독 SVG야.
+  - 구성: 이전
+    인물:
+      - 식별자: client
+        손모양: 인사손
+    대사:
+      - 화자: client
+        상대: server
+        내용: 네 컷 완성! 각각 저장할 수 있어.
 </code></pre>
     <p id="status" role="status">CDN에서 SDK를 불러오는 중…</p>
     <script type="module">

@@ -75,7 +75,7 @@ export function renderPanel(
         Math.abs(actorYs[i] - actorYs[j]) < 120 * Math.max(scales[i], scales[j])
       ) {
         throw new Error(
-          `캐릭터 '${panel.actors[i].id}'와 '${panel.actors[j].id}'가 겹칩니다. x/y 또는 scale을 조정하세요.`,
+          `캐릭터 '${panel.actors[i].id}'와 '${panel.actors[j].id}'가 겹칩니다. 가로위치·세로위치 또는 배율을 조정하세요.`,
         );
       }
     }

@@ -1,6 +1,9 @@
-import { stringify } from "yaml";
+import { parse, stringify } from "yaml";
+import { koreanComic } from "./syntax";
+const koreanSource = (source: string) =>
+  stringify(koreanComic(parse(source)), { lineWidth: 0 });
 
-export const starter = `title: 요청과 응답
+export const starter = koreanSource(`title: 요청과 응답
 cast:
   web: {asset: server, label: 웹 서버}
   db: {asset: database, label: DB}
@@ -11,7 +14,7 @@ panels:
     dialogue:
       - {from: web, to: db, text: "데이터를 부탁해!"}
       - {from: db, to: web, text: "좋아, 바로 찾아볼게!"}
-`;
+`);
 
 export interface Example {
   id: string;
@@ -27,7 +30,7 @@ function sourceFor(
   cast: Record<string, { asset: string; label: string }>,
   panels: unknown[],
 ): string {
-  return stringify({ title, cast, panels }, { lineWidth: 0 });
+  return stringify(koreanComic({ title, cast, panels }), { lineWidth: 0 });
 }
 
 // Keep every example as ordinary authoring code, using the same public renderer as the editor.
@@ -38,8 +41,8 @@ function getExamples(): Example[] {
       title: "변화만 적는 네 컷 이야기",
       category: "여러 컷·상속",
       description:
-        "첫 컷을 정의하고 before 모드로 표정·소품만 바꿉니다. 대사는 매 컷 새로 작성합니다.",
-      features: ["4컷", "mode: before", "상태 초기화"],
+        "첫 컷을 정의하고 이전 구성로 표정·소품만 바꿉니다. 대사는 매 컷 새로 작성합니다.",
+      features: ["4컷", "구성: 이전", "상태 초기화"],
       source: `title: 데이터가 도착하기까지
 cast:
   web: {asset: server, label: 웹 서버}
@@ -64,7 +67,7 @@ panels:
       title: "처음 만드는 두 캐릭터 대화",
       category: "빠른 시작",
       description:
-        "cast에 이름을 붙이고 두 캐릭터가 서로 이야기하게 합니다. 대사만 바꾸며 시작하세요.",
+        "등장인물에 이름을 붙이고 두 캐릭터가 서로 이야기하게 합니다. 대사만 바꾸며 시작하세요.",
       features: ["역할 이름표", "대화 상대", "자동 배치"],
       source: starter,
     },
@@ -134,8 +137,8 @@ panels:
       title: "열쇠로 이해하는 인증",
       category: "IT 설명",
       description:
-        "key 소품을 인증 정보에 비유합니다. 이름표는 주제에 맞게 바꿀 수 있습니다.",
-      features: ["key", "holding", "전달 방향"],
+        "열쇠 소품을 인증 정보에 비유합니다. 이름표는 주제에 맞게 바꿀 수 있습니다.",
+      features: ["열쇠", "든소품", "전달 방향"],
       source: sourceFor(
         "인증 정보 확인하기",
         {
@@ -184,7 +187,7 @@ panels:
       category: "IT 설명",
       description:
         "실패와 재시도를 표정 변화로 설명합니다. 한 인물의 표정은 컷마다 달라질 수 있습니다.",
-      features: ["sad → happy", "3컷", "상태 변화"],
+      features: ["슬픔 → 기쁨", "3컷", "상태 변화"],
       source: sourceFor(
         "실패 후 다시 시도하기",
         {
@@ -276,8 +279,8 @@ panels:
       title: "잃어버린 열쇠",
       category: "대화·스토리",
       description:
-        "같은 client 에셋을 서로 다른 두 인물로 사용해 작은 이야기를 만듭니다.",
-      features: ["동일 에셋의 두 인물", "감정 변화", "key 전달"],
+        "같은 클라이언트 에셋을 서로 다른 두 인물로 사용해 작은 이야기를 만듭니다.",
+      features: ["동일 에셋의 두 인물", "감정 변화", "열쇠 전달"],
       source: sourceFor(
         "잃어버린 열쇠",
         {
@@ -349,8 +352,8 @@ panels:
       title: "인사와 가리키기",
       category: "표현",
       description:
-        "wave는 인사, point는 가리키는 몸짓입니다. 지정하지 않은 인물에는 손이 없습니다.",
-      features: ["wave", "point", "손 생략"],
+        "인사손과 가리키는손은 고정된 손 모양입니다. 시간에 따라 움직이지 않으며 지정하지 않은 인물에는 손이 없습니다.",
+      features: ["인사손", "가리키는손", "손 생략"],
       source: sourceFor(
         "손으로도 이야기해요",
         {
@@ -422,7 +425,7 @@ panels:
       category: "배치",
       description:
         "인물의 좌우·크기, 말풍선 위치와 글자 크기를 직접 조절합니다.",
-      features: ["x/y", "scale", "fontSize"],
+      features: ["가로·세로위치", "배율", "글자크기"],
       source: sourceFor(
         "직접 배치해 보기",
         {
@@ -494,7 +497,7 @@ export function findExample(id: string | null): Example {
   );
 }
 
-export const actionExample = `title: 데이터를 전달해요
+export const actionExample = koreanSource(`title: 데이터를 전달해요
 cast:
   browser: {asset: client, label: 클라이언트}
   web: {asset: server, label: 웹 서버}
@@ -516,6 +519,9 @@ panels:
       - {from: db, to: web, text: "여기 데이터야. 응답에 사용해!"}
     transfer:
       - {from: db, to: web, prop: data}
-`;
+`);
 
-export const examples = getExamples();
+export const examples = getExamples().map((example) => ({
+  ...example,
+  source: koreanSource(example.source),
+}));

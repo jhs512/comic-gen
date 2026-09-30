@@ -21,7 +21,7 @@ test("author can adjust one actor and a bubble while keeping defaults for others
   await page
     .getByLabel("만화 코드")
     .fill(`cast: {a: {asset: server}}\npanels: [{actors: [{id: a, x: 4}]}]`);
-  await expect(page.getByRole("alert")).toContainText("x");
+  await expect(page.getByRole("alert")).toContainText("가로위치");
 });
 
 test("held prop remains visible beside three characters at narrow output width", async ({
