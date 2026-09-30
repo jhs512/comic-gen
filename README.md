@@ -22,7 +22,7 @@
 | CDN 실험        | [외부 CDN에서 SDK를 불러오는 화면](https://jhs512.github.io/comic-gen/cdn.html)                                |
 | 소스            | [GitHub 저장소](https://github.com/jhs512/comic-gen)                                                           |
 | 최신 SDK        | [main 브랜치 CDN](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@main/cdn/comic-gen.js)                          |
-| 현재 고정 버전  | [v0.2.0 CDN](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.2.0/cdn/comic-gen.js)                             |
+| 현재 고정 버전  | [v0.2.1 CDN](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.2.1/cdn/comic-gen.js)                             |
 | 이전 고정 버전  | [v0.1.0 CDN](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.1.0/cdn/comic-gen.js)                             |
 | 자체 호스팅 SDK | [GitHub Pages SDK](https://jhs512.github.io/comic-gen/sdk/comic-gen.js)                                        |
 | CodePen         | [검증한 코드](https://codepen.io/jangka44/pen/PwpKdPz) · [그림 보기](https://codepen.io/jangka44/full/PwpKdPz) |
@@ -35,9 +35,9 @@ import { renderPanels } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@main/
 
 `@main`은 주소 변경 없이 main에 게시한 최신 SDK를 사용합니다. `@latest`는 최신 정식 버전 태그를 의미하며 이 프로젝트의 기본 최신 주소는 `@main`으로 통일합니다. [jsDelivr 캐시 정책](https://github.com/jsdelivr/jsdelivr#caching)에 따라 브랜치 URL은 최대 12시간 캐시될 수 있어 모든 사용자에게 즉시 갱신되는 것은 아닙니다. 즉시 특정 수정 버전을 받아야 한다면 새 태그의 고정 URL을 사용하세요.
 
-CDN 파일에는 YAML 파서와 기본 SVG 에셋이 포함되어 상대 경로의 추가 파일이나 npm 설치가 필요 없습니다. npm에는 아직 게시하지 않았습니다. 재현 가능한 문서에는 `@v0.2.0`을 사용하세요. 기존 태그는 덮어쓰지 않습니다.
+CDN 파일에는 YAML 파서와 기본 SVG 에셋이 포함되어 상대 경로의 추가 파일이나 npm 설치가 필요 없습니다. npm에는 아직 게시하지 않았습니다. 재현 가능한 문서에는 `@v0.2.1`을 사용하세요. 기존 태그는 덮어쓰지 않습니다.
 
-v0.2.0은 컷별 SVG, 스마트폰용 세로 비율, 이전 컷 상속, 갤러리와 문법 안내를 추가합니다. 말풍선 몸통과 꼬리의 내부 경계선을 없애고 전달 화살표를 캐릭터의 손 높이에 연결합니다. v0.1.0 URL은 기존 결과를 유지합니다.
+v0.2.1은 컷별 SVG, 스마트폰용 세로 비율, 이전 컷 상속, 갤러리와 문법 안내를 추가합니다. 말풍선 몸통과 꼬리의 내부 경계선을 없애고 전달 화살표를 캐릭터의 손 높이에 연결합니다. v0.1.0 URL은 기존 결과를 유지합니다.
 
 ## 첫 만화 작성하기
 
