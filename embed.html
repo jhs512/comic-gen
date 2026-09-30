@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Comic Gen · 문서 삽입</title>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/">◒ Comic Gen</a><span>정적 문서 삽입 예제</span
+      ><a href="/">편집기로 돌아가기 ↗</a>
+    </header>
+    <main class="document">
+      <span class="eyebrow">COMICS IN DOCUMENTS</span>
+      <h1>설명 사이에, 작은 대화.</h1>
+      <p>
+        만화 코드 블록을 브라우저에서 렌더링합니다. 아래 그림은 각각 독립적인
+        코드 블록입니다.
+      </p>
+      <button id="rerender">문서 다시 그리기</button>
+      <h2>요청이 도착하면</h2>
+      <pre data-comic><code>title: 문서에 넣은 대화
+cast:
+  web: {asset: server, label: 웹 서버}
+  db: {asset: database, label: 데이터베이스}
+panels:
+  - actors: [web, db]
+    dialogue:
+      - {from: web, to: db, text: "문서 안에서도 대화해요!"}
+      - {from: db, text: "같은 캐릭터를 다시 써도 좋아요."}
+</code></pre>
+      <h2>응답을 기다리는 클라이언트</h2>
+      <pre><code class="language-comic">title: 요청을 보내요
+cast:
+  browser: {asset: client, label: 클라이언트}
+panels:
+  - actors: [{id: browser, expression: happy, gesture: wave, holding: request}]
+    dialogue: [{from: browser, text: "Hello, server!"}]
+</code></pre>
+      <h2>오류는 해당 블록에서만</h2>
+      <p>잘못된 에셋을 참조해도 다른 만화는 정상적으로 표시됩니다.</p>
+      <pre data-comic><code>cast: {missing: {asset: unknown}}
+panels: [{actors: [missing]}]</code></pre>
+    </main>
+    <script type="module" src="/src/document-demo.ts"></script>
+  </body>
+</html>

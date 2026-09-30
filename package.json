@@ -10,6 +10,13 @@
     "test": "playwright test",
     "preview": "vite preview --host 127.0.0.1"
   },
-  "dependencies": { "yaml": "^2.8.1" },
-  "devDependencies": { "@playwright/test": "^1.55.0", "typescript": "^5.9.2", "vite": "^7.1.0" }
+  "dependencies": {
+    "yaml": "^2.8.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "prettier": "^3.9.9",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.0"
+  }
 }
