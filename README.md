@@ -2,7 +2,22 @@
 
 준비된 SVG 에셋을 YAML로 조합하는 브라우저 전용 교육 만화 렌더러입니다. 웹 서버·DB·클라이언트, 다섯 표정, 손 제스처와 소품을 제공하며 SVG와 PNG로 저장합니다.
 
-## 실행
+## 공개 버전 v0.1.0
+
+| 용도            | 링크                                                                                    |
+| --------------- | --------------------------------------------------------------------------------------- |
+| 편집기          | [Comic Gen 앱](https://jhs512.github.io/comic-gen/)                                     |
+| 문서 삽입       | [여러 코드 블록 예제](https://jhs512.github.io/comic-gen/embed.html)                    |
+| CDN 실험        | [외부 CDN으로 렌더링하는 예제](https://jhs512.github.io/comic-gen/cdn.html)             |
+| 소스            | [GitHub 저장소](https://github.com/jhs512/comic-gen)                                    |
+| 고정 버전 SDK   | [jsDelivr v0.1.0](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.1.0/cdn/comic-gen.js) |
+| 자체 호스팅 SDK | [GitHub Pages SDK](https://jhs512.github.io/comic-gen/sdk/comic-gen.js)                 |
+
+CDN SDK는 GitHub의 `v0.1.0` 태그를 사용하는 브라우저 ES 모듈입니다. YAML 파서와 기본 SVG 에셋이 한 파일에 포함되어 상대 경로의 추가 파일이 필요 없습니다. npm에는 게시하지 않았습니다. 재현 가능한 문서에는 태그가 고정된 URL을 사용하세요. 이후 버전은 새 태그로 배포하며 기존 태그를 덮어쓰지 않습니다.
+
+편집기에서 예제를 선택하고 YAML을 수정하면 미리보기가 갱신됩니다. SVG 또는 PNG 저장 버튼으로 결과를 다운로드할 수 있습니다.
+
+## 로컬 실행
 
 Node.js 22.12 이상이 필요합니다.
 
@@ -21,7 +36,7 @@ npm run build
 npm run preview
 ```
 
-빌드 결과 전체를 정적 웹 서버에 배포할 수 있습니다. 렌더링 계산용 서버는 필요하지 않습니다. SDK가 참조하는 `assets` 폴더도 함께 배포하세요. 아직 npm이나 외부 사이트에 게시하지 않았습니다.
+`dist` 전체를 정적 웹 서버에 배포할 수 있습니다. 앱의 `assets` 폴더도 함께 배포하세요. 별도로 `cdn/comic-gen.js`와 `dist/sdk/comic-gen.js`에는 단일 파일 SDK가 생성됩니다. 렌더링 계산용 서버는 필요하지 않습니다. main 브랜치 푸시는 GitHub Actions에서 브라우저 테스트 후 Pages에 배포합니다. 새 SDK 버전을 만들 때는 빌드한 CDN 파일을 커밋하고 새 버전 태그를 게시합니다.
 
 ## 작성 예제
 
@@ -68,7 +83,7 @@ import {
   createRenderer,
   exportPng,
   renderCodeBlocks,
-} from "./comic-gen.js";
+} from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.1.0/cdn/comic-gen.js";
 
 await document.fonts.ready;
 const renderer = createRenderer();
@@ -87,7 +102,7 @@ const png = await exportPng(result, 2);
 ```html
 <pre data-comic><code>여기에 만화 YAML 코드</code></pre>
 <script type="module">
-  import { renderCodeBlocks } from "./comic-gen.js";
+  import { renderCodeBlocks } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.1.0/cdn/comic-gen.js";
   await document.fonts.ready;
   renderCodeBlocks();
 </script>
@@ -96,6 +111,27 @@ const png = await exportPng(result, 2);
 `pre > code.language-comic`도 지원합니다. Markdown 파서가 `comic` 코드 블록을 해당 HTML로 출력하면 연결할 수 있습니다. 실제 코드 내용에 HTML 특수문자가 있으면 HTML로 삽입할 때 이스케이프하거나 `textContent`로 설정하세요. 렌더러는 대사를 실행하지 않는 텍스트로 표시합니다.
 
 여러 블록을 독립적으로 렌더링하고 오류는 해당 블록에만 표시합니다. 코드 블록을 수정한 뒤 다시 호출해도 그림이 중복되지 않습니다. slog.gg의 `$$` 블록 연결은 그 서비스의 파서에 별도로 통합해야 하며 현재 구현하거나 검증하지 않았습니다.
+
+## CodePen에서 사용
+
+새 Pen의 HTML 영역에 아래 내용을 붙여 넣으세요. JavaScript 전처리기나 외부 패키지 설정은 필요 없습니다. 별도 JS 영역에 옮기려면 `script type="module"`을 지원하는 실행 방식이 필요하므로 이 예제처럼 HTML에 모듈 스크립트를 넣는 것이 간단합니다.
+
+```html
+<pre data-comic><code>cast:
+  web: {asset: server, label: 웹 서버}
+  db: {asset: database, label: DB}
+panels:
+  - actors: [web, db]
+    dialogue:
+      - {from: web, to: db, text: "데이터를 부탁해!"}
+      - {from: db, to: web, text: "좋아, 바로 보낼게!"}
+</code></pre>
+<script type="module">
+  import { renderCodeBlocks } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.1.0/cdn/comic-gen.js";
+  await document.fonts.ready;
+  renderCodeBlocks();
+</script>
+```
 
 ## 범위와 검증
 

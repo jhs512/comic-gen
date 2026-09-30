@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import { resolve } from "node:path";
 
 export default defineConfig({
+  base: "./",
   build: {
     target: "es2022",
     rollupOptions: {
@@ -9,6 +10,7 @@ export default defineConfig({
       input: {
         app: resolve("index.html"),
         document: resolve("embed.html"),
+        cdn: resolve("cdn.html"),
         "comic-gen": resolve("src/index.ts"),
       },
       output: {

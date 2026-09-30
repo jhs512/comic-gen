@@ -5,7 +5,7 @@ import { downloadBlob, exportPng } from "./export";
 import "./style.css";
 
 document.querySelector("#app")!.innerHTML = `
-  <header><a class="brand" href="/">◒ Comic Gen</a><span>코드로 설명하는 작은 만화</span><a href="/embed.html">문서 삽입 예제 ↗</a></header>
+  <header><a class="brand" href="./">◒ Comic Gen</a><span>코드로 설명하는 작은 만화</span><a href="./embed.html">문서 삽입 예제 ↗</a></header>
   <main><section class="intro"><span class="eyebrow">CODE → COMIC</span><h1>복잡한 개념을,<br>작은 대화로.</h1><p>준비된 캐릭터에 표정과 대사를 더하세요.<br>브라우저에서 그리고 이미지로 저장합니다.</p></section>
   <div class="workspace"><section class="editor"><div class="panel-heading"><h2>01 / 작성</h2><button id="reset">예제 복원</button></div><label for="source">만화 코드</label><textarea id="source" spellcheck="false"></textarea><details><summary>문법과 에셋 보기</summary><p>cast에서 인물을 정의하고 panels에 등장인물과 대사를 적습니다. from은 화자, to는 대화 상대입니다.</p><p>캐릭터: ${Object.keys(characters).join(", ")}</p><p>표정: ${Object.keys(expressions).join(", ")}</p></details><div id="diagnostics" role="alert"></div></section>
     <section class="output"><div class="panel-heading"><h2>02 / 미리보기</h2><div class="export-controls"><button id="svg">SVG 저장</button><button id="png">PNG 저장</button></div></div><div class="options"><label>만화 너비 <select id="width"><option value="720">720 px</option><option value="960">960 px</option><option value="480">480 px</option></select></label><label>PNG 배율 <select id="scale"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label></div><div id="preview" aria-live="polite"></div><p class="caption">서버 렌더링 없이 · SVG 원본 · 반복 사용하는 캐릭터</p></section></div></main>`;

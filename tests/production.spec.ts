@@ -6,7 +6,7 @@ test("built browser SDK exports a working renderer with bounded and invalidatabl
   await page.goto("http://127.0.0.1:4173");
   const outcome = await page.evaluate(async () => {
     // Exercise the distributed API, not the development module's internals.
-    const sdk = await import("/comic-gen.js");
+    const sdk = await import("/sdk/comic-gen.js");
     const source =
       "cast: {a: {asset: server}}\npanels: [{actors: [a], dialogue: [{from: a, text: hello}]}]";
     const renderer = sdk.createRenderer(100000);
