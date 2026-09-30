@@ -30,7 +30,7 @@
 ## 최신 CDN과 버전 고정
 
 ```js
-import { 컷그리기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@main/cdn/comic-gen.js";
+import { 컷그리기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.3.0/cdn/comic-gen.js";
 ```
 
 `@main`은 주소 변경 없이 main에 게시한 최신 SDK를 사용합니다. `@latest`는 최신 정식 버전 태그를 의미하며 이 프로젝트의 기본 최신 주소는 `@main`으로 통일합니다. [jsDelivr 캐시 정책](https://github.com/jsdelivr/jsdelivr#caching)에 따라 브랜치 URL은 최대 12시간 캐시될 수 있어 모든 사용자에게 즉시 갱신되는 것은 아닙니다. 즉시 특정 수정 버전을 받아야 한다면 새 태그의 고정 URL을 사용하세요.
@@ -181,7 +181,7 @@ import {
   렌더러만들기,
   exportPng,
   downloadBlob,
-} from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@main/cdn/comic-gen.js";
+} from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.3.0/cdn/comic-gen.js";
 await document.fonts.ready;
 const result = 컷그리기(source, { 너비: 720, 컷비율: "모바일" });
 if (result.diagnostics.length) {
@@ -236,7 +236,7 @@ CodePen의 HTML 영역에 아래 내용을 그대로 넣을 수 있습니다. Ja
     전달: [ { 주는인물: db, 받는인물: web, 소품: 데이터 } ]
 </code></pre>
 <script type="module">
-  import { 코드블록그리기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@main/cdn/comic-gen.js";
+  import { 코드블록그리기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.3.0/cdn/comic-gen.js";
   await document.fonts.ready;
   코드블록그리기();
 </script>
