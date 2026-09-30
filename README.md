@@ -114,6 +114,10 @@ const png = await exportPng(result, 2);
 
 ## CodePen에서 사용
 
+[실제로 검증한 CodePen](https://codepen.io/jangka44/pen/PwpKdPz) · [그림 보기](https://codepen.io/jangka44/full/PwpKdPz)
+
+2026-10-01에 로그인된 CodePen의 새 Pen에서 공개 v0.1.0 CDN을 import하고 웹 서버·DB 대사, 표정, 손, 소품과 전달 관계의 SVG 표시를 확인했습니다. CDN은 JavaScript MIME과 `Access-Control-Allow-Origin: *`로 응답했습니다. 공개 Pages 앱과 문서 삽입, CDN에서 생성한 PNG의 실제 디코딩도 확인했으며 브라우저 실행 오류는 없었습니다.
+
 새 Pen의 HTML 영역에 아래 내용을 붙여 넣으세요. JavaScript 전처리기나 외부 패키지 설정은 필요 없습니다. 별도 JS 영역에 옮기려면 `script type="module"`을 지원하는 실행 방식이 필요하므로 이 예제처럼 HTML에 모듈 스크립트를 넣는 것이 간단합니다.
 
 ```html
