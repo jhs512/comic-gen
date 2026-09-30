@@ -1,1 +1,1 @@
-export const navigation = `<header><a class="brand" href="./">◒ Comic Gen</a><nav aria-label="주요 메뉴"><a href="./">플레이그라운드</a><a href="./gallery.html">갤러리</a><a href="./guide.html">문법 안내</a><a href="./embed.html">문서 삽입</a><a href="./cdn.html">CDN 예제</a></nav></header>`;
+export const navigation = `<header><a class="brand" href="./">◒ Comic Gen</a><nav aria-label="주요 메뉴"><a href="./">플레이그라운드</a><a href="./gallery.html">갤러리</a><a href="./guide.html">문법 안내</a><a href="./embed.html">문서 삽입</a><a href="./llm-guide.md">LLM 가이드</a><a href="./cdn.html">CDN 예제</a></nav></header>`;

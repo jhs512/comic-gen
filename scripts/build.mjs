@@ -12,3 +12,4 @@ await writeFile(
 await build({ configFile: "vite.config.ts" });
 await mkdir("dist/sdk", { recursive: true });
 await copyFile("cdn/comic-gen.js", "dist/sdk/comic-gen.js");
+await copyFile("llm-guide.md", "dist/llm-guide.md");
