@@ -35,7 +35,7 @@
     <a href="./">← Comic Gen 편집기</a>
     <h1>CDN으로 만화 넣기</h1>
     <p>
-      이 페이지는 한글 문법을 지원하는 v0.3.0 고정 CDN에서 단일 SDK 파일을
+      이 페이지는 한글 문법을 지원하는 v0.3.1 고정 CDN에서 단일 SDK 파일을
       불러옵니다.
     </p>
     <pre data-comic hidden><code>제목: CDN에서 불러온 만화
@@ -88,7 +88,7 @@
     <script type="module">
       try {
         const { renderCodeBlocks } =
-          await import("https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.3.0/cdn/comic-gen.js");
+          await import("https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.3.1/cdn/comic-gen.js");
         await document.fonts.ready;
         const results = renderCodeBlocks();
         if (results.some((result) => result.diagnostics.length))
@@ -96,7 +96,7 @@
             results.flatMap((result) => result.diagnostics).join("\n"),
           );
         document.querySelector("#status").textContent =
-          "v0.3.0 고정 SDK · CDN에서 불러오기와 브라우저 렌더링 완료";
+          "v0.3.1 고정 SDK · CDN에서 불러오기와 브라우저 렌더링 완료";
       } catch (error) {
         const status = document.querySelector("#status");
         status.setAttribute("role", "alert");

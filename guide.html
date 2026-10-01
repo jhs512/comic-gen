@@ -8,7 +8,7 @@
   <body>
     <div id="navigation"></div>
     <main class="document guide">
-      <span class="eyebrow">작성 문법 · v0.3.0</span>
+      <span class="eyebrow">작성 문법 · v0.3.1</span>
       <h1>첫 대사부터,<br />나만의 설명까지.</h1>
       <p>
         Comic Gen은 준비된 SVG 에셋을 YAML로 조합하는 브라우저 렌더러입니다. 세
@@ -276,11 +276,11 @@
       <h2 id="sdk">5. 브라우저 SDK와 SVG·PNG 저장</h2>
       <p>
         최신 주소는 main 브랜치를 따르며 CDN 캐시로 반영이 지연될 수 있습니다.
-        한글 문법은 v0.3.0부터 지원합니다. 재현 가능한 문서에는 v0.3.0 고정
+        한글 문법은 v0.3.0부터 지원합니다. 재현 가능한 문서에는 v0.3.1 고정
         SDK를 사용하세요. v0.2.1 고정 SDK는 영어 문법 전용입니다.
       </p>
       <pre><code>import { 컷그리기, exportPng, downloadBlob }
-  from 'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.3.0/cdn/comic-gen.js';
+  from 'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.3.1/cdn/comic-gen.js';
 await document.fonts.ready;
 const result = 컷그리기(source, {너비: 720, 컷비율: '모바일'});
 if (result.diagnostics.length) {
@@ -318,7 +318,7 @@ if (result.diagnostics.length) {
 &lt;/code&gt;&lt;/pre&gt;
 &lt;script type="module"&gt;
   import { 코드블록그리기 } from
-    'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.3.0/cdn/comic-gen.js';
+    'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.3.1/cdn/comic-gen.js';
   await document.fonts.ready;
   코드블록그리기();
 &lt;/script&gt;</code></pre>
@@ -340,10 +340,12 @@ if (result.diagnostics.length) {
       </p>
       <p>
         뷰어는 원래 컷 순서와 내부 좌표를 유지합니다. PC에서는 넓게 열리고
-        모바일에서는 화면 너비에 맞춥니다. 원본 크기·150%·200% 확대와 가로·세로
-        스크롤을 지원하며 닫기 또는 Escape로 돌아오면 카드로 초점이 복원됩니다.
-        문서 삽입의 컷비율 기본값은 기본입니다. 너비·컷비율·글꼴·글꼴버전은 SDK
-        호출 옵션이며 YAML 필드로 넣지 않습니다.
+        모바일에서는 화면 너비에 맞춥니다. 화면 넘침 방지 체크박스와
+        100%·150%·200% 보기 크기를 제공합니다. 넘침 방지를 켜면 가로·세로 모두
+        화면 안에 맞추고, 끄면 선택한 크기로 스크롤해 읽습니다. 체크를 바꾸어도
+        보기 크기는 유지됩니다. 닫기 또는 Escape로 돌아오면 카드로 초점이
+        복원됩니다. 문서 삽입의 컷비율 기본값은 기본입니다.
+        너비·컷비율·글꼴·글꼴버전은 SDK 호출 옵션이며 YAML 필드로 넣지 않습니다.
       </p>
       <h3>영어 문법 호환</h3>
       <p>

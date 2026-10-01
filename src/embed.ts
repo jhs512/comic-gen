@@ -15,15 +15,46 @@ let viewer: HTMLDialogElement | undefined;
 let artwork: HTMLElement;
 let viewerTitle: HTMLElement;
 let zoom: HTMLSelectElement;
+let preventOverflow: HTMLInputElement;
+let viewport: HTMLElement;
 let activeCard: ComicCard | undefined;
 let previousOverflow = "";
+
+function updateViewerSize() {
+  if (!activeCard || !viewer?.open) return;
+  let width = activeCard.result.width * Number(zoom.value);
+  viewport.dataset.preventOverflow = String(preventOverflow.checked);
+  if (preventOverflow.checked) {
+    const style = getComputedStyle(viewport);
+    const availableWidth = Math.max(
+      0,
+      viewport.clientWidth -
+        parseFloat(style.paddingLeft) -
+        parseFloat(style.paddingRight),
+    );
+    const availableHeight = Math.max(
+      0,
+      viewport.clientHeight -
+        parseFloat(style.paddingTop) -
+        parseFloat(style.paddingBottom),
+    );
+    width = Math.min(
+      width,
+      availableWidth,
+      (availableHeight * activeCard.result.width) / activeCard.result.height,
+    );
+    viewport.scrollTo(0, 0);
+  }
+  artwork.style.width = `${width}px`;
+}
 
 function updateViewer(card: ComicCard) {
   viewerTitle.textContent = card.title.textContent;
   artwork.innerHTML = card.result.svg;
-  zoom.value = "fit";
-  artwork.style.width = "100%";
-  artwork.parentElement!.scrollTo(0, 0);
+  zoom.value = "1";
+  preventOverflow.checked = true;
+  viewport.scrollTo(0, 0);
+  updateViewerSize();
 }
 
 function openViewer(card: ComicCard) {
@@ -32,17 +63,14 @@ function openViewer(card: ComicCard) {
     viewer.className = "comic-viewer";
     viewer.setAttribute("aria-labelledby", "comic-viewer-title");
     viewer.setAttribute("aria-describedby", "comic-viewer-help");
-    viewer.innerHTML = `<div class="comic-viewer-toolbar"><h2 class="comic-viewer-title" id="comic-viewer-title"></h2><button type="button" autofocus>닫기</button><label>보기 크기 <select><option value="fit">화면 너비 맞춤</option><option value="1">원본 크기 (100%)</option><option value="1.5">확대 (150%)</option><option value="2">확대 (200%)</option></select></label></div><p class="comic-viewer-help" id="comic-viewer-help">확대하면 가로·세로로 스크롤해 읽을 수 있습니다. 원래 컷 배치는 유지됩니다.</p><div class="comic-viewer-viewport" tabindex="0" role="region" aria-label="만화 읽기 영역"><div class="comic-viewer-artwork"></div></div>`;
+    viewer.innerHTML = `<div class="comic-viewer-toolbar"><h2 class="comic-viewer-title" id="comic-viewer-title"></h2><button type="button" autofocus>닫기</button><div class="comic-viewer-controls"><label class="comic-viewer-checkbox"><input type="checkbox" checked>화면 넘침 방지</label><label>보기 크기 <select><option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option></select></label></div></div><p class="comic-viewer-help" id="comic-viewer-help">화면 넘침 방지를 켜면 만화를 가로·세로 화면 안에 맞춥니다. 끄면 선택한 보기 크기로 스크롤해 읽을 수 있습니다.</p><div class="comic-viewer-viewport" tabindex="0" role="region" aria-label="만화 읽기 영역"><div class="comic-viewer-artwork"></div></div>`;
     viewerTitle = viewer.querySelector("h2")!;
     artwork = viewer.querySelector(".comic-viewer-artwork")!;
+    viewport = viewer.querySelector(".comic-viewer-viewport")!;
     zoom = viewer.querySelector("select")!;
-    zoom.addEventListener("change", () => {
-      if (activeCard)
-        artwork.style.width =
-          zoom.value === "fit"
-            ? "100%"
-            : `${activeCard.result.width * Number(zoom.value)}px`;
-    });
+    preventOverflow = viewer.querySelector('input[type="checkbox"]')!;
+    zoom.addEventListener("change", updateViewerSize);
+    preventOverflow.addEventListener("change", updateViewerSize);
     viewer
       .querySelector("button")!
       .addEventListener("click", () => viewer!.close());
@@ -53,6 +81,7 @@ function openViewer(card: ComicCard) {
       activeCard = undefined;
     });
     document.body.append(viewer);
+    new ResizeObserver(updateViewerSize).observe(viewport);
   }
   activeCard = card;
   updateViewer(card);
@@ -61,6 +90,7 @@ function openViewer(card: ComicCard) {
     document.body.style.overflow = "hidden";
     viewer.showModal();
   }
+  updateViewerSize();
 }
 
 /** Replace comic code blocks with cards that open the original composition in a viewer. */

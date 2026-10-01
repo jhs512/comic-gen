@@ -30,12 +30,12 @@
 ## 최신 CDN과 버전 고정
 
 ```js
-import { 컷그리기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.3.0/cdn/comic-gen.js";
+import { 컷그리기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.3.1/cdn/comic-gen.js";
 ```
 
 `@main`은 주소 변경 없이 main에 게시한 최신 SDK를 사용합니다. `@latest`는 최신 정식 버전 태그를 의미하며 이 프로젝트의 기본 최신 주소는 `@main`으로 통일합니다. [jsDelivr 캐시 정책](https://github.com/jsdelivr/jsdelivr#caching)에 따라 브랜치 URL은 최대 12시간 캐시될 수 있어 모든 사용자에게 즉시 갱신되는 것은 아닙니다. 즉시 특정 수정 버전을 받아야 한다면 새 태그의 고정 URL을 사용하세요.
 
-CDN 파일에는 YAML 파서와 기본 SVG 에셋이 포함되어 상대 경로의 추가 파일이나 npm 설치가 필요 없습니다. npm에는 아직 게시하지 않았습니다. 한글 문법은 v0.3.0부터 지원합니다. 재현 가능한 문서에는 `@v0.3.0` 고정 주소를 사용하세요. 기존 태그는 덮어쓰지 않습니다.
+CDN 파일에는 YAML 파서와 기본 SVG 에셋이 포함되어 상대 경로의 추가 파일이나 npm 설치가 필요 없습니다. npm에는 아직 게시하지 않았습니다. 한글 문법은 v0.3.0부터 지원합니다. 재현 가능한 문서에는 `@v0.3.1` 고정 주소를 사용하세요. 기존 태그는 덮어쓰지 않습니다.
 
 v0.2.1은 영어 문법 전용입니다. 컷별 SVG, 스마트폰용 세로 비율, 이전 컷 상속, 갤러리와 문법 안내를 지원하며 기존 영어 예제를 계속 사용할 수 있습니다. v0.1.0 URL도 기존 결과를 유지합니다.
 
@@ -181,7 +181,7 @@ import {
   렌더러만들기,
   exportPng,
   downloadBlob,
-} from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.3.0/cdn/comic-gen.js";
+} from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.3.1/cdn/comic-gen.js";
 await document.fonts.ready;
 const result = 컷그리기(source, { 너비: 720, 컷비율: "모바일" });
 if (result.diagnostics.length) {
@@ -236,7 +236,7 @@ CodePen의 HTML 영역에 아래 내용을 그대로 넣을 수 있습니다. Ja
     전달: [ { 주는인물: db, 받는인물: web, 소품: 데이터 } ]
 </code></pre>
 <script type="module">
-  import { 코드블록그리기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.3.0/cdn/comic-gen.js";
+  import { 코드블록그리기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.3.1/cdn/comic-gen.js";
   await document.fonts.ready;
   코드블록그리기();
 </script>
@@ -244,7 +244,7 @@ CodePen의 HTML 영역에 아래 내용을 그대로 넣을 수 있습니다. Ja
 
 코드블록그리기(root = document, options = {})는 각 만화를 제목과 첫 컷 썸네일이 있는 카드로 묶습니다. 카드를 클릭하거나 키보드로 열면 전용 뷰어에서 전체 만화를 읽을 수 있습니다. 원문은 오류가 있어도 숨기며 진단만 해당 블록에 표시합니다. `pre > code.language-comic`과 `code.language-comic-gen`을 지원하므로 Markdown의 삼중 백틱 comic-gen 블록을 해당 HTML로 변환하면 연결할 수 있습니다. 필요한 카드·뷰어 스타일은 SDK에 포함되어 있습니다. 내용을 수정한 뒤 다시 호출하면 카드와 열린 뷰어가 갱신됩니다.
 
-뷰어는 PC에서 넓게 열리고 모바일에서는 화면 너비에 맞춰 표시합니다. 기본 컷비율은 `기본`이며 `{ 너비: 1600, 컷비율: "기본" }`처럼 넓은 컷이나 `{ 컷비율: "모바일" }`처럼 모바일 비율을 지정할 수 있습니다. 원래 SVG의 컷 순서와 내부 좌표를 유지하며 화면 크기에 따라 다시 배치하지 않습니다. 원본 크기·150%·200% 확대 후 가로·세로로 스크롤해 읽을 수 있습니다. 닫기 또는 Escape로 돌아오면 카드에 키보드 초점이 복원됩니다. 현재 데이터 모델은 컷을 세로 순서로 배치하며 임의의 격자·페이지 배치를 정의하는 문법은 없습니다.
+뷰어는 PC에서 넓게 열리고 모바일에서는 화면 너비에 맞춰 표시합니다. 기본 컷비율은 `기본`이며 `{ 너비: 1600, 컷비율: "기본" }`처럼 넓은 컷이나 `{ 컷비율: "모바일" }`처럼 모바일 비율을 지정할 수 있습니다. 원래 SVG의 컷 순서와 내부 좌표를 유지하며 화면 크기에 따라 다시 배치하지 않습니다. 화면 넘침 방지는 기본으로 켜져 가로·세로 모두 읽기 영역 안에 맞춥니다. 옆의 보기 크기에서 100%·150%·200%를 고를 수 있으며, 넘침 방지를 끄면 선택한 크기로 가로·세로 스크롤해 읽습니다. 체크를 바꾸어도 선택한 보기 크기는 유지됩니다. 닫기 또는 Escape로 돌아오면 카드에 키보드 초점이 복원됩니다. 현재 데이터 모델은 컷을 세로 순서로 배치하며 임의의 격자·페이지 배치를 정의하는 문법은 없습니다.
 
 HTML에 넣을 때 대사의 &, <, >는 이스케이프하거나 textContent로 설정하세요. 대사는 실행하지 않는 텍스트로 표시합니다. 사이트에서 모듈 스크립트를 허용해야 합니다. slog.gg의 `$$` 문법은 해당 서비스 파서에 별도로 통합해야 하며 아직 연결하지 않았습니다.
 
