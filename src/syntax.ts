@@ -8,6 +8,7 @@ export const syntaxFields = {
     dialogue: "대사",
     transfer: "전달",
     removeActors: "제외인물",
+    diagram: "다이어그램",
   },
   actor: {
     id: "식별자",
@@ -27,6 +28,12 @@ export const syntaxFields = {
     fontSize: "글자크기",
   },
   transfer: { from: "주는인물", to: "받는인물", prop: "소품" },
+  diagram: {
+    type: "종류",
+    source: "원문",
+    title: "제목",
+    height: "높이",
+  },
   options: {
     width: "너비",
     font: "글꼴",
@@ -48,6 +55,7 @@ export const syntaxValues = {
   prop: { request: "요청", data: "데이터", key: "열쇠" },
   mode: { full: "전체", before: "이전" },
   panelFormat: { compact: "기본", phone: "모바일" },
+  diagramType: { mermaid: "머메이드" },
 } as const;
 
 type Context = keyof typeof syntaxFields;
@@ -58,6 +66,7 @@ const enumFields: Partial<
   actor: { expression: "expression", gesture: "gesture", holding: "prop" },
   panel: { mode: "mode" },
   transfer: { prop: "prop" },
+  diagram: { type: "diagramType" },
   options: { panelFormat: "panelFormat" },
 };
 
@@ -102,6 +111,8 @@ function translate(
       for (const [id, member] of Object.entries(raw))
         cast[id] = translate(member, "cast", korean, `${path}.등장인물.${id}`);
       next = cast;
+    } else if (context === "panel" && field === "diagram") {
+      next = translate(raw, "diagram", korean, `${path}.다이어그램`);
     } else if (Array.isArray(raw)) {
       const child =
         context === "comic" && field === "panels"

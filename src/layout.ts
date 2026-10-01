@@ -1,5 +1,6 @@
 import { characters, expressions, gestures, props, escapeXml } from "./assets";
 import type { Panel, Comic } from "./model";
+import type { DiagramSvg } from "./diagram";
 const clamp = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, value));
 
@@ -32,6 +33,7 @@ export function renderPanel(
   width: number,
   font: string,
   format: "compact" | "phone" = "compact",
+  diagram?: DiagramSvg,
 ): { markup: string; height: number } {
   const bubbleWidth = Math.min(width - 80, 390);
   const bubbles = panel.dialogue.map((line) => ({
@@ -157,12 +159,40 @@ export function renderPanel(
       `<g data-transfer="${escapeXml(relation.from)}" data-to="${escapeXml(relation.to)}" stroke="#586c8c" stroke-width="2.5"><path d="M${start} ${startY}L${end} ${endY}" fill="none"/><circle data-hand="transfer" cx="${start}" cy="${startY}" r="${9 * scales[fromIndex]}" fill="white"/><circle data-hand="receive" cx="${end}" cy="${endY}" r="${9 * scales[toIndex]}" fill="white"/><path transform="translate(${end} ${endY}) rotate(${angle})" d="M-12 -5L-4 0L-12 5" fill="none"/><g data-prop="${relation.prop}" transform="translate(${(start + end) / 2} ${(startY + endY) / 2 - 16})">${props[relation.prop]}</g></g>`,
     );
   });
+  let content = markup.slice(1).join("");
+  let panelHeight = height;
+  if (diagram && panel.diagram) {
+    const boardWidth = width - 80;
+    const contentWidth = boardWidth - 32;
+    const boardHeight =
+      panel.diagram.height ??
+      clamp((contentWidth * diagram.height) / diagram.width + 58, 180, 1200);
+    const contentHeight = boardHeight - 58;
+    const scale = Math.min(
+      contentWidth / diagram.width,
+      contentHeight / diagram.height,
+    );
+    const diagramX = 56 + (contentWidth - diagram.width * scale) / 2;
+    const diagramY = 66 + (contentHeight - diagram.height * scale) / 2;
+    const titleLines = wrapText(panel.diagram.title, contentWidth, 16, font);
+    if (titleLines.length > 1)
+      throw new Error(
+        "다이어그램 제목이 너무 깁니다. 제목이나 너비를 조정하세요.",
+      );
+    content = `<g data-diagram="mermaid"><rect x="40" y="20" width="${boardWidth}" height="${boardHeight}" rx="10" fill="#f3f7fc" stroke="#8093ab" stroke-width="2"/><text x="56" y="48" font-size="16" font-weight="700">${escapeXml(panel.diagram.title)}</text><g data-diagram-content="mermaid" transform="translate(${diagramX} ${diagramY}) scale(${scale})">${diagram.svg}</g></g><g data-scene="true" transform="translate(0 ${boardHeight + 40})">${content}</g>`;
+    panelHeight += boardHeight + 40;
+  }
   if (format === "phone") {
-    const phoneHeight = height * 2 + 92;
+    const phoneHeight = panelHeight * 2 + 92;
     return {
-      markup: `<rect x="20" y="0" width="${width - 40}" height="${phoneHeight}" rx="18" fill="white" stroke="#303341" stroke-width="2.5"/><g transform="translate(0 ${(phoneHeight - height) / 2})">${markup.slice(1).join("")}</g>`,
+      markup: `<rect x="20" y="0" width="${width - 40}" height="${phoneHeight}" rx="18" fill="white" stroke="#303341" stroke-width="2.5"/><g transform="translate(0 ${(phoneHeight - panelHeight) / 2})">${content}</g>`,
       height: phoneHeight,
     };
   }
+  if (diagram)
+    return {
+      markup: `<rect x="20" y="0" width="${width - 40}" height="${panelHeight}" rx="18" fill="white" stroke="#303341" stroke-width="2.5"/>${content}`,
+      height: panelHeight,
+    };
   return { markup: markup.join(""), height };
 }

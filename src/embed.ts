@@ -7,10 +7,11 @@ interface ComicCard {
   thumbnail: HTMLElement;
   title: HTMLElement;
   caption: HTMLElement;
-  result: PanelsResult;
+  result?: PanelsResult;
 }
 const cards = new WeakMap<HTMLElement, ComicCard>();
 const documentRenderer = createRenderer();
+const revisions = new WeakMap<HTMLElement, number>();
 let viewer: HTMLDialogElement | undefined;
 let artwork: HTMLElement;
 let viewerTitle: HTMLElement;
@@ -21,7 +22,7 @@ let activeCard: ComicCard | undefined;
 let previousOverflow = "";
 
 function updateViewerSize() {
-  if (!activeCard || !viewer?.open) return;
+  if (!activeCard?.result || !viewer?.open) return;
   let width = activeCard.result.width * Number(zoom.value);
   viewport.dataset.preventOverflow = String(preventOverflow.checked);
   if (preventOverflow.checked) {
@@ -49,6 +50,7 @@ function updateViewerSize() {
 }
 
 function updateViewer(card: ComicCard) {
+  if (!card.result) return;
   viewerTitle.textContent = card.title.textContent;
   artwork.innerHTML = card.result.svg;
   zoom.value = "1";
@@ -58,6 +60,7 @@ function updateViewer(card: ComicCard) {
 }
 
 function openViewer(card: ComicCard) {
+  if (!card.result?.svg) return;
   if (!viewer) {
     viewer = document.createElement("dialog");
     viewer.className = "comic-viewer";
@@ -93,72 +96,134 @@ function openViewer(card: ComicCard) {
   updateViewerSize();
 }
 
-/** Replace comic code blocks with cards that open the original composition in a viewer. */
-export function renderCodeBlocks(
-  root: ParentNode = document,
-  options: RenderOptions = {},
-) {
+function getBlocks(root: ParentNode) {
   if (!document.getElementById("comic-gen-embed-styles")) {
     const style = document.createElement("style");
     style.id = "comic-gen-embed-styles";
     style.textContent = embedStyles;
     document.head.append(style);
   }
-  const results = [];
   const selector =
     'pre[language="comic-gen"], pre[data-comic], pre:has(code.language-comic), pre:has(code.language-comic-gen)';
   const blocks = [...root.querySelectorAll<HTMLElement>(selector)];
   if (root instanceof HTMLElement && root.matches(selector))
     blocks.unshift(root);
-  for (const block of blocks) {
-    const source = (block.querySelector("code") ?? block).textContent ?? "";
-    // The full SVG preserves the renderer's composition, including explicit width/format.
-    const result = documentRenderer.render(source, options);
-    let card = cards.get(block);
-    if (!card) {
-      const figure = document.createElement("figure");
-      figure.className = "comic-figure";
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "comic-card";
-      button.setAttribute("aria-haspopup", "dialog");
-      const thumbnail = document.createElement("span");
-      thumbnail.className = "comic-card-thumbnail";
-      thumbnail.setAttribute("aria-hidden", "true");
-      const copy = document.createElement("span");
-      copy.className = "comic-card-copy";
-      const title = document.createElement("strong");
-      const caption = document.createElement("span");
-      copy.append(title, caption);
-      button.append(thumbnail, copy);
-      card = { figure, button, thumbnail, title, caption, result };
-      const entry = card;
-      button.addEventListener("click", () => openViewer(entry));
-      cards.set(block, card);
-    }
-    block.after(card.figure);
-    card.result = result;
-    // Even invalid input stays collapsed; the diagnostic belongs to this card alone.
-    block.hidden = true;
-    if (result.svg) {
-      const svg = new DOMParser().parseFromString(result.svg, "image/svg+xml");
-      card.title.textContent = svg.documentElement.getAttribute("aria-label");
-      card.caption.textContent = `${result.panels.length}컷 · 만화 읽기 ↗`;
-      card.button.setAttribute(
-        "aria-label",
-        `${card.title.textContent} · 만화 읽기`,
-      );
-      card.thumbnail.innerHTML = result.panels[0].svg;
-      card.figure.replaceChildren(card.button);
-      if (activeCard === card) updateViewer(card);
-    } else {
-      if (activeCard === card) viewer?.close();
-      const message = document.createElement("p");
-      message.setAttribute("role", "alert");
-      message.textContent = result.diagnostics.join("\n");
-      card.figure.replaceChildren(message);
-    }
-    results.push(result);
+  return blocks;
+}
+
+function blockSource(block: HTMLElement) {
+  return (block.querySelector("code") ?? block).textContent ?? "";
+}
+
+function getCard(block: HTMLElement) {
+  let card = cards.get(block);
+  if (!card) {
+    const figure = document.createElement("figure");
+    figure.className = "comic-figure";
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "comic-card";
+    button.setAttribute("aria-haspopup", "dialog");
+    const thumbnail = document.createElement("span");
+    thumbnail.className = "comic-card-thumbnail";
+    thumbnail.setAttribute("aria-hidden", "true");
+    const copy = document.createElement("span");
+    copy.className = "comic-card-copy";
+    const title = document.createElement("strong");
+    const caption = document.createElement("span");
+    copy.append(title, caption);
+    button.append(thumbnail, copy);
+    card = { figure, button, thumbnail, title, caption };
+    const entry = card;
+    button.addEventListener("click", () => openViewer(entry));
+    cards.set(block, card);
   }
-  return results;
+  block.after(card.figure);
+  block.hidden = true;
+  return card;
+}
+
+function showResult(card: ComicCard, result: PanelsResult) {
+  card.result = result;
+  card.figure.removeAttribute("aria-busy");
+  card.button.disabled = false;
+  if (result.svg) {
+    const svg = new DOMParser().parseFromString(result.svg, "image/svg+xml");
+    card.title.textContent = svg.documentElement.getAttribute("aria-label");
+    card.caption.textContent = `${result.panels.length}컷 · 만화 읽기 ↗`;
+    card.button.setAttribute(
+      "aria-label",
+      `${card.title.textContent} · 만화 읽기`,
+    );
+    card.thumbnail.innerHTML = result.panels[0].svg;
+    card.figure.replaceChildren(card.button);
+    if (activeCard === card) updateViewer(card);
+  } else {
+    if (activeCard === card) viewer?.close();
+    const message = document.createElement("p");
+    message.setAttribute("role", "alert");
+    message.textContent = result.diagnostics.join("\n");
+    card.figure.replaceChildren(message);
+  }
+}
+
+function nextRevision(block: HTMLElement) {
+  const revision = (revisions.get(block) ?? 0) + 1;
+  revisions.set(block, revision);
+  return revision;
+}
+
+/** Synchronously render ordinary comics. Diagrams require renderCodeBlocksAsync. */
+export function renderCodeBlocks(
+  root: ParentNode = document,
+  options: RenderOptions = {},
+) {
+  return getBlocks(root).map((block) => {
+    nextRevision(block);
+    const result = documentRenderer.render(blockSource(block), options);
+    showResult(getCard(block), result);
+    return result;
+  });
+}
+
+/** Render cards after optional Mermaid diagrams finish loading and drawing. */
+export async function renderCodeBlocksAsync(
+  root: ParentNode = document,
+  options: RenderOptions = {},
+) {
+  return Promise.all(
+    getBlocks(root).map(async (block) => {
+      const source = blockSource(block);
+      const revision = nextRevision(block);
+      const wasConnected = block.isConnected;
+      const card = getCard(block);
+      card.figure.setAttribute("aria-busy", "true");
+      card.button.disabled = true;
+      if (!card.result) {
+        const status = document.createElement("p");
+        status.setAttribute("role", "status");
+        status.textContent = "만화를 그리는 중…";
+        card.figure.replaceChildren(status);
+      }
+      const result = await documentRenderer.renderAsync(source, options);
+      if (revisions.get(block) !== revision) return result;
+      if (wasConnected && !block.isConnected) {
+        card.figure.remove();
+        if (activeCard === card) viewer?.close();
+        return result;
+      }
+      if (blockSource(block) !== source) {
+        card.figure.removeAttribute("aria-busy");
+        card.result = undefined;
+        if (activeCard === card) viewer?.close();
+        const status = document.createElement("p");
+        status.setAttribute("role", "status");
+        status.textContent = "코드가 바뀌었어요. 다시 그리기를 호출하세요.";
+        card.figure.replaceChildren(status);
+        return result;
+      }
+      showResult(card, result);
+      return result;
+    }),
+  );
 }

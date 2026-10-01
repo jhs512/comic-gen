@@ -1,12 +1,12 @@
-import { renderCodeBlocks } from "./embed";
+import { renderCodeBlocksAsync } from "./embed";
 import "./style.css";
 import { navigation } from "./navigation";
 document.querySelector("header")!.outerHTML = navigation;
 
-const update = () => renderCodeBlocks();
+const update = () => renderCodeBlocksAsync();
 await document.fonts.ready;
-update();
+await update();
 document.querySelector("#rerender")!.addEventListener("click", update);
-document.fonts.addEventListener("loadingdone", (event) => {
-  if (event.fontfaces.length) update();
+document.fonts.addEventListener("loadingdone", async (event) => {
+  if (event.fontfaces.length) await update();
 });

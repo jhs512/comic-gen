@@ -37,6 +37,89 @@ function sourceFor(
 function getExamples(): Example[] {
   return [
     {
+      id: "uml-class",
+      title: "칠판으로 설명하는 클래스 관계",
+      category: "UML·다이어그램",
+      description:
+        "한 컷의 칠판에 Mermaid 클래스 다이어그램을 그리고, 아래에서 인물이 관계를 설명합니다.",
+      features: ["클래스 다이어그램", "한글 라벨", "인물과 대사"],
+      source: sourceFor(
+        "회원과 주문의 관계",
+        {
+          teacher: { asset: "server", label: "선생님" },
+          student: { asset: "client", label: "학생" },
+        },
+        [
+          {
+            actors: ["teacher", "student"],
+            dialogue: [
+              {
+                from: "teacher",
+                to: "student",
+                text: "회원 한 명이 여러 주문을 만들 수 있어요.",
+              },
+            ],
+            diagram: {
+              type: "mermaid",
+              title: "회원과 주문 클래스",
+              height: 260,
+              source: `classDiagram
+  direction LR
+  class 회원 {
+    +String 이름
+    +주문하기()
+  }
+  class 주문 {
+    +String 번호
+    +결제하기()
+  }
+  회원 "1" --> "*" 주문 : 생성`,
+            },
+          },
+        ],
+      ),
+    },
+    {
+      id: "uml-sequence",
+      title: "화면으로 읽는 요청 순서",
+      category: "UML·다이어그램",
+      description:
+        "Mermaid 시퀀스 다이어그램과 두 인물의 대사로 요청·조회·응답의 순서를 설명합니다.",
+      features: ["시퀀스 다이어그램", "요청·응답", "컷 안 화면"],
+      source: sourceFor(
+        "요청은 어떤 순서로 흐를까?",
+        {
+          client: { asset: "client", label: "방문자" },
+          server: { asset: "server", label: "웹 서버" },
+        },
+        [
+          {
+            actors: ["client", "server"],
+            dialogue: [
+              {
+                from: "server",
+                to: "client",
+                text: "조회가 끝나면 결과를 응답으로 돌려줘요.",
+              },
+            ],
+            diagram: {
+              type: "mermaid",
+              title: "요청에서 응답까지",
+              height: 440,
+              source: `sequenceDiagram
+  participant 방문자
+  participant 서버 as 웹 서버
+  participant 저장소 as 데이터베이스
+  방문자->>서버: 데이터 요청
+  서버->>저장소: 데이터 조회
+  저장소-->>서버: 조회 결과
+  서버-->>방문자: 응답`,
+            },
+          },
+        ],
+      ),
+    },
+    {
       id: "before",
       title: "변화만 적는 네 컷 이야기",
       category: "여러 컷·상속",

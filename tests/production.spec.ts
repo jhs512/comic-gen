@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./mermaid-fixture";
 
 test("built browser SDK exports a working renderer with bounded and invalidatable cache", async ({
   page,
@@ -30,6 +30,9 @@ test("built browser SDK exports a working renderer with bounded and invalidatabl
       "renderPanels",
       "createRenderer",
       "renderCodeBlocks",
+      "renderComicAsync",
+      "renderPanelsAsync",
+      "renderCodeBlocksAsync",
       "exportPng",
     ]),
   );
@@ -39,6 +42,67 @@ test("built browser SDK exports a working renderer with bounded and invalidatabl
   expect(outcome.revised.misses).toBe(1);
   expect(outcome.cleared.misses).toBe(1);
   expect(outcome.cleared.bytes).toBeLessThanOrEqual(100000);
+});
+
+test("distributed SDK lazily renders diagrams through its async API and exports standalone PNG", async ({
+  page,
+  request,
+}) => {
+  const response = await request.get("http://127.0.0.1:4173/sdk/comic-gen.js");
+  expect(await response.text()).toContain("import(/* webpackIgnore: true */ ");
+  await page.goto("http://127.0.0.1:4173");
+  const mermaidRequests: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().includes("/npm/mermaid@"))
+      mermaidRequests.push(request.url());
+  });
+  const result = await page.evaluate(async () => {
+    const sdk = await import("/sdk/comic-gen.js");
+    const source = JSON.stringify({
+      제목: "배포 SDK UML",
+      등장인물: { 서버: { 그림: "서버" } },
+      컷: [
+        {
+          인물: ["서버"],
+          다이어그램: {
+            종류: "머메이드",
+            원문: "sequenceDiagram\nparticipant A as 사용자\nparticipant B as 서버\nA->>B: 요청\nB-->>A: 응답",
+          },
+        },
+      ],
+    });
+    const sync = sdk.만화그리기(source);
+    const renderer = sdk.렌더러만들기();
+    const output = await renderer.renderPanelsAsync(source, { 컷비율: "기본" });
+    const cached = await renderer.renderPanelsAsync(source, { 컷비율: "기본" });
+    const png = await sdk.exportPng(output.panels[0]);
+    const image = await createImageBitmap(png);
+    return {
+      sync: sync.diagnostics,
+      diagnostics: output.diagnostics,
+      cached: cached.cache,
+      panels: output.panels.length,
+      svg: output.svg.includes("사용자"),
+      png: { type: png.type, width: image.width, height: image.height },
+      size: {
+        width: output.panels[0].width,
+        height: Math.round(output.panels[0].height),
+      },
+      aliases: [
+        sdk.만화그리기비동기 === sdk.renderComicAsync,
+        sdk.컷그리기비동기 === sdk.renderPanelsAsync,
+        sdk.코드블록그리기비동기 === sdk.renderCodeBlocksAsync,
+      ],
+    };
+  });
+  expect(result.sync.join("\n")).toContain("renderComicAsync");
+  expect(result.diagnostics).toEqual([]);
+  expect(result.cached.hits).toBe(1);
+  expect(result.panels).toBe(1);
+  expect(result.svg).toBe(true);
+  expect(result.aliases).toEqual([true, true, true]);
+  expect(result.png).toEqual({ type: "image/png", ...result.size });
+  expect(mermaidRequests.length).toBeGreaterThan(0);
 });
 
 test("standalone SDK supplies card and viewer styles without a host stylesheet", async ({

@@ -5,6 +5,7 @@ import type {
   Actor,
   Dialogue,
   Transfer,
+  Diagram,
   Panel,
   Comic,
   CastMember,
@@ -15,11 +16,13 @@ function record(value: unknown, context: string): Record<string, unknown> {
     throw new Error(`${context}: 객체가 필요합니다.`);
   return value as Record<string, unknown>;
 }
-function text(value: unknown, context: string): string {
+function text(value: unknown, context: string, max = 10000): string {
   if (typeof value !== "string" || !value.trim())
     throw new Error(`${context}: 비어 있지 않은 문자열이 필요합니다.`);
-  if (value.length > 10000)
-    throw new Error(`${context}: 텍스트가 너무 깁니다.`);
+  if (value.length > max)
+    throw new Error(
+      `${context}: 텍스트가 너무 깁니다. ${max}자 이내로 작성하세요.`,
+    );
   return value;
 }
 function list(value: unknown, context: string): unknown[] {
@@ -208,7 +211,25 @@ export function readComic(source: string): Comic {
     );
     if (transfer.length > 6)
       throw new Error(`${ctx}: 소품 전달은 6개 이내로 작성하세요.`);
-    previous = { actors, dialogue, transfer };
+    let diagram: Diagram | undefined;
+    if (panel.diagram !== undefined && panel.diagram !== null) {
+      const ctxDiagram = `${ctx}.다이어그램`;
+      const rawDiagram = record(panel.diagram, ctxDiagram);
+      known(rawDiagram, Object.keys(syntaxFields.diagram), ctxDiagram);
+      if (rawDiagram.type !== "mermaid")
+        throw new Error(`${ctxDiagram}.종류: 머메이드여야 합니다.`);
+      diagram = {
+        type: "mermaid",
+        source: text(rawDiagram.source, `${ctxDiagram}.원문`, 20000),
+        title:
+          rawDiagram.title === undefined
+            ? "다이어그램"
+            : text(rawDiagram.title, `${ctxDiagram}.제목`, 100),
+        height: number(rawDiagram.height, 160, 1200, `${ctxDiagram}.높이`),
+      };
+    }
+    // Diagram content belongs to this cut and is never inherited by before mode.
+    previous = { actors, dialogue, transfer, ...(diagram ? { diagram } : {}) };
     return previous;
   });
   if (panels.length < 1 || panels.length > 30)

@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./mermaid-fixture";
 import { readFile } from "node:fs/promises";
 
 test("before resolves to the same four independent panels as full definitions without mutating earlier state", async ({
@@ -82,7 +82,7 @@ test("gallery examples open in the phone playground and one panel downloads inde
   page,
 }) => {
   await page.goto("/gallery.html");
-  await expect(page.locator(".gallery-card")).toHaveCount(13);
+  await expect(page.locator(".gallery-card")).toHaveCount(15);
   await expect(page.locator(".gallery-preview[role=alert]")).toHaveCount(0);
   for (const card of await page.locator(".gallery-card").all())
     await expect(card.locator("svg").first()).toBeVisible();

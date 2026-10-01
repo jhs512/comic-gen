@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./mermaid-fixture";
 import { readFile } from "node:fs/promises";
 
 const guide = await readFile("llm-guide.md", "utf8");
@@ -9,25 +9,28 @@ const examples = [...guide.matchAll(/```comic-gen\r?\n([\s\S]*?)```/g)].map(
 test("LLM guide examples parse and render in compact and phone formats", async ({
   page,
 }) => {
-  expect(examples).toHaveLength(3);
+  expect(examples).toHaveLength(5);
   await page.goto("/");
   const outcomes = await page.evaluate(async (sources) => {
     const { readComic } = await import("/src/parse.ts");
-    const { renderComic, renderPanels } = await import("/src/index.ts");
-    return sources.map((source) => {
-      const comic = readComic(source);
-      const compact = renderComic(source);
-      const phone = renderPanels(source);
-      return {
-        panels: comic.panels.length,
-        compact: compact.diagnostics,
-        phone: phone.diagnostics,
-        svg: !!compact.svg,
-        phonePanels: phone.panels.length,
-      };
-    });
+    const { renderComicAsync, renderPanelsAsync } =
+      await import("/src/index.ts");
+    return Promise.all(
+      sources.map(async (source) => {
+        const comic = readComic(source);
+        const compact = await renderComicAsync(source);
+        const phone = await renderPanelsAsync(source);
+        return {
+          panels: comic.panels.length,
+          compact: compact.diagnostics,
+          phone: phone.diagnostics,
+          svg: !!compact.svg,
+          phonePanels: phone.panels.length,
+        };
+      }),
+    );
   }, examples);
-  expect(outcomes.map((result) => result.panels)).toEqual([1, 4, 1]);
+  expect(outcomes.map((result) => result.panels)).toEqual([1, 1, 1, 4, 1]);
   for (const result of outcomes) {
     expect(result.compact).toEqual([]);
     expect(result.phone).toEqual([]);

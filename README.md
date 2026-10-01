@@ -17,7 +17,7 @@
 | ------------------- | -------------------------------------------------------------------------------------------------------------- |
 | 플레이그라운드      | [예제 선택 → 코드 수정 → 실시간 결과 → 저장](https://jhs512.github.io/comic-gen/)                              |
 | 문법 안내           | [튜토리얼·필드·기본값·오류 해결](https://jhs512.github.io/comic-gen/guide.html)                                |
-| 갤러리              | [13개 렌더링 예제와 코드](https://jhs512.github.io/comic-gen/gallery.html)                                     |
+| 갤러리              | [15개 렌더링 예제와 코드](https://jhs512.github.io/comic-gen/gallery.html)                                     |
 | 문서 삽입           | [여러 코드 블록을 렌더링하는 문서](https://jhs512.github.io/comic-gen/embed.html)                              |
 | CDN 실험            | [외부 CDN에서 SDK를 불러오는 화면](https://jhs512.github.io/comic-gen/cdn.html)                                |
 | 소스                | [GitHub 저장소](https://github.com/jhs512/comic-gen)                                                           |
@@ -30,12 +30,12 @@
 ## 최신 CDN과 버전 고정
 
 ```js
-import { 컷그리기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.3.1/cdn/comic-gen.js";
+import { 컷그리기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.4.0/cdn/comic-gen.js";
 ```
 
 `@main`은 주소 변경 없이 main에 게시한 최신 SDK를 사용합니다. `@latest`는 최신 정식 버전 태그를 의미하며 이 프로젝트의 기본 최신 주소는 `@main`으로 통일합니다. [jsDelivr 캐시 정책](https://github.com/jsdelivr/jsdelivr#caching)에 따라 브랜치 URL은 최대 12시간 캐시될 수 있어 모든 사용자에게 즉시 갱신되는 것은 아닙니다. 즉시 특정 수정 버전을 받아야 한다면 새 태그의 고정 URL을 사용하세요.
 
-CDN 파일에는 YAML 파서와 기본 SVG 에셋이 포함되어 상대 경로의 추가 파일이나 npm 설치가 필요 없습니다. npm에는 아직 게시하지 않았습니다. 한글 문법은 v0.3.0부터 지원합니다. 재현 가능한 문서에는 `@v0.3.1` 고정 주소를 사용하세요. 기존 태그는 덮어쓰지 않습니다.
+CDN 파일에는 YAML 파서와 기본 SVG 에셋이 포함되어 npm 설치가 필요 없습니다. 다이어그램 없는 만화는 SDK 한 파일로 그립니다. Mermaid 다이어그램을 처음 그릴 때만 Mermaid 11.17.2를 고정 CDN에서 추가로 불러옵니다. npm에는 아직 게시하지 않았습니다. 한글 문법은 v0.3.0부터, 컷 안 다이어그램은 v0.4.0부터 지원합니다. 재현 가능한 문서에는 `@v0.4.0` 고정 주소를 사용하세요. 기존 태그는 덮어쓰지 않습니다.
 
 v0.2.1은 영어 문법 전용입니다. 컷별 SVG, 스마트폰용 세로 비율, 이전 컷 상속, 갤러리와 문법 안내를 지원하며 기존 영어 예제를 계속 사용할 수 있습니다. v0.1.0 URL도 기존 결과를 유지합니다.
 
@@ -65,6 +65,7 @@ YAML의 `등장인물`은 인물 사전, `컷`은 순서가 있는 컷 목록입
 | 등장인물의 인물 | `그림` / `이름표`                    | 그림 필수: 클라이언트, 서버, 데이터베이스. 이름표 선택, 기본 ID               |
 | 컷              | `인물`                               | 필수 1~3명. ID 문자열 또는 설정 객체. 같은 ID 중복 불가. 이전에서는 생략 가능 |
 | 컷              | `대사` / `전달`                      | 선택 목록, 기본 빈 목록. 최대 20대사, 6개 전달 관계                           |
+| 컷              | `다이어그램`                         | 선택 객체. 종류: 머메이드, 원문 필수. 제목·높이 선택                          |
 | 컷              | `구성`                               | 전체(기본) 또는 이전                                                          |
 | 컷              | `제외인물`                           | 이전에서만 사용하는 제거 ID 목록                                              |
 | 인물 설정       | `식별자`                             | 필수, 등장인물에 선언한 인물 ID                                               |
@@ -131,6 +132,37 @@ YAML의 `등장인물`은 인물 사전, `컷`은 순서가 있는 컷 목록입
 
 배경은 현재 지원하지 않으므로 상속 대상도 아닙니다. 뒤 컷을 바꿔도 앞 컷은 변하지 않습니다. 앞 컷의 상속 상태를 변경하면 영향을 받는 이후 컷의 캐시도 갱신됩니다. 대사와 전달은 자동 반복하지 않으므로 각 컷에 다시 적으세요.
 
+### 한 컷에서 다이어그램 설명하기
+
+`다이어그램`은 인물·말풍선과 구분되는 칠판 영역에 표시됩니다. Mermaid의 첫 줄에서 클래스, 시퀀스, 흐름도 등의 종류를 고르고 `원문`에는 Mermaid 문법을 그대로 넣습니다. Comic Gen의 한글 문법 변환은 원문 안의 식별자·명령·라벨을 바꾸지 않습니다.
+
+```yaml
+제목: 요청의 순서
+등장인물:
+  안내자: { 그림: 서버, 이름표: 안내자 }
+컷:
+  - 인물: [안내자]
+    대사: [{ 화자: 안내자, 내용: "조회가 끝나면 응답을 돌려줘요." }]
+    다이어그램:
+      종류: 머메이드
+      제목: 요청에서 응답까지
+      높이: 300
+      원문: |
+        sequenceDiagram
+          participant 방문자
+          participant 서버
+          방문자->>서버: 데이터 요청
+          서버-->>방문자: 응답
+```
+
+`종류`와 `원문`은 필수입니다. `제목`은 기본 `다이어그램`, `높이`는 160~1200px이며 생략하면 그림의 비율에 맞춰 정합니다. 이 높이는 칠판 영역의 높이입니다. 인물·대사 영역은 별도로 유지하고 컷 높이를 늘려 두 영역이 겹치지 않게 합니다. `구성: 이전`에서도 다이어그램은 상속하지 않으므로 필요한 컷에 다시 작성하세요. 복잡한 그림은 영역을 크게 잡거나 여러 컷으로 나누세요.
+
+다이어그램이 들어간 코드는 `await 컷그리기비동기(source)` 또는 `await 만화그리기비동기(source)`로 그립니다. 기존 동기 함수는 일반 만화를 같은 방식으로 처리하며, 다이어그램 입력에는 비동기 함수 사용을 안내하는 진단을 반환합니다. [클래스](https://jhs512.github.io/comic-gen/gallery.html#uml-class)와 [시퀀스](https://jhs512.github.io/comic-gen/gallery.html#uml-sequence) 예제를 편집기에서 확인할 수 있습니다.
+
+Mermaid 원문은 최대 20,000자입니다. 구조와 일반 텍스트 라벨을 지원하며 링크·외부 이미지·HTML·사용자 CSS·노드/간선 메타데이터(`@{}`)·테마 설정과 init 지시문/frontmatter는 지원하지 않습니다. 외부 참조와 실행 콘텐츠가 포함된 입력은 진단합니다. 출력은 내부 참조만 사용하는 SVG이며 전체 SVG, 개별 컷 SVG, PNG 모두 다이어그램을 포함합니다. SDK 로딩 후에도 Mermaid CDN에 접근할 수 있어야 첫 다이어그램을 그릴 수 있습니다.
+
+Mermaid 모듈 주소는 `https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.esm.min.mjs`입니다. CSP를 설정한 호스트는 이 도메인의 ES 모듈과 하위 청크 로딩을 허용해야 합니다. SDK를 vendor 파일로 포함해도 이 지연 로딩 주소는 유지됩니다. 렌더링이 끝난 뒤 반환된 SVG·PNG에는 외부 이미지나 Mermaid 모듈 참조가 없습니다.
+
 ### 여러 줄과 수동 배치
 
 ```yaml
@@ -149,27 +181,29 @@ YAML의 `등장인물`은 인물 사전, `컷`은 순서가 있는 컷 목록입
 
 인물 가로위치는 내부 여백을 제외한 영역, 세로위치는 기본 내용 영역의 비율입니다. 대사 가로위치는 말풍선 중심, 세로위치는 상단입니다. 안전한 범위로 제한되어 최종 좌표는 요청값과 다를 수 있습니다. 좁은 폭에서는 캐릭터를 자동 축소하며 배율은 그 기본 크기에 대한 배율입니다.
 
-스마트폰 비율은 각 컷 SVG의 실제 높이를 기본 비율 대비 2배로 만듭니다. 내용 그룹의 배치는 유지하고 위아래 여백을 더해 그림을 찌그러뜨리거나 말풍선 꼬리를 과도하게 늘리지 않습니다. 너비 명시값은 유지합니다. 플레이그라운드의 컷 비율에서 기본 비율을 선택할 수 있습니다. 높이를 직접 지정하는 옵션은 현재 없습니다.
+스마트폰 비율은 각 컷 SVG의 실제 높이를 기본 비율 대비 2배로 만듭니다. 내용 그룹의 배치는 유지하고 위아래 여백을 더해 그림을 찌그러뜨리거나 말풍선 꼬리를 과도하게 늘리지 않습니다. 너비 명시값은 유지합니다. 플레이그라운드의 컷 비율에서 기본 비율을 선택할 수 있습니다. 전체 컷 높이를 직접 지정하는 SDK 옵션은 현재 없습니다. 다이어그램의 높이는 칠판 영역만 조절합니다.
 
 인물끼리 겹치면 진단합니다. 수동 말풍선과 전달 선의 모든 교차를 자동 회피하지는 않습니다. 자동 배치로 시작한 뒤 조금씩 조절하세요. 긴 한국어와 공백 없는 영어 식별자도 자동 줄바꿈합니다. 자동 번역은 하지 않습니다.
 
 ## 활용 예제 지도
 
-| 갤러리 예제                                                              | 배울 수 있는 것                        |
-| ------------------------------------------------------------------------ | -------------------------------------- |
-| [네 컷 상속](https://jhs512.github.io/comic-gen/gallery.html#before)     | 이전 상태 유지, 부분 변경, null 초기화 |
-| [첫 대화](https://jhs512.github.io/comic-gen/gallery.html#basic)         | 이름표, 화자와 상대                    |
-| [요청·응답](https://jhs512.github.io/comic-gen/gallery.html#actions)     | 3명, 여러 컷, 요청/데이터 전달         |
-| [캐시](https://jhs512.github.io/comic-gen/gallery.html#cache)            | 3컷으로 설명하는 상태 변화             |
-| [인증](https://jhs512.github.io/comic-gen/gallery.html#auth)             | 열쇠, 든소품과 전달                    |
-| [재시도](https://jhs512.github.io/comic-gen/gallery.html#retry)          | 실패와 성공의 표정                     |
-| [교육 문답](https://jhs512.github.io/comic-gen/gallery.html#lesson)      | 학생·선생님·예제의 역할                |
-| [짧은 이야기](https://jhs512.github.io/comic-gen/gallery.html#story)     | 같은 에셋으로 다른 인물                |
-| [다섯 표정](https://jhs512.github.io/comic-gen/gallery.html#expressions) | 5컷의 다섯 표정                        |
-| [손 제스처](https://jhs512.github.io/comic-gen/gallery.html#gestures)    | 인사손, 가리키는손과 손 생략           |
-| [한국어·영어](https://jhs512.github.io/comic-gen/gallery.html#languages) | 여러 줄과 다국어                       |
-| [수동 배치](https://jhs512.github.io/comic-gen/gallery.html#manual)      | 가로위치/세로위치, 배율, 글자크기      |
-| [긴 설명](https://jhs512.github.io/comic-gen/gallery.html#long-text)     | 줄바꿈, 문서 삽입                      |
+| 갤러리 예제                                                               | 배울 수 있는 것                        |
+| ------------------------------------------------------------------------- | -------------------------------------- |
+| [네 컷 상속](https://jhs512.github.io/comic-gen/gallery.html#before)      | 이전 상태 유지, 부분 변경, null 초기화 |
+| [첫 대화](https://jhs512.github.io/comic-gen/gallery.html#basic)          | 이름표, 화자와 상대                    |
+| [요청·응답](https://jhs512.github.io/comic-gen/gallery.html#actions)      | 3명, 여러 컷, 요청/데이터 전달         |
+| [캐시](https://jhs512.github.io/comic-gen/gallery.html#cache)             | 3컷으로 설명하는 상태 변화             |
+| [인증](https://jhs512.github.io/comic-gen/gallery.html#auth)              | 열쇠, 든소품과 전달                    |
+| [재시도](https://jhs512.github.io/comic-gen/gallery.html#retry)           | 실패와 성공의 표정                     |
+| [교육 문답](https://jhs512.github.io/comic-gen/gallery.html#lesson)       | 학생·선생님·예제의 역할                |
+| [짧은 이야기](https://jhs512.github.io/comic-gen/gallery.html#story)      | 같은 에셋으로 다른 인물                |
+| [다섯 표정](https://jhs512.github.io/comic-gen/gallery.html#expressions)  | 5컷의 다섯 표정                        |
+| [손 제스처](https://jhs512.github.io/comic-gen/gallery.html#gestures)     | 인사손, 가리키는손과 손 생략           |
+| [한국어·영어](https://jhs512.github.io/comic-gen/gallery.html#languages)  | 여러 줄과 다국어                       |
+| [수동 배치](https://jhs512.github.io/comic-gen/gallery.html#manual)       | 가로위치/세로위치, 배율, 글자크기      |
+| [긴 설명](https://jhs512.github.io/comic-gen/gallery.html#long-text)      | 줄바꿈, 문서 삽입                      |
+| [클래스 관계](https://jhs512.github.io/comic-gen/gallery.html#uml-class)  | 한 컷의 칠판, 한글 클래스 라벨         |
+| [요청 순서](https://jhs512.github.io/comic-gen/gallery.html#uml-sequence) | 시퀀스 다이어그램과 인물 대사          |
 
 ## 브라우저 SDK: 컷별 SVG가 기본
 
@@ -177,13 +211,13 @@ YAML의 `등장인물`은 인물 사전, `컷`은 순서가 있는 컷 목록입
 
 ```js
 import {
-  컷그리기,
+  컷그리기비동기,
   렌더러만들기,
   exportPng,
   downloadBlob,
-} from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.3.1/cdn/comic-gen.js";
+} from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.4.0/cdn/comic-gen.js";
 await document.fonts.ready;
-const result = 컷그리기(source, { 너비: 720, 컷비율: "모바일" });
+const result = await 컷그리기비동기(source, { 너비: 720, 컷비율: "모바일" });
 if (result.diagnostics.length) {
   console.error(result.diagnostics);
 } else {
@@ -200,20 +234,22 @@ async function saveFirstPanel() {
 }
 ```
 
-| API / 옵션                     | 설명                                                           |
-| ------------------------------ | -------------------------------------------------------------- |
-| 컷그리기(source, options)      | 권장. result.panels에 컷별 독립 SVG 반환. 기본 컷비율은 모바일 |
-| result.panels[n]               | index(0부터), svg, width, height, diagnostics, cache           |
-| result.diagnostics             | 실패 설명. 실패 시 panels는 빈 배열                            |
-| result.svg / width / height    | 선택적인 전체 통합 출력. 기본 화면에는 panels 사용             |
-| 만화그리기(source, options)    | 전체 통합 SVG 반환. 기본 컷비율은 기본                         |
-| 렌더러만들기(maxCacheBytes)    | 독립 캐시. render(), renderPanels(), clearCache() 제공         |
-| 너비                           | 480~2400, 기본 720                                             |
-| 컷비율                         | 모바일 또는 기본. SVG·PNG에 같은 실제 크기 적용                |
-| 글꼴                           | 기본 Malgun Gothic, Apple SD Gothic Neo, sans-serif            |
-| 글꼴버전                       | 외부 글꼴 환경 변경 시 캐시 조건 갱신에 사용                   |
-| exportPng(panelOrComic, scale) | PNG Blob 반환. 배율 0.5~4, 기본 1                              |
-| downloadBlob(blob, filename)   | 브라우저 다운로드                                              |
+| API / 옵션                        | 설명                                                                                       |
+| --------------------------------- | ------------------------------------------------------------------------------------------ |
+| 컷그리기(source, options)         | 일반 만화의 동기 출력. result.panels에 독립 SVG 반환. 기본 컷비율은 모바일                 |
+| 컷그리기비동기(source, options)   | 일반 만화와 다이어그램을 처리하는 Promise. 완료 뒤 같은 PanelsResult 반환                  |
+| 만화그리기비동기(source, options) | 전체 SVG의 비동기 출력. 기본 컷비율은 기본                                                 |
+| result.panels[n]                  | index(0부터), svg, width, height, diagnostics, cache                                       |
+| result.diagnostics                | 실패 설명. 실패 시 panels는 빈 배열                                                        |
+| result.svg / width / height       | 선택적인 전체 통합 출력. 기본 화면에는 panels 사용                                         |
+| 만화그리기(source, options)       | 전체 통합 SVG 반환. 기본 컷비율은 기본                                                     |
+| 렌더러만들기(maxCacheBytes)       | 독립 캐시. render(), renderPanels(), renderAsync(), renderPanelsAsync(), clearCache() 제공 |
+| 너비                              | 480~2400, 기본 720                                                                         |
+| 컷비율                            | 모바일 또는 기본. SVG·PNG에 같은 실제 크기 적용                                            |
+| 글꼴                              | 기본 Malgun Gothic, Apple SD Gothic Neo, sans-serif                                        |
+| 글꼴버전                          | 외부 글꼴 환경 변경 시 캐시 조건 갱신에 사용                                               |
+| exportPng(panelOrComic, scale)    | PNG Blob 반환. 배율 0.5~4, 기본 1                                                          |
+| downloadBlob(blob, filename)      | 브라우저 다운로드                                                                          |
 
 `너비`, `컷비율`, `글꼴`, `글꼴버전`은 SDK 호출 옵션이며 YAML 필드가 아닙니다. 반환값의 `result.panels`, `svg`, `width`, `height`, `diagnostics`, `cache`와 PNG 저장 함수 이름은 그대로 사용합니다.
 
@@ -236,25 +272,27 @@ CodePen의 HTML 영역에 아래 내용을 그대로 넣을 수 있습니다. Ja
     전달: [ { 주는인물: db, 받는인물: web, 소품: 데이터 } ]
 </code></pre>
 <script type="module">
-  import { 코드블록그리기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.3.1/cdn/comic-gen.js";
+  import { 코드블록그리기비동기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.4.0/cdn/comic-gen.js";
   await document.fonts.ready;
-  코드블록그리기();
+  await 코드블록그리기비동기();
 </script>
 ```
 
-코드블록그리기(root = document, options = {})는 각 만화를 제목과 첫 컷 썸네일이 있는 카드로 묶습니다. 카드를 클릭하거나 키보드로 열면 전용 뷰어에서 전체 만화를 읽을 수 있습니다. 원문은 오류가 있어도 숨기며 진단만 해당 블록에 표시합니다. `pre > code.language-comic`과 `code.language-comic-gen`을 지원하므로 Markdown의 삼중 백틱 comic-gen 블록을 해당 HTML로 변환하면 연결할 수 있습니다. 필요한 카드·뷰어 스타일은 SDK에 포함되어 있습니다. 내용을 수정한 뒤 다시 호출하면 카드와 열린 뷰어가 갱신됩니다.
+코드블록그리기비동기(root = document, options = {})는 각 만화를 제목과 첫 컷 썸네일이 있는 카드로 묶습니다. 카드를 클릭하거나 키보드로 열면 전용 뷰어에서 전체 만화를 읽을 수 있습니다. 원문은 오류가 있어도 숨기며 진단만 해당 블록에 표시합니다. `pre > code.language-comic`과 `code.language-comic-gen`을 지원하므로 Markdown의 삼중 백틱 comic-gen 블록을 해당 HTML로 변환하면 연결할 수 있습니다. 필요한 카드·뷰어 스타일은 SDK에 포함되어 있습니다. 내용을 수정한 뒤 다시 호출하면 카드와 열린 뷰어가 갱신됩니다. 비동기 함수는 Mermaid 완료까지 기다리며 이전 요청이 최신 코드를 덮지 않습니다. 기존 코드블록그리기/renderCodeBlocks는 일반 만화에 대한 동기 API로 유지합니다.
 
 뷰어는 PC에서 넓게 열리고 모바일에서는 화면 너비에 맞춰 표시합니다. 기본 컷비율은 `기본`이며 `{ 너비: 1600, 컷비율: "기본" }`처럼 넓은 컷이나 `{ 컷비율: "모바일" }`처럼 모바일 비율을 지정할 수 있습니다. 원래 SVG의 컷 순서와 내부 좌표를 유지하며 화면 크기에 따라 다시 배치하지 않습니다. 화면 넘침 방지는 기본으로 켜져 가로·세로 모두 읽기 영역 안에 맞춥니다. 옆의 보기 크기에서 100%·150%·200%를 고를 수 있으며, 넘침 방지를 끄면 선택한 크기로 가로·세로 스크롤해 읽습니다. 체크를 바꾸어도 선택한 보기 크기는 유지됩니다. 닫기 또는 Escape로 돌아오면 카드에 키보드 초점이 복원됩니다. 현재 데이터 모델은 컷을 세로 순서로 배치하며 임의의 격자·페이지 배치를 정의하는 문법은 없습니다.
 
-HTML에 넣을 때 대사의 &, <, >는 이스케이프하거나 textContent로 설정하세요. 대사는 실행하지 않는 텍스트로 표시합니다. 사이트에서 모듈 스크립트를 허용해야 합니다. slog.gg의 `$$` 문법은 해당 서비스 파서에 별도로 통합해야 하며 아직 연결하지 않았습니다.
+HTML에 넣을 때 대사의 &, <, >는 이스케이프하거나 textContent로 설정하세요. 대사는 실행하지 않는 텍스트로 표시합니다. 사이트에서 모듈 스크립트를 허용해야 합니다. slog.gg의 `$$` 문법은 해당 서비스 파서에 별도로 통합해야 하며 호스트가 새 기능을 사용할 때 SDK 버전과 비동기 연결을 함께 갱신해야 합니다.
 
-[기존 CodePen 검증 링크](https://codepen.io/jangka44/pen/PwpKdPz)는 영어 문법의 v0.1.0 실험을 보존합니다. 한글 예제는 v0.3.0 이상 SDK에서 위 코드로 실행하세요.
+[기존 CodePen 검증 링크](https://codepen.io/jangka44/pen/PwpKdPz)는 영어 문법의 v0.1.0 실험을 보존합니다. 위 비동기 삽입 예제에는 v0.4.0 이상 SDK를 사용하세요.
 
 ## 영어 문법 호환
 
 v0.3.0은 기존 영어 YAML 키와 값도 받습니다. 예를 들어 `cast`/`actors`/`dialogue`/`transfer`, `server`, `happy`, `mode: before`를 쓴 이전 코드도 유지할 수 있습니다. 한글과 영어를 섞을 수 있지만 같은 객체에 `표정`과 `expression`처럼 같은 뜻의 키를 둘 다 쓰면 값이 같아도 오류입니다. 한 항목에는 한 이름만 쓰세요. `null`은 한글 문법에서도 표준 YAML 값 그대로 씁니다.
 
 한글 함수 이름 `만화그리기`, `컷그리기`, `코드블록그리기`, `렌더러만들기`는 각각 기존 `renderComic`, `renderPanels`, `renderCodeBlocks`, `createRenderer`와 같은 함수입니다. 기존 영어 옵션 `width`, `panelFormat`, `font`, `fontVersion`과 값 `compact`, `phone`도 호환됩니다. 반환값과 렌더러 객체의 `render`, `renderPanels`, `clearCache` 메서드 이름은 기존 이름을 유지합니다. v0.2.1 고정 SDK에서는 영어 문법과 영어 함수만 사용하세요.
+
+v0.4.0의 `만화그리기비동기`, `컷그리기비동기`, `코드블록그리기비동기`는 `renderComicAsync`, `renderPanelsAsync`, `renderCodeBlocksAsync`와 같은 함수입니다. `렌더러만들기()`의 객체에는 `renderAsync`와 `renderPanelsAsync`도 제공합니다. 새 다이어그램의 영어 호환 문법은 `diagram: { type: mermaid, source: "...", title: "...", height: 300 }`입니다. 같은 객체에 `diagram`과 `다이어그램`처럼 같은 뜻의 두 키를 쓰면 오류입니다.
 
 ## 오류 해결과 한계
 
@@ -266,7 +304,7 @@ v0.3.0은 기존 영어 YAML 키와 값도 받습니다. 예를 들어 `cast`/`a
 - 첫 컷에 구성: 이전: 첫 컷은 완전히 정의하세요.
 - SVG에서 글꼴이 다름: 글꼴을 경로/파일로 포함하지 않습니다. 같은 픽셀이 필요하면 PNG로 저장하세요.
 
-입력은 100,000 문자, 각 텍스트는 10,000 문자 이내입니다. PNG 최대 크기는 한 변 16,384픽셀, 총 3,200만 픽셀입니다. 많은 컷은 전체 PNG보다 컷별로 저장하세요. 한계 초과 시 설명을 반환합니다.
+입력은 100,000 문자, 일반 텍스트는 10,000 문자, 다이어그램 원문은 20,000 문자 이내입니다. PNG 최대 크기는 한 변 16,384픽셀, 총 3,200만 픽셀입니다. 많은 컷은 전체 PNG보다 컷별로 저장하세요. 한계 초과 시 설명을 반환합니다.
 
 현재 자동 검증은 Chromium입니다. 모든 브라우저·글꼴에서 동일한 그림을 보장하지 않습니다. 임의 에셋 업로드, 배경, 직접 그림 정의, AI 생성, 계정 저장, 애니메이션, 자동 경로 회피, CLI는 지원하지 않습니다. 원본 SVG는 독립적으로 작성했으며 ComicForge의 코드나 그림을 복사하지 않았습니다.
 
@@ -287,5 +325,7 @@ npm run preview
 ```
 
 npm test는 빌드 후 브라우저 검증을 실행합니다. 편집·저장, PNG 디코딩, 캐시 갱신, 말풍선 접점 픽셀, 전달 높이, 상속과 전체 정의의 출력 일치, 이전 컷 불변성, 네 컷 독립 SVG, 갤러리 연결과 모바일 너비를 검증합니다.
+
+다이어그램 테스트는 고정 Mermaid 배포 파일을 로컬에서 제공해 CI의 외부 네트워크 의존을 없앱니다. 실제 클래스·시퀀스 렌더링, 한글 라벨 픽셀, SVG 식별자·내부 참조, 입력 차단, 비동기 요청 경쟁, 양축 화면 맞춤, 배포 SDK의 지연 로딩과 PNG 저장을 검증합니다.
 
 `dist` 전체와 그 assets 폴더를 정적 서버에 배포하세요. 단일 파일 SDK는 `cdn/comic-gen.js`와 `dist/sdk/comic-gen.js`에 생성됩니다. main 푸시는 GitHub Actions에서 테스트 후 Pages에 배포합니다. 새 SDK를 배포할 때 package 버전을 올리고 빌드한 CDN 파일을 커밋한 다음 새 태그를 게시합니다. 공개 API는 `src/index.ts`, 입력 검증은 `src/parse.ts`, 배치는 `src/layout.ts`에서 관리합니다.

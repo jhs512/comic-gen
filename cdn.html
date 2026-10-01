@@ -35,8 +35,8 @@
     <a href="./">← Comic Gen 편집기</a>
     <h1>CDN으로 만화 넣기</h1>
     <p>
-      이 페이지는 한글 문법을 지원하는 v0.3.1 고정 CDN에서 단일 SDK 파일을
-      불러옵니다.
+      이 페이지는 v0.4.0 고정 CDN에서 SDK를 불러옵니다. 컷 안 다이어그램을 그릴
+      때만 Mermaid를 추가로 불러옵니다.
     </p>
     <pre data-comic hidden><code>제목: CDN에서 불러온 만화
 등장인물:
@@ -58,6 +58,16 @@
       - 화자: server
         상대: client
         내용: 그림은 네 브라우저에서 만들고 있어.
+    다이어그램:
+      종류: 머메이드
+      제목: 요청과 응답
+      높이: 240
+      원문: |
+        sequenceDiagram
+          participant 방문자
+          participant 서버 as 웹 서버
+          방문자->>서버: 요청
+          서버-->>방문자: 응답
   - 구성: 이전
     인물:
       - 식별자: server
@@ -87,16 +97,16 @@
     <p id="status" role="status">CDN에서 SDK를 불러오는 중…</p>
     <script type="module">
       try {
-        const { renderCodeBlocks } =
-          await import("https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.3.1/cdn/comic-gen.js");
+        const { renderCodeBlocksAsync } =
+          await import("https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.4.0/cdn/comic-gen.js");
         await document.fonts.ready;
-        const results = renderCodeBlocks();
+        const results = await renderCodeBlocksAsync();
         if (results.some((result) => result.diagnostics.length))
           throw new Error(
             results.flatMap((result) => result.diagnostics).join("\n"),
           );
         document.querySelector("#status").textContent =
-          "v0.3.1 고정 SDK · CDN에서 불러오기와 브라우저 렌더링 완료";
+          "v0.4.0 고정 SDK · CDN에서 불러오기와 브라우저 렌더링 완료";
       } catch (error) {
         const status = document.querySelector("#status");
         status.setAttribute("role", "alert");

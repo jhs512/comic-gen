@@ -24,10 +24,17 @@ export interface Transfer {
   to: string;
   prop: string;
 }
+export interface Diagram {
+  type: "mermaid";
+  source: string;
+  title: string;
+  height?: number;
+}
 export interface Panel {
   actors: Actor[];
   dialogue: Dialogue[];
   transfer: Transfer[];
+  diagram?: Diagram;
 }
 export interface Comic {
   title: string;
