@@ -14,6 +14,17 @@ export const test = base.extend<{ mermaidModules: void }>({
   mermaidModules: [
     async ({ context }, use) => {
       await context.route(
+        "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.mermaid.js",
+        async (route) =>
+          route.fulfill({
+            body: await readFile(
+              resolve(mermaidDist, "../../../cdn/comic-gen.mermaid.js"),
+            ),
+            contentType: "text/javascript",
+            headers: { "access-control-allow-origin": "*" },
+          }),
+      );
+      await context.route(
         "https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/**",
         async (route) => {
           const url = new URL(route.request().url());

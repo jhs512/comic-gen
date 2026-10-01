@@ -48,8 +48,12 @@ test("distributed SDK lazily renders diagrams through its async API and exports 
   page,
   request,
 }) => {
-  const response = await request.get("http://127.0.0.1:4173/sdk/comic-gen.js");
-  expect(await response.text()).toContain("import(/* webpackIgnore: true */ ");
+  const response = await request.get(
+    "http://127.0.0.1:4173/sdk/comic-gen.mermaid.js",
+  );
+  expect(
+    /import\(\/\* webpackIgnore: true \*\/\s/.test(await response.text()),
+  ).toBe(true);
   await page.goto("http://127.0.0.1:4173");
   const mermaidRequests: string[] = [];
   page.on("request", (request) => {
@@ -136,7 +140,7 @@ test("standalone SDK supplies card and viewer styles without a host stylesheet",
   expect((await page.getByRole("dialog").boundingBox())!.width).toBe(390);
   expect(
     await page
-      .locator(".comic-viewer-artwork svg")
+      .locator(".comic-viewer-artwork img")
       .evaluate((svg) => getComputedStyle(svg).display),
   ).toBe("block");
 });

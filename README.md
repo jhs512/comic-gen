@@ -30,12 +30,24 @@
 ## 최신 CDN과 버전 고정
 
 ```js
-import { 컷그리기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.4.0/cdn/comic-gen.js";
+import { 컷그리기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.render.js";
 ```
 
 `@main`은 주소 변경 없이 main에 게시한 최신 SDK를 사용합니다. `@latest`는 최신 정식 버전 태그를 의미하며 이 프로젝트의 기본 최신 주소는 `@main`으로 통일합니다. [jsDelivr 캐시 정책](https://github.com/jsdelivr/jsdelivr#caching)에 따라 브랜치 URL은 최대 12시간 캐시될 수 있어 모든 사용자에게 즉시 갱신되는 것은 아닙니다. 즉시 특정 수정 버전을 받아야 한다면 새 태그의 고정 URL을 사용하세요.
 
-CDN 파일에는 YAML 파서와 기본 SVG 에셋이 포함되어 npm 설치가 필요 없습니다. 다이어그램 없는 만화는 SDK 한 파일로 그립니다. Mermaid 다이어그램을 처음 그릴 때만 Mermaid 11.17.2를 고정 CDN에서 추가로 불러옵니다. npm에는 아직 게시하지 않았습니다. 한글 문법은 v0.3.0부터, 컷 안 다이어그램은 v0.4.0부터 지원합니다. 재현 가능한 문서에는 `@v0.4.0` 고정 주소를 사용하세요. 기존 태그는 덮어쓰지 않습니다.
+렌더링 파일에는 YAML 파서와 기본 SVG 에셋이 포함되어 npm 설치가 필요 없습니다. 다이어그램 없는 만화는 이 한 파일로 그립니다. Mermaid 다이어그램을 그릴 때만 Mermaid 11.17.2와 고정 버전의 렌더링 모듈을 추가로 불러옵니다. npm에는 아직 게시하지 않았습니다. 한글 문법은 v0.3.0부터, 컷 안 다이어그램은 v0.4.0부터, 선택형 공용 뷰어는 v0.5.0부터 지원합니다. 재현 가능한 문서에는 `@v0.5.0` 고정 주소를 사용하세요. 기존 태그는 덮어쓰지 않습니다.
+
+| 사용할 기능                  | v0.5.0 파일                                                                                        | 포함하는 API                                                            |
+| ---------------------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| 렌더링·SVG·PNG 저장          | [comic-gen.render.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.render.js) | `renderComic`, `renderPanels`, 비동기 함수, `createRenderer`, 저장 함수 |
+| 완성한 결과에 카드·뷰어 추가 | [comic-gen.viewer.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.viewer.js) | `mountComicCard`, `createComicViewer`                                   |
+| 기존 문서 삽입을 함께 사용   | [comic-gen.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.js)               | 위 API와 `renderCodeBlocks`, `renderCodeBlocksAsync`                    |
+
+렌더링과 뷰어 모듈은 각각 사용할 수 있습니다. 렌더링 모듈은 카드·대화상자·뷰어 스타일을 설치하지 않습니다. 뷰어 모듈은 렌더러나 YAML·Mermaid를 불러오지 않고 이미 완성된 결과만 받습니다. 기존 `comic-gen.js` 주소와 동기·비동기 API, 한글 별칭과 반환 구조는 유지합니다.
+
+`만화카드붙이기`와 `만화뷰어만들기`는 각각 `mountComicCard`, `createComicViewer`와 같은 함수입니다.
+
+각 JavaScript와 같은 경로에 `comic-gen.render.d.ts`, `comic-gen.viewer.d.ts`, `comic-gen.d.ts` 타입 선언이 있습니다. vendor 방식으로 복사할 때 JavaScript와 같은 버전의 선언 파일을 함께 사용하세요.
 
 v0.2.1은 영어 문법 전용입니다. 컷별 SVG, 스마트폰용 세로 비율, 이전 컷 상속, 갤러리와 문법 안내를 지원하며 기존 영어 예제를 계속 사용할 수 있습니다. v0.1.0 URL도 기존 결과를 유지합니다.
 
@@ -161,7 +173,7 @@ YAML의 `등장인물`은 인물 사전, `컷`은 순서가 있는 컷 목록입
 
 Mermaid 원문은 최대 20,000자입니다. 구조와 일반 텍스트 라벨을 지원하며 링크·외부 이미지·HTML·사용자 CSS·노드/간선 메타데이터(`@{}`)·테마 설정과 init 지시문/frontmatter는 지원하지 않습니다. 외부 참조와 실행 콘텐츠가 포함된 입력은 진단합니다. 출력은 내부 참조만 사용하는 SVG이며 전체 SVG, 개별 컷 SVG, PNG 모두 다이어그램을 포함합니다. SDK 로딩 후에도 Mermaid CDN에 접근할 수 있어야 첫 다이어그램을 그릴 수 있습니다.
 
-Mermaid 모듈 주소는 `https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.esm.min.mjs`입니다. CSP를 설정한 호스트는 이 도메인의 ES 모듈과 하위 청크 로딩을 허용해야 합니다. SDK를 vendor 파일로 포함해도 이 지연 로딩 주소는 유지됩니다. 렌더링이 끝난 뒤 반환된 SVG·PNG에는 외부 이미지나 Mermaid 모듈 참조가 없습니다.
+Mermaid는 임시 iframe에서 [v0.5.0 렌더링 모듈](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.mermaid.js)을 실행하고 `https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.esm.min.mjs`와 하위 청크를 불러옵니다. 호스트의 AMD 로더(`define`)를 바꾸지 않으므로 Monaco를 사용하는 페이지에서도 함께 사용할 수 있습니다. SDK를 vendor 파일로 포함해도 이 고정 CDN 주소는 유지됩니다. 렌더링이 끝나면 임시 iframe을 제거하며 반환된 SVG·PNG에는 외부 이미지나 Mermaid 모듈 참조가 없습니다.
 
 ### 여러 줄과 수동 배치
 
@@ -215,7 +227,7 @@ import {
   렌더러만들기,
   exportPng,
   downloadBlob,
-} from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.4.0/cdn/comic-gen.js";
+} from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.render.js";
 await document.fonts.ready;
 const result = await 컷그리기비동기(source, { 너비: 720, 컷비율: "모바일" });
 if (result.diagnostics.length) {
@@ -255,6 +267,44 @@ async function saveFirstPanel() {
 
 각 컷 SVG는 필요한 에셋을 인라인으로 포함해 단독 파일로 열 수 있습니다. 기본 캐시는 2MB 문자열 예산의 메모리 LRU이며 영구 저장되지 않습니다. 내용·인물·에셋/배치 버전·너비·비율·글꼴 조건이 캐시 키입니다. 변경한 컷만 다시 그리며 이전 컷 상태 변화는 관련 이후 컷도 갱신합니다. 글꼴 로딩 완료 이벤트가 캐시 조건을 갱신합니다. 외부 글꼴 변경 시 `글꼴버전`을 바꾸거나 캐시를 비우세요.
 
+## 완성한 결과에 카드·뷰어 붙이기
+
+렌더링 결과만 사용할 수도 있고, 필요할 때 별도 뷰어를 불러올 수도 있습니다. 페이지에 `<div id="comic-card"></div>`를 준비하세요.
+
+```js
+import { renderPanelsAsync } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.render.js";
+import { mountComicCard } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.viewer.js";
+
+const result = await renderPanelsAsync(source, { panelFormat: "compact" });
+if (result.diagnostics.length) throw new Error(result.diagnostics.join("\n"));
+const cleanup = mountComicCard(document.querySelector("#comic-card"), result);
+// 내용을 교체하거나 페이지 컴포넌트를 제거할 때 호출합니다.
+// cleanup();
+```
+
+`mountComicCard(container, result)`는 컨테이너에 제목·첫 컷 썸네일·실제 컷 수가 있는 카드를 넣고 정리 함수를 반환합니다. 미리보기를 클릭하거나 키보드로 열면 PC·모바일에 맞는 몰입 화면에서 읽습니다. Mermaid가 있다면 비동기 렌더링을 먼저 완료하고 그 결과를 그대로 전달하세요. 카드를 다시 만들기 전에 이전 정리 함수를 호출합니다.
+
+자체 미리보기나 버튼에 연결하려면 뷰어 컨트롤러를 사용하세요.
+
+```js
+import { createComicViewer } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.viewer.js";
+
+const viewer = createComicViewer();
+const trigger = document.querySelector("#read-comic");
+const open = () => viewer.open(result, { trigger });
+trigger.addEventListener("click", open);
+// viewer.isOpen으로 열림 상태를 확인하고 viewer.close()로 닫습니다.
+// 컴포넌트 정리 시 trigger.removeEventListener("click", open); viewer.destroy();
+```
+
+`open(result, {trigger?})`은 새 결과로 열거나 현재 결과를 교체하고, `close()`는 닫으며, `destroy()`는 뷰어를 폐기합니다. 생성하거나 import하는 것만으로 대화상자나 스타일을 설치하지 않습니다. `cleanup()`과 `destroy()`는 여러 번 호출해도 안전하며 Blob URL, 이벤트, 관찰자, 대화상자와 스크롤 잠금을 정리합니다.
+
+입력 타입 `ComicViewerResult`는 전체 `svg`, `width`, `height`와 읽기 전용 `panels` 목록입니다. 각 컷은 `index`, `svg`, `width`, `height`를 가지며 `diagnostics`는 선택입니다. SDK의 `PanelsResult`를 그대로 전달할 수 있습니다. 실패 결과, 외부 리소스나 실행 콘텐츠가 포함된 SVG는 받지 않습니다. 그림은 Blob 이미지로 표시해 SVG 스타일과 식별자가 호스트 문서에 섞이지 않습니다.
+
+화면 넘침 방지는 **한 컷의 제목·여백까지 포함한 가장 큰 컷**을 읽기 영역의 가로·세로에 맞춥니다. 전체 만화는 원래 배치와 순서를 유지하며 스크롤해서 읽습니다. 체크박스 옆의 100%·150%·200% 보기 크기는 별도로 유지되고, 넘침 방지를 끄면 선택한 크기로 양축 스크롤할 수 있습니다. 컷 왼쪽은 이전, 오른쪽은 다음 컷이며 버튼과 읽기 영역의 ←/→ 키로도 이동합니다. 현재/전체 표시는 실제 1~30컷을 사용하며 30컷을 채우지 않습니다. 닫기·Escape는 호출한 카드나 버튼으로 초점을 돌려줍니다.
+
+CSP를 적용한 호스트는 SDK와 jsDelivr 모듈을 실행하도록 `script-src`에 `'self' https://cdn.jsdelivr.net`을 허용하고, 뷰어를 사용할 때 `img-src`에 `'self' blob:`을 허용하세요. 다이어그램의 임시 iframe에도 호스트의 스크립트 정책이 적용되며, SDK가 삽입하는 UI·측정용 스타일도 사이트의 `style-src` 정책에서 허용되어야 합니다. [CDN 예제](https://jhs512.github.io/comic-gen/cdn.html#optional-viewer)에서 분리 모듈과 완성된 비동기 결과를 연결합니다.
+
 ## 문서·Markdown·CodePen 삽입
 
 CodePen의 HTML 영역에 아래 내용을 그대로 넣을 수 있습니다. JavaScript 전처리기나 외부 패키지 설정은 필요 없습니다.
@@ -272,7 +322,7 @@ CodePen의 HTML 영역에 아래 내용을 그대로 넣을 수 있습니다. Ja
     전달: [ { 주는인물: db, 받는인물: web, 소품: 데이터 } ]
 </code></pre>
 <script type="module">
-  import { 코드블록그리기비동기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.4.0/cdn/comic-gen.js";
+  import { 코드블록그리기비동기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.js";
   await document.fonts.ready;
   await 코드블록그리기비동기();
 </script>
@@ -280,11 +330,11 @@ CodePen의 HTML 영역에 아래 내용을 그대로 넣을 수 있습니다. Ja
 
 코드블록그리기비동기(root = document, options = {})는 각 만화를 제목과 첫 컷 썸네일이 있는 카드로 묶습니다. 카드를 클릭하거나 키보드로 열면 전용 뷰어에서 전체 만화를 읽을 수 있습니다. 원문은 오류가 있어도 숨기며 진단만 해당 블록에 표시합니다. `pre > code.language-comic`과 `code.language-comic-gen`을 지원하므로 Markdown의 삼중 백틱 comic-gen 블록을 해당 HTML로 변환하면 연결할 수 있습니다. 필요한 카드·뷰어 스타일은 SDK에 포함되어 있습니다. 내용을 수정한 뒤 다시 호출하면 카드와 열린 뷰어가 갱신됩니다. 비동기 함수는 Mermaid 완료까지 기다리며 이전 요청이 최신 코드를 덮지 않습니다. 기존 코드블록그리기/renderCodeBlocks는 일반 만화에 대한 동기 API로 유지합니다.
 
-뷰어는 PC에서 넓게 열리고 모바일에서는 화면 너비에 맞춰 표시합니다. 기본 컷비율은 `기본`이며 `{ 너비: 1600, 컷비율: "기본" }`처럼 넓은 컷이나 `{ 컷비율: "모바일" }`처럼 모바일 비율을 지정할 수 있습니다. 원래 SVG의 컷 순서와 내부 좌표를 유지하며 화면 크기에 따라 다시 배치하지 않습니다. 화면 넘침 방지는 기본으로 켜져 가로·세로 모두 읽기 영역 안에 맞춥니다. 옆의 보기 크기에서 100%·150%·200%를 고를 수 있으며, 넘침 방지를 끄면 선택한 크기로 가로·세로 스크롤해 읽습니다. 체크를 바꾸어도 선택한 보기 크기는 유지됩니다. 닫기 또는 Escape로 돌아오면 카드에 키보드 초점이 복원됩니다. 현재 데이터 모델은 컷을 세로 순서로 배치하며 임의의 격자·페이지 배치를 정의하는 문법은 없습니다.
+문서 삽입도 같은 공용 뷰어를 사용합니다. 기본 컷비율은 `기본`이며 `{ 너비: 1600, 컷비율: "기본" }`처럼 넓은 컷이나 `{ 컷비율: "모바일" }`처럼 모바일 비율을 지정할 수 있습니다. 화면 넘침 방지는 전체를 한 화면에 줄이는 대신 가장 큰 한 컷을 가로·세로에 맞추며, 나머지 컷은 스크롤해서 읽습니다. 현재 데이터 모델은 컷을 세로 순서로 배치하며 임의의 격자·페이지 배치를 정의하는 문법은 없습니다.
 
 HTML에 넣을 때 대사의 &, <, >는 이스케이프하거나 textContent로 설정하세요. 대사는 실행하지 않는 텍스트로 표시합니다. 사이트에서 모듈 스크립트를 허용해야 합니다. slog.gg의 `$$` 문법은 해당 서비스 파서에 별도로 통합해야 하며 호스트가 새 기능을 사용할 때 SDK 버전과 비동기 연결을 함께 갱신해야 합니다.
 
-[기존 CodePen 검증 링크](https://codepen.io/jangka44/pen/PwpKdPz)는 영어 문법의 v0.1.0 실험을 보존합니다. 위 비동기 삽입 예제에는 v0.4.0 이상 SDK를 사용하세요.
+[기존 CodePen 검증 링크](https://codepen.io/jangka44/pen/PwpKdPz)는 영어 문법의 v0.1.0 실험을 보존합니다. 위 삽입 예제와 공용 뷰어에는 v0.5.0 이상 SDK를 사용하세요.
 
 ## 영어 문법 호환
 
@@ -328,4 +378,4 @@ npm test는 빌드 후 브라우저 검증을 실행합니다. 편집·저장, P
 
 다이어그램 테스트는 고정 Mermaid 배포 파일을 로컬에서 제공해 CI의 외부 네트워크 의존을 없앱니다. 실제 클래스·시퀀스 렌더링, 한글 라벨 픽셀, SVG 식별자·내부 참조, 입력 차단, 비동기 요청 경쟁, 양축 화면 맞춤, 배포 SDK의 지연 로딩과 PNG 저장을 검증합니다.
 
-`dist` 전체와 그 assets 폴더를 정적 서버에 배포하세요. 단일 파일 SDK는 `cdn/comic-gen.js`와 `dist/sdk/comic-gen.js`에 생성됩니다. main 푸시는 GitHub Actions에서 테스트 후 Pages에 배포합니다. 새 SDK를 배포할 때 package 버전을 올리고 빌드한 CDN 파일을 커밋한 다음 새 태그를 게시합니다. 공개 API는 `src/index.ts`, 입력 검증은 `src/parse.ts`, 배치는 `src/layout.ts`에서 관리합니다.
+`dist` 전체와 그 assets 폴더를 정적 서버에 배포하세요. `cdn/`과 `dist/sdk/`에는 호환 SDK, 렌더링 모듈, 뷰어 모듈, Mermaid 렌더링 모듈과 타입 선언이 생성됩니다. main 푸시는 GitHub Actions에서 테스트 후 Pages에 배포합니다. 새 SDK를 배포할 때 package 버전을 올리고 빌드한 CDN 파일을 커밋한 다음 새 태그를 게시합니다. 호환 API는 `src/index.ts`, 분리 API는 `src/renderer.ts`와 `src/viewer-entry.ts`, 입력 검증은 `src/parse.ts`, 배치는 `src/layout.ts`에서 관리합니다.

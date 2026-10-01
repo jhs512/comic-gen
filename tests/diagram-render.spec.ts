@@ -422,12 +422,19 @@ test("mobile diagram cards fit both axes and stale or deleted async cards cannot
   await page.getByRole("button", { name: "한 컷 UML · 만화 읽기" }).click();
   const viewer = page.getByRole("dialog");
   await expect(viewer).toBeVisible();
-  await expect(viewer.locator("[data-diagram]")).toHaveCount(1);
+  expect(
+    await viewer.locator("img").evaluate(async (image: HTMLImageElement) => {
+      const svg = await (await fetch(image.src)).text();
+      return new DOMParser()
+        .parseFromString(svg, "image/svg+xml")
+        .querySelectorAll("[data-diagram]").length;
+    }),
+  ).toBe(1);
   const fit = async () => {
     await expect
       .poll(() =>
         page.locator(".comic-viewer-viewport").evaluate((viewport) => {
-          const image = viewport.querySelector("svg").getBoundingClientRect(),
+          const image = viewport.querySelector("img").getBoundingClientRect(),
             bounds = viewport.getBoundingClientRect();
           return (
             image.width > 0 &&
@@ -501,6 +508,8 @@ test("unsafe source and font declarations fail without external requests and Mer
     const url = request.url();
     if (
       !url.startsWith("http://127.0.0.1:") &&
+      url !==
+        "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.mermaid.js" &&
       !url.startsWith("https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/")
     )
       external.push(url);

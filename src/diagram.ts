@@ -7,6 +7,8 @@ export interface DiagramSvg {
 export const mermaidVersion = "11.17.2";
 export const mermaidModuleUrl =
   "https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.esm.min.mjs";
+export const mermaidRuntimeUrl =
+  "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.mermaid.js";
 export const maxDiagramSourceLength = 20_000;
 
 interface MermaidApi {
@@ -21,8 +23,6 @@ interface MermaidApi {
 const svgNamespace = "http://www.w3.org/2000/svg";
 const instance = Math.random().toString(36).slice(2);
 let serial = 0;
-let importAttempt = 0;
-let loading: Promise<MermaidApi> | undefined;
 let rendering: Promise<unknown> = Promise.resolve();
 
 // Only static SVG paint is retained. In particular, no CSS animations,
@@ -221,27 +221,74 @@ function safeFont(font: string): string {
   return font;
 }
 
-async function loadMermaid(): Promise<MermaidApi> {
-  if (!loading) {
-    const attempt = importAttempt++;
-    const url =
-      mermaidModuleUrl + (attempt ? `?comic-gen-retry=${attempt}` : "");
-    loading = import(/* @vite-ignore */ /* webpackIgnore: true */ url)
-      .then((module) => {
-        const api = module.default as MermaidApi;
+interface MermaidRuntime {
+  api: MermaidApi;
+  document: Document;
+  dispose(): void;
+}
+
+async function loadMermaid(container: HTMLElement): Promise<MermaidRuntime> {
+  // A module imported by the parent window still sees an AMD loader such as
+  // Monaco's `define`. Execute the trusted external bridge in its own realm;
+  // do not temporarily replace the host loader while asynchronous imports run.
+  const frame = document.createElement("iframe");
+  frame.title = "Mermaid 렌더링";
+  frame.tabIndex = -1;
+  frame.setAttribute("aria-hidden", "true");
+  frame.style.cssText =
+    "all:initial!important;display:block!important;width:20000px!important;height:20000px!important;border:0!important;";
+  container.append(frame);
+  const runtimeDocument = frame.contentDocument;
+  const runtimeWindow = frame.contentWindow as
+    (Window & { __comicGenMermaid?: MermaidApi }) | null;
+  if (!runtimeDocument?.body || !runtimeWindow) {
+    frame.remove();
+    throw new Error("Mermaid 격리 문서를 만들지 못했습니다.");
+  }
+  const script = runtimeDocument.createElement("script");
+  script.type = "module";
+  script.src = mermaidRuntimeUrl;
+  try {
+    const api = await new Promise<MermaidApi>((resolve, reject) => {
+      const timer = window.setTimeout(() => {
+        cleanup();
+        reject(new Error("Mermaid 모듈을 불러오는 시간이 초과되었습니다."));
+      }, 30_000);
+      const cleanup = () => {
+        window.clearTimeout(timer);
+        script.onload = null;
+        script.onerror = null;
+        runtimeWindow.removeEventListener("comic-gen-mermaid-ready", ready);
+        runtimeWindow.removeEventListener("comic-gen-mermaid-error", failed);
+      };
+      const ready = () => {
+        cleanup();
+        const api = runtimeWindow.__comicGenMermaid;
         if (
           typeof api?.initialize !== "function" ||
           typeof api?.render !== "function"
         )
-          throw new Error("Mermaid 모듈을 불러오지 못했습니다.");
-        return api;
-      })
-      .catch((error: unknown) => {
-        loading = undefined;
-        throw error;
-      });
+          reject(new Error("Mermaid 모듈을 불러오지 못했습니다."));
+        else resolve(api);
+      };
+      const failed = () => {
+        cleanup();
+        reject(new Error("Mermaid 모듈을 불러오지 못했습니다."));
+      };
+      // A module load event may precede its top-level await completion.
+      runtimeWindow.addEventListener("comic-gen-mermaid-ready", ready);
+      runtimeWindow.addEventListener("comic-gen-mermaid-error", failed);
+      script.onload = () => {
+        if (runtimeWindow.__comicGenMermaid) ready();
+      };
+      script.onerror = failed;
+      runtimeDocument.head.append(script);
+    });
+    return { api, document: runtimeDocument, dispose: () => frame.remove() };
+  } catch (error) {
+    frame.remove();
+    throw error;
   }
-  return loading;
 }
 
 function parseSvg(markup: string): SVGSVGElement {
@@ -459,7 +506,6 @@ export async function renderMermaid(
   inspectSource(source);
   font = safeFont(font);
   const pending = rendering.then(async () => {
-    const mermaid = await loadMermaid();
     // Loading the actual characters also covers split Korean web-font subsets.
     await Promise.all([
       document.fonts.load(`18px ${font}`, source),
@@ -477,17 +523,25 @@ export async function renderMermaid(
     const loadedFonts = [...document.fonts].filter(
       (face) => face.status === "loaded",
     );
+    let runtime: MermaidRuntime | undefined;
+    let runtimeContainer: HTMLElement | undefined;
     const observer = new MutationObserver(() => {
-      const frame = container.querySelector("iframe");
+      const frame = runtimeContainer?.querySelector("iframe");
       const frameDocument = frame?.contentDocument;
       if (!frame || !frameDocument) return;
       frame.style.cssText =
         "all:initial!important;display:block!important;width:20000px!important;height:20000px!important;border:0!important;";
       for (const face of loadedFonts) frameDocument.fonts.add(face);
     });
-    observer.observe(container, { childList: true, subtree: true });
     document.body.append(container);
     try {
+      runtime = await loadMermaid(container);
+      for (const face of loadedFonts) runtime.document.fonts.add(face);
+      runtimeContainer = runtime.document.createElement("div");
+      runtimeContainer.style.cssText = "width:20000px;";
+      runtime.document.body.append(runtimeContainer);
+      observer.observe(runtimeContainer, { childList: true, subtree: true });
+      const mermaid = runtime.api;
       mermaid.initialize({
         startOnLoad: false,
         securityLevel: "sandbox",
@@ -521,7 +575,7 @@ export async function renderMermaid(
           "altFontFamily",
         ],
       });
-      const result = await mermaid.render(id, source, container);
+      const result = await mermaid.render(id, source, runtimeContainer);
       observer.disconnect();
       const svg = sanitizeSvg(sandboxSvg(result.svg));
       const size = dimensions(svg);
@@ -572,10 +626,11 @@ export async function renderMermaid(
       return { svg: markup, ...size };
     } finally {
       observer.disconnect();
+      runtime?.document.getElementById(id)?.remove();
+      runtime?.document.getElementById(`d${id}`)?.remove();
+      runtime?.document.getElementById(`i${id}`)?.remove();
+      runtime?.dispose();
       container.remove();
-      document.getElementById(id)?.remove();
-      document.getElementById(`d${id}`)?.remove();
-      document.getElementById(`i${id}`)?.remove();
     }
   });
   // A syntax/import failure must not poison subsequent render requests.

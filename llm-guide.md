@@ -2,7 +2,7 @@
 
 Canonical URL: https://jhs512.github.io/comic-gen/llm-guide.md
 
-이 문서는 LLM이 Comic Gen YAML 만화를 작성하거나 수정할 때 읽는 참조입니다. 기준은 v0.4.0의 **한글 기본 문법**과 에셋 라이브러리입니다. 새 코드는 아래 한글 항목·값으로 작성합니다. 기존 영어 문법을 읽거나 수정할 때는 마지막의 영어 호환 표를 참고합니다. 한글 문법에는 v0.3.0 이상, 컷 안 Mermaid 다이어그램에는 v0.4.0 이상 SDK와 비동기 렌더링 연결이 필요합니다.
+이 문서는 LLM이 Comic Gen YAML 만화를 작성하거나 수정할 때 읽는 참조입니다. 기준은 v0.5.0의 **한글 기본 문법**과 에셋 라이브러리입니다. 새 코드는 아래 한글 항목·값으로 작성합니다. 기존 영어 문법을 읽거나 수정할 때는 마지막의 영어 호환 표를 참고합니다. 한글 문법에는 v0.3.0 이상, 컷 안 Mermaid 다이어그램에는 v0.4.0 이상 SDK와 비동기 렌더링 연결이 필요합니다. 선택형 공용 뷰어는 v0.5.0 이상에서 제공합니다.
 
 만화는 준비된 캐릭터 에셋에 이름표, 표정, 손 제스처, 소품, 대사를 조합한 정적인 그림입니다. 컷 안에 Mermaid 원문을 넣으면 별도 칠판 영역에서 다이어그램을 보여줄 수 있습니다.
 
@@ -222,6 +222,19 @@ Canonical URL: https://jhs512.github.io/comic-gen/llm-guide.md
 
 `렌더러만들기()`는 독립 캐시를 가진 renderer를 반환합니다. renderer의 `render`, `renderPanels`, `renderAsync`, `renderPanelsAsync`, `clearCache`와 반환값의 `svg`, `panels`, `diagnostics`, `width`, `height`, `cache` 등은 개발자용 영어 이름을 유지합니다.
 
+### 호스트에 선택형 뷰어 연결하기
+
+뷰어 설정은 YAML 항목이 아닙니다. 만화 작성 요청에는 계속 `comic-gen` 펜스 안의 YAML만 전달합니다. 호스트를 구현할 때는 [v0.5.0 렌더링 모듈](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.render.js)과 [뷰어 모듈](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.viewer.js)을 각각 선택합니다. 기존 [호환 SDK](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.js)의 코드 블록 삽입 API도 유지합니다. 타입 선언은 같은 파일 이름의 `.d.ts`를 제공합니다.
+
+- `mountComicCard(container, completedResult)`는 첫 컷 미리보기 카드와 실제 컷 수를 표시하며 정리 함수를 반환합니다. 내용을 교체하거나 컴포넌트를 제거할 때 정리 함수를 호출합니다.
+- `createComicViewer()`는 `isOpen`, `open(result, {trigger?})`, `close()`, `destroy()`를 제공합니다. 자체 미리보기 버튼을 연결할 수 있습니다.
+- `await renderPanelsAsync(source)` 또는 캐시 렌더러의 `await renderer.renderPanelsAsync(source)`가 반환한 완성된 결과를 전달합니다. 실패 진단이나 Promise를 뷰어에 전달하지 않습니다. 뷰어는 YAML·Mermaid를 직접 렌더링하지 않습니다.
+- `ComicViewerResult`는 전체 SVG·너비·높이와 읽기 전용 `panels` 배열을 받습니다. 각 컷의 `index`, `svg`, `width`, `height`는 필수이고 `diagnostics`는 선택입니다. 기존 `PanelsResult`를 그대로 사용할 수 있습니다.
+
+뷰어는 가장 큰 한 컷의 제목·여백을 포함해 가로·세로 화면에 맞추고 전체 만화는 원래 순서로 스크롤해 읽습니다. 화면 넘침 방지 체크박스와 100%·150%·200% 보기 크기는 독립입니다. 컷 좌측/우측, 이전/다음 버튼, 읽기 영역의 ←/→ 키로 이동하며 닫기·Escape는 원래 버튼으로 초점을 돌려줍니다. 현재/전체 수는 실제 컷 수이며 30은 상한입니다. 임의 컷을 추가하거나 같은 컷을 복제해 30을 채우지 않습니다.
+
+Mermaid 렌더링은 임시 iframe에서 고정 [comic-gen.mermaid.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.mermaid.js)를 사용하며 호스트 AMD `define`을 바꾸지 않습니다. CSP가 있는 호스트에서는 사용할 SDK·jsDelivr 모듈의 스크립트와 뷰어의 Blob 이미지를 허용해야 합니다. 이미 완료한 SVG에는 외부 리소스가 없습니다.
+
 ## 영어 문법 호환
 
 정적 vendor 방식의 호스트는 포함된 SDK를 직접 갱신해야 새 기능을 사용할 수 있습니다. 공개 CDN과 가이드만 새 버전으로 게시해도 기존 vendor 파일은 자동으로 바뀌지 않습니다. 다이어그램 기능에는 v0.4.0 이상 SDK와 비동기 API 연결이 모두 필요합니다. 실행 성공 여부는 갱신된 실제 호스트에서 검증합니다.
@@ -262,6 +275,8 @@ Canonical URL: https://jhs512.github.io/comic-gen/llm-guide.md
 | `컷그리기비동기`       | `renderPanelsAsync`     |
 | `코드블록그리기비동기` | `renderCodeBlocksAsync` |
 | `렌더러만들기`         | `createRenderer`        |
+| `만화뷰어만들기`       | `createComicViewer`     |
+| `만화카드붙이기`       | `mountComicCard`        |
 
 기존 영어 함수는 계속 사용할 수 있고 같은 한글 문법·옵션을 받습니다. `exportPng`, `downloadBlob` 등 개발자용 함수도 영어 이름을 유지합니다. 개발 중인 `소품동작`/`actions` 확장은 이 가이드의 공개 허용 항목에 포함되지 않습니다. 받기·버리기·떨어뜨리기·던지기 동작을 작성하려면 그 확장을 지원하는 별도 SDK의 문법을 확인해야 합니다.
 
