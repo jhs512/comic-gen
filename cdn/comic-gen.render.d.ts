@@ -40,17 +40,33 @@ export declare const renderPanelsAsync: (source: string, options?: RenderOptions
 export declare function downloadBlob(blob: Blob, filename: string): void;
 export declare function exportPng(result: RenderResult, scale?: number): Promise<Blob>;
 
-export declare const assetVersion = "1";
+export declare const assetVersion = "2";
 /** The authored Korean surface normalizes into the existing resolved English model. */
 declare const syntaxFields: {
     readonly comic: {
         readonly title: "제목";
         readonly cast: "등장인물";
         readonly panels: "컷";
+        readonly personas: "페르소나";
     };
     readonly cast: {
         readonly asset: "그림";
         readonly label: "이름표";
+        readonly appearance: "외형";
+        readonly persona: "페르소나";
+    };
+    readonly persona: {
+        readonly role: "직무";
+        readonly personality: "성격";
+        readonly speechStyle: "말투";
+    };
+    readonly appearance: {
+        readonly skinColor: "피부색";
+        readonly hairStyle: "머리모양";
+        readonly hairColor: "머리색";
+        readonly outfit: "옷";
+        readonly outfitColor: "옷색";
+        readonly glasses: "안경";
     };
     readonly panel: {
         readonly mode: "구성";
@@ -100,6 +116,18 @@ declare const syntaxValues: {
         readonly client: "클라이언트";
         readonly server: "서버";
         readonly database: "데이터베이스";
+        readonly human: "사람";
+    };
+    readonly hairStyle: {
+        readonly short: "짧은머리";
+        readonly bob: "단발";
+        readonly long: "긴머리";
+        readonly bald: "민머리";
+    };
+    readonly outfit: {
+        readonly shirt: "셔츠";
+        readonly jacket: "재킷";
+        readonly hoodie: "후드";
     };
     readonly expression: {
         readonly neutral: "보통";

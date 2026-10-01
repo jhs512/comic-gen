@@ -180,6 +180,7 @@ test("distributed SDK accepts the full Korean authoring contract and legacy Engl
   expect(result.fields.comic).toEqual({
     title: "제목",
     cast: "등장인물",
+    personas: "페르소나",
     panels: "컷",
   });
   expect(result.values.gesture.wave).toBe("인사손");

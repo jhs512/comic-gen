@@ -509,7 +509,7 @@ test("unsafe source and font declarations fail without external requests and Mer
     if (
       !url.startsWith("http://127.0.0.1:") &&
       url !==
-        "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.mermaid.js" &&
+        "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.mermaid.js" &&
       !url.startsWith("https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/")
     )
       external.push(url);

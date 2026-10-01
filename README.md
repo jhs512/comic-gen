@@ -1,6 +1,6 @@
 # Comic Gen
 
-준비된 SVG 에셋을 YAML로 조합하는 브라우저 전용 만화 렌더러입니다. IT 교육, 기술 문서, 짧은 이야기에서 역할을 맡은 작은 캐릭터가 질문하고 대답하도록 만듭니다. 클라이언트·웹 서버·DB에 이름표, 표정, 손과 소품을 더하고 SVG 또는 PNG로 저장하세요.
+준비된 SVG 에셋을 YAML로 조합하는 브라우저 전용 만화 렌더러입니다. IT 교육, 기술 문서, 짧은 이야기에서 역할을 맡은 작은 캐릭터가 질문하고 대답하도록 만듭니다. 사람·클라이언트·웹 서버·DB에 이름표, 표정, 손과 소품을 더하고 SVG 또는 PNG로 저장하세요.
 
 설치 없이 웹에서 시작하거나 단일 ES 모듈을 내 문서에 넣을 수 있습니다. 렌더링·줄바꿈·이미지 변환은 브라우저에서 처리하며 AI 생성이나 렌더링 서버는 사용하지 않습니다. 같은 에셋도 다른 ID로 여러 인물에 재사용할 수 있습니다.
 
@@ -17,7 +17,7 @@
 | ------------------- | -------------------------------------------------------------------------------------------------------------- |
 | 플레이그라운드      | [예제 선택 → 코드 수정 → 실시간 결과 → 저장](https://jhs512.github.io/comic-gen/)                              |
 | 문법 안내           | [튜토리얼·필드·기본값·오류 해결](https://jhs512.github.io/comic-gen/guide.html)                                |
-| 갤러리              | [15개 렌더링 예제와 코드](https://jhs512.github.io/comic-gen/gallery.html)                                     |
+| 갤러리              | [17개 렌더링 예제와 코드](https://jhs512.github.io/comic-gen/gallery.html)                                     |
 | 문서 삽입           | [여러 코드 블록을 렌더링하는 문서](https://jhs512.github.io/comic-gen/embed.html)                              |
 | CDN 실험            | [외부 CDN에서 SDK를 불러오는 화면](https://jhs512.github.io/comic-gen/cdn.html)                                |
 | 소스                | [GitHub 저장소](https://github.com/jhs512/comic-gen)                                                           |
@@ -30,18 +30,18 @@
 ## 최신 CDN과 버전 고정
 
 ```js
-import { 컷그리기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.render.js";
+import { 컷그리기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.render.js";
 ```
 
 `@main`은 주소 변경 없이 main에 게시한 최신 SDK를 사용합니다. `@latest`는 최신 정식 버전 태그를 의미하며 이 프로젝트의 기본 최신 주소는 `@main`으로 통일합니다. [jsDelivr 캐시 정책](https://github.com/jsdelivr/jsdelivr#caching)에 따라 브랜치 URL은 최대 12시간 캐시될 수 있어 모든 사용자에게 즉시 갱신되는 것은 아닙니다. 즉시 특정 수정 버전을 받아야 한다면 새 태그의 고정 URL을 사용하세요.
 
-렌더링 파일에는 YAML 파서와 기본 SVG 에셋이 포함되어 npm 설치가 필요 없습니다. 다이어그램 없는 만화는 이 한 파일로 그립니다. Mermaid 다이어그램을 그릴 때만 Mermaid 11.17.2와 고정 버전의 렌더링 모듈을 추가로 불러옵니다. npm에는 아직 게시하지 않았습니다. 한글 문법은 v0.3.0부터, 컷 안 다이어그램은 v0.4.0부터, 선택형 공용 뷰어는 v0.5.0부터 지원합니다. 재현 가능한 문서에는 `@v0.5.0` 고정 주소를 사용하세요. 기존 태그는 덮어쓰지 않습니다.
+렌더링 파일에는 YAML 파서와 기본 SVG 에셋이 포함되어 npm 설치가 필요 없습니다. 다이어그램 없는 만화는 이 한 파일로 그립니다. Mermaid 다이어그램을 그릴 때만 Mermaid 11.17.2와 고정 버전의 렌더링 모듈을 추가로 불러옵니다. npm에는 아직 게시하지 않았습니다. 한글 문법은 v0.3.0부터, 컷 안 다이어그램은 v0.4.0부터, 선택형 공용 뷰어는 v0.5.0부터, 사람·외형·페르소나는 v0.6.0부터 지원합니다. 재현 가능한 문서에는 `@v0.6.0` 고정 주소를 사용하세요. 기존 태그는 덮어쓰지 않습니다.
 
-| 사용할 기능                  | v0.5.0 파일                                                                                        | 포함하는 API                                                            |
+| 사용할 기능                  | v0.6.0 파일                                                                                        | 포함하는 API                                                            |
 | ---------------------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| 렌더링·SVG·PNG 저장          | [comic-gen.render.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.render.js) | `renderComic`, `renderPanels`, 비동기 함수, `createRenderer`, 저장 함수 |
-| 완성한 결과에 카드·뷰어 추가 | [comic-gen.viewer.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.viewer.js) | `mountComicCard`, `createComicViewer`                                   |
-| 기존 문서 삽입을 함께 사용   | [comic-gen.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.js)               | 위 API와 `renderCodeBlocks`, `renderCodeBlocksAsync`                    |
+| 렌더링·SVG·PNG 저장          | [comic-gen.render.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.render.js) | `renderComic`, `renderPanels`, 비동기 함수, `createRenderer`, 저장 함수 |
+| 완성한 결과에 카드·뷰어 추가 | [comic-gen.viewer.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.viewer.js) | `mountComicCard`, `createComicViewer`                                   |
+| 기존 문서 삽입을 함께 사용   | [comic-gen.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.js)               | 위 API와 `renderCodeBlocks`, `renderCodeBlocksAsync`                    |
 
 렌더링과 뷰어 모듈은 각각 사용할 수 있습니다. 렌더링 모듈은 카드·대화상자·뷰어 스타일을 설치하지 않습니다. 뷰어 모듈은 렌더러나 YAML·Mermaid를 불러오지 않고 이미 완성된 결과만 받습니다. 기존 `comic-gen.js` 주소와 동기·비동기 API, 한글 별칭과 반환 구조는 유지합니다.
 
@@ -74,7 +74,9 @@ YAML의 `등장인물`은 인물 사전, `컷`은 순서가 있는 컷 목록입
 | 최상위          | `제목`                               | 선택 문자열, 기본 Comic Gen                                                   |
 | 최상위          | `등장인물`                           | 필수 객체, 키가 인물 ID                                                       |
 | 최상위          | `컷`                                 | 필수 목록, 1~30컷, 적은 순서대로 세로 배치                                    |
-| 등장인물의 인물 | `그림` / `이름표`                    | 그림 필수: 클라이언트, 서버, 데이터베이스. 이름표 선택, 기본 ID               |
+| 등장인물의 인물 | `그림` / `이름표`                    | 그림 필수: 사람, 클라이언트, 서버, 데이터베이스. 이름표 선택, 기본 ID         |
+| 최상위          | `페르소나`                           | 선택 프로필 사전. 직무·성격·말투를 선언                                       |
+| 등장인물의 인물 | `페르소나` / `외형`                  | 선택 프로필 객체/ID, 사람 전용 외형 객체                                      |
 | 컷              | `인물`                               | 필수 1~3명. ID 문자열 또는 설정 객체. 같은 ID 중복 불가. 이전에서는 생략 가능 |
 | 컷              | `대사` / `전달`                      | 선택 목록, 기본 빈 목록. 최대 20대사, 6개 전달 관계                           |
 | 컷              | `다이어그램`                         | 선택 객체. 종류: 머메이드, 원문 필수. 제목·높이 선택                          |
@@ -91,6 +93,44 @@ YAML의 `등장인물`은 인물 사전, `컷`은 순서가 있는 컷 목록입
 
 같은 에셋도 서로 다른 ID와 이름표로 여러 인물을 만들 수 있습니다. 역할을 학생·선생님으로 바꾸는 것은 이름표를 바꾸는 것이며 새 그림 에셋을 생성하지 않습니다. 배경·임의 에셋 업로드는 현재 지원하지 않습니다.
 
+### 같은 사람이 여러 컷에서 설명하기
+
+v0.6.0의 `그림: 사람`은 피부·머리·옷·안경을 조합합니다. `페르소나`는 직무·성격·말투를 유지하며 대사를 작성하는 참고 정보입니다. 외형과 페르소나는 만화 전체에서 공유하며, 컷에서는 같은 인물 ID를 참조하고 표정·손·소품을 바꿉니다. 페르소나가 대사나 표정을 자동 생성하지는 않습니다.
+
+```yaml
+페르소나:
+  분석가:
+    {
+      직무: 빅데이터 전문가,
+      성격: 차분하게 근거를 확인한다,
+      말투: 짧은 질문으로 설명한다,
+    }
+등장인물:
+  김대리:
+    그림: 사람
+    이름표: 김대리
+    페르소나: 분석가
+    외형: { 옷: 재킷, 옷색: "#5379a7", 안경: true }
+컷:
+  - 인물: [김대리]
+    대사: [{ 화자: 김대리, 내용: "클릭과 구매 전환을 나눠서 보죠." }]
+```
+
+인물 안에 `페르소나: {직무: 마케팅 팀장, 말투: 결론부터 질문한다}`처럼 직접 적을 수도 있습니다. 프로필은 직무(1~100자), 성격·말투(각 1~300자) 중 하나 이상이 필요합니다. 프로필에 외형·이름표를 넣거나 다른 프로필을 상속하는 문법은 없습니다.
+
+| 외형 항목 | 값 / 기본값                             |
+| --------- | --------------------------------------- |
+| 피부색    | `#RGB` 또는 `#RRGGBB`, 기본 `"#f0c8a6"` |
+| 머리모양  | 짧은머리(기본), 단발, 긴머리, 민머리    |
+| 머리색    | 같은 색상 형식, 기본 `"#47362f"`        |
+| 옷        | 셔츠(기본), 재킷, 후드                  |
+| 옷색      | 같은 색상 형식, 기본 `"#647bd6"`        |
+| 안경      | `true` 또는 `false`(기본)               |
+
+색상은 YAML 주석으로 읽히지 않도록 따옴표로 감싸세요. [김대리·마케팅 팀장·오사원의 네 컷 회의](https://jhs512.github.io/comic-gen/?example=persona-meeting#workspace)와 [같은 세 사람의 Mermaid 설명](https://jhs512.github.io/comic-gen/?example=persona-diagram#workspace)을 시작 예제로 제공합니다. [LLM 가이드](https://jhs512.github.io/comic-gen/llm-guide.md)에는 페르소나에 맞춘 질문·반론·설명 작성 순서와 완전한 회의 코드가 있습니다.
+
+여러 이야기에서 같은 인물을 쓰려면 `등장인물`과 `페르소나` 선언을 함께 재사용합니다. JavaScript에서는 공유하는 `cast`·`personas` 객체에 이야기별 `panels`를 붙인 `JSON.stringify({title, cast, personas, panels})` 문자열을 기존 렌더링 함수에 전달합니다. 사람도 한 컷에 최대 3명이며 기존 SDK 호출·반환 구조는 같습니다. 외형을 수정하면 해당 인물이 등장하는 컷을 다시 그리고, 작성용 페르소나만 수정하면 같은 SVG와 캐시를 유지합니다.
+
 ### 표정·손·소품
 
 ```yaml
@@ -101,7 +141,7 @@ YAML의 `등장인물`은 인물 사전, `컷`은 순서가 있는 컷 목록입
   - { 주는인물: db, 받는인물: web, 소품: 데이터 }
 ```
 
-`든소품`은 인물이 들고 있는 물건, `전달`은 두 인물 사이의 정적인 전달 표현입니다. `손모양: 인사손`과 `손모양: 가리키는손`은 고정된 SVG 그림입니다. 두 손모양은 캐릭터 왼쪽에 표시되고 가리키는손은 왼쪽을 가리키며, 대화 상대의 위치에 따라 반전하거나 움직이지 않습니다. 손모양과 든소품을 생략하면 기본 손은 없으며, 전달을 쓰면 전달용 손이 표시됩니다. 애니메이션이나 실제 네트워크 동작은 없습니다.
+`든소품`은 인물이 들고 있는 물건, `전달`은 두 인물 사이의 정적인 전달 표현입니다. `손모양: 인사손`과 `손모양: 가리키는손`은 고정된 SVG 그림입니다. 두 손모양은 캐릭터 왼쪽에 표시되고 가리키는손은 왼쪽을 가리키며, 대화 상대의 위치에 따라 반전하거나 움직이지 않습니다. 사람은 생략한 쪽에 기본 손을 그리며 기존 아이콘은 손모양·든소품·전달이 있을 때 손을 표시합니다. 애니메이션이나 실제 네트워크 동작은 없습니다.
 
 ### 네 컷과 이전 컷 상속
 
@@ -173,7 +213,7 @@ YAML의 `등장인물`은 인물 사전, `컷`은 순서가 있는 컷 목록입
 
 Mermaid 원문은 최대 20,000자입니다. 구조와 일반 텍스트 라벨을 지원하며 링크·외부 이미지·HTML·사용자 CSS·노드/간선 메타데이터(`@{}`)·테마 설정과 init 지시문/frontmatter는 지원하지 않습니다. 외부 참조와 실행 콘텐츠가 포함된 입력은 진단합니다. 출력은 내부 참조만 사용하는 SVG이며 전체 SVG, 개별 컷 SVG, PNG 모두 다이어그램을 포함합니다. SDK 로딩 후에도 Mermaid CDN에 접근할 수 있어야 첫 다이어그램을 그릴 수 있습니다.
 
-Mermaid는 임시 iframe에서 [v0.5.0 렌더링 모듈](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.mermaid.js)을 실행하고 `https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.esm.min.mjs`와 하위 청크를 불러옵니다. 호스트의 AMD 로더(`define`)를 바꾸지 않으므로 Monaco를 사용하는 페이지에서도 함께 사용할 수 있습니다. SDK를 vendor 파일로 포함해도 이 고정 CDN 주소는 유지됩니다. 렌더링이 끝나면 임시 iframe을 제거하며 반환된 SVG·PNG에는 외부 이미지나 Mermaid 모듈 참조가 없습니다.
+Mermaid는 임시 iframe에서 [v0.6.0 렌더링 모듈](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.mermaid.js)을 실행하고 `https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.esm.min.mjs`와 하위 청크를 불러옵니다. 호스트의 AMD 로더(`define`)를 바꾸지 않으므로 Monaco를 사용하는 페이지에서도 함께 사용할 수 있습니다. SDK를 vendor 파일로 포함해도 이 고정 CDN 주소는 유지됩니다. 렌더링이 끝나면 임시 iframe을 제거하며 반환된 SVG·PNG에는 외부 이미지나 Mermaid 모듈 참조가 없습니다.
 
 ### 여러 줄과 수동 배치
 
@@ -227,7 +267,7 @@ import {
   렌더러만들기,
   exportPng,
   downloadBlob,
-} from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.render.js";
+} from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.render.js";
 await document.fonts.ready;
 const result = await 컷그리기비동기(source, { 너비: 720, 컷비율: "모바일" });
 if (result.diagnostics.length) {
@@ -272,8 +312,8 @@ async function saveFirstPanel() {
 렌더링 결과만 사용할 수도 있고, 필요할 때 별도 뷰어를 불러올 수도 있습니다. 페이지에 `<div id="comic-card"></div>`를 준비하세요.
 
 ```js
-import { renderPanelsAsync } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.render.js";
-import { mountComicCard } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.viewer.js";
+import { renderPanelsAsync } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.render.js";
+import { mountComicCard } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.viewer.js";
 
 const result = await renderPanelsAsync(source, { panelFormat: "compact" });
 if (result.diagnostics.length) throw new Error(result.diagnostics.join("\n"));
@@ -287,7 +327,7 @@ const cleanup = mountComicCard(document.querySelector("#comic-card"), result);
 자체 미리보기나 버튼에 연결하려면 뷰어 컨트롤러를 사용하세요.
 
 ```js
-import { createComicViewer } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.viewer.js";
+import { createComicViewer } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.viewer.js";
 
 const viewer = createComicViewer();
 const trigger = document.querySelector("#read-comic");
@@ -322,7 +362,7 @@ CodePen의 HTML 영역에 아래 내용을 그대로 넣을 수 있습니다. Ja
     전달: [ { 주는인물: db, 받는인물: web, 소품: 데이터 } ]
 </code></pre>
 <script type="module">
-  import { 코드블록그리기비동기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.js";
+  import { 코드블록그리기비동기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.js";
   await document.fonts.ready;
   await 코드블록그리기비동기();
 </script>
@@ -343,6 +383,8 @@ v0.3.0은 기존 영어 YAML 키와 값도 받습니다. 예를 들어 `cast`/`a
 한글 함수 이름 `만화그리기`, `컷그리기`, `코드블록그리기`, `렌더러만들기`는 각각 기존 `renderComic`, `renderPanels`, `renderCodeBlocks`, `createRenderer`와 같은 함수입니다. 기존 영어 옵션 `width`, `panelFormat`, `font`, `fontVersion`과 값 `compact`, `phone`도 호환됩니다. 반환값과 렌더러 객체의 `render`, `renderPanels`, `clearCache` 메서드 이름은 기존 이름을 유지합니다. v0.2.1 고정 SDK에서는 영어 문법과 영어 함수만 사용하세요.
 
 v0.4.0의 `만화그리기비동기`, `컷그리기비동기`, `코드블록그리기비동기`는 `renderComicAsync`, `renderPanelsAsync`, `renderCodeBlocksAsync`와 같은 함수입니다. `렌더러만들기()`의 객체에는 `renderAsync`와 `renderPanelsAsync`도 제공합니다. 새 다이어그램의 영어 호환 문법은 `diagram: { type: mermaid, source: "...", title: "...", height: 300 }`입니다. 같은 객체에 `diagram`과 `다이어그램`처럼 같은 뜻의 두 키를 쓰면 오류입니다.
+
+사람 문법의 영어 항목은 `asset: human`, 최상위 `personas`, 인물의 `persona`·`appearance`입니다. 프로필은 `role`·`personality`·`speechStyle`, 외형은 `skinColor`·`hairStyle`·`hairColor`·`outfit`·`outfitColor`·`glasses`를 사용합니다. 머리 값 `short/bob/long/bald`는 짧은머리/단발/긴머리/민머리, 옷 값 `shirt/jacket/hoodie`는 셔츠/재킷/후드에 대응합니다. [LLM 가이드](https://jhs512.github.io/comic-gen/llm-guide.md)의 영어 문법 호환 표에 전체 대응을 정리했습니다.
 
 ## 오류 해결과 한계
 

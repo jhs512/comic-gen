@@ -14,7 +14,7 @@ export const test = base.extend<{ mermaidModules: void }>({
   mermaidModules: [
     async ({ context }, use) => {
       await context.route(
-        "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.mermaid.js",
+        "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.mermaid.js",
         async (route) =>
           route.fulfill({
             body: await readFile(

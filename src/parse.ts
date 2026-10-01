@@ -1,15 +1,8 @@
 import { parseDocument } from "yaml";
 import { normalizeComic, syntaxFields } from "./syntax";
-import { characters, expressions, gestures, props } from "./assets";
-import type {
-  Actor,
-  Dialogue,
-  Transfer,
-  Diagram,
-  Panel,
-  Comic,
-  CastMember,
-} from "./model";
+import { expressions, gestures, props } from "./assets";
+import { readCharacterDefinitions } from "./character-definition";
+import type { Actor, Dialogue, Transfer, Diagram, Panel, Comic } from "./model";
 
 function record(value: unknown, context: string): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value))
@@ -61,21 +54,7 @@ export function readComic(source: string): Comic {
   if (doc.errors.length) throw new Error(doc.errors[0].message);
   const root = record(normalizeComic(doc.toJS({ maxAliasCount: 20 })), "만화");
   known(root, Object.keys(syntaxFields.comic), "만화");
-  const cast: Record<string, CastMember> = Object.create(null);
-  for (const [id, raw] of Object.entries(record(root.cast, "등장인물"))) {
-    const member = record(raw, `등장인물.${id}`);
-    known(member, Object.keys(syntaxFields.cast), `등장인물.${id}`);
-    const asset = text(member.asset, `등장인물.${id}.그림`);
-    if (!Object.hasOwn(characters, asset))
-      throw new Error(`등장인물.${id}: 없는 에셋 '${asset}'.`);
-    cast[id] = {
-      asset,
-      label:
-        member.label === undefined
-          ? id
-          : text(member.label, `등장인물.${id}.이름표`),
-    };
-  }
+  const { cast, personas } = readCharacterDefinitions(root.cast, root.personas);
   let previous: Panel | undefined;
   const panels = list(root.panels, "컷").map((raw, index): Panel => {
     const ctx = `컷 ${index + 1}`;
@@ -238,5 +217,6 @@ export function readComic(source: string): Comic {
     title: root.title === undefined ? "Comic Gen" : text(root.title, "제목"),
     cast,
     panels,
+    ...(personas ? { personas } : {}),
   };
 }

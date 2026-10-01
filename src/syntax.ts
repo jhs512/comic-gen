@@ -1,7 +1,26 @@
 /** The authored Korean surface normalizes into the existing resolved English model. */
 export const syntaxFields = {
-  comic: { title: "제목", cast: "등장인물", panels: "컷" },
-  cast: { asset: "그림", label: "이름표" },
+  comic: {
+    title: "제목",
+    cast: "등장인물",
+    panels: "컷",
+    personas: "페르소나",
+  },
+  cast: {
+    asset: "그림",
+    label: "이름표",
+    appearance: "외형",
+    persona: "페르소나",
+  },
+  persona: { role: "직무", personality: "성격", speechStyle: "말투" },
+  appearance: {
+    skinColor: "피부색",
+    hairStyle: "머리모양",
+    hairColor: "머리색",
+    outfit: "옷",
+    outfitColor: "옷색",
+    glasses: "안경",
+  },
   panel: {
     mode: "구성",
     actors: "인물",
@@ -43,7 +62,14 @@ export const syntaxFields = {
 } as const;
 
 export const syntaxValues = {
-  asset: { client: "클라이언트", server: "서버", database: "데이터베이스" },
+  asset: {
+    client: "클라이언트",
+    server: "서버",
+    database: "데이터베이스",
+    human: "사람",
+  },
+  hairStyle: { short: "짧은머리", bob: "단발", long: "긴머리", bald: "민머리" },
+  outfit: { shirt: "셔츠", jacket: "재킷", hoodie: "후드" },
   expression: {
     neutral: "보통",
     happy: "기쁨",
@@ -63,6 +89,7 @@ const enumFields: Partial<
   Record<Context, Record<string, keyof typeof syntaxValues>>
 > = {
   cast: { asset: "asset" },
+  appearance: { hairStyle: "hairStyle", outfit: "outfit" },
   actor: { expression: "expression", gesture: "gesture", holding: "prop" },
   panel: { mode: "mode" },
   transfer: { prop: "prop" },
@@ -111,6 +138,20 @@ function translate(
       for (const [id, member] of Object.entries(raw))
         cast[id] = translate(member, "cast", korean, `${path}.등장인물.${id}`);
       next = cast;
+    } else if (context === "comic" && field === "personas" && object(raw)) {
+      const personas: Record<string, unknown> = Object.create(null);
+      for (const [id, persona] of Object.entries(raw))
+        personas[id] = translate(
+          persona,
+          "persona",
+          korean,
+          `${path}.페르소나.${id}`,
+        );
+      next = personas;
+    } else if (context === "cast" && field === "persona") {
+      next = translate(raw, "persona", korean, `${path}.페르소나`);
+    } else if (context === "cast" && field === "appearance") {
+      next = translate(raw, "appearance", korean, `${path}.외형`);
     } else if (context === "panel" && field === "diagram") {
       next = translate(raw, "diagram", korean, `${path}.다이어그램`);
     } else if (Array.isArray(raw)) {

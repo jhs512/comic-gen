@@ -68,7 +68,13 @@ function cacheKey(panel: Panel, context: Context) {
   const { comic, width, font, options, format } = context;
   return JSON.stringify({
     panel,
-    members: panel.actors.map((actor) => [actor.id, comic.cast[actor.id]]),
+    members: panel.actors.map((actor) => {
+      const { asset, label, appearance } = comic.cast[actor.id];
+      return [
+        actor.id,
+        { asset, label, ...(appearance ? { appearance } : {}) },
+      ];
+    }),
     width,
     font,
     fontEpoch,

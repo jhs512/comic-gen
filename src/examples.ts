@@ -27,15 +27,222 @@ export interface Example {
 
 function sourceFor(
   title: string,
-  cast: Record<string, { asset: string; label: string }>,
+  cast: Record<string, unknown>,
   panels: unknown[],
+  personas?: Record<string, unknown>,
 ): string {
-  return stringify(koreanComic({ title, cast, panels }), { lineWidth: 0 });
+  return stringify(
+    koreanComic({ title, cast, panels, ...(personas ? { personas } : {}) }),
+    { lineWidth: 0 },
+  );
 }
+
+const meetingPersonas = {
+  analyst: {
+    role: "빅데이터 전문가",
+    personality: "차분하고 근거를 확인한다",
+    speechStyle: "짧은 질문으로 지표를 구분하고 이유를 설명한다",
+  },
+  leader: {
+    role: "마케팅 팀장",
+    personality: "결과를 빠르게 얻고 싶지만 반론을 듣는다",
+    speechStyle: "목표와 다음 행동을 묻는 간결한 존댓말",
+  },
+  newcomer: {
+    role: "신입 마케터",
+    personality: "솔직하고 호기심이 많다",
+    speechStyle: "모르는 점을 구체적으로 질문하고 배운 것을 자기 말로 정리한다",
+  },
+};
+const meetingCast = {
+  kim: {
+    asset: "human",
+    label: "김대리 · 데이터 전문가",
+    persona: "analyst",
+    appearance: {
+      hairStyle: "short",
+      glasses: true,
+      outfit: "jacket",
+      outfitColor: "#5379a7",
+    },
+  },
+  leader: {
+    asset: "human",
+    label: "마케팅 팀장",
+    persona: "leader",
+    appearance: {
+      hairStyle: "bob",
+      hairColor: "#573d36",
+      outfit: "shirt",
+      outfitColor: "#b88646",
+      skinColor: "#d6a279",
+    },
+  },
+  oh: {
+    asset: "human",
+    label: "오사원",
+    persona: "newcomer",
+    appearance: {
+      hairStyle: "short",
+      hairColor: "#303746",
+      outfit: "hoodie",
+      outfitColor: "#609b87",
+    },
+  },
+};
 
 // Keep every example as ordinary authoring code, using the same public renderer as the editor.
 function getExamples(): Example[] {
   return [
+    {
+      id: "persona-meeting",
+      title: "김대리·팀장·오사원의 캠페인 회의",
+      category: "사람·페르소나",
+      description:
+        "같은 세 사람이 네 컷에 등장해 클릭과 구매 전환을 구분합니다. 직무·성격·말투는 작성 참고이고 외형은 일관되게 유지합니다.",
+      features: ["사람 외형", "페르소나 참조", "3인 티키타카", "이전 컷 상속"],
+      source: sourceFor(
+        "캠페인 회의: 숫자의 함정",
+        meetingCast,
+        [
+          {
+            actors: [
+              "kim",
+              { id: "leader", expression: "happy" },
+              { id: "oh", expression: "confused" },
+            ],
+            dialogue: [
+              {
+                from: "leader",
+                to: "kim",
+                text: "클릭이 늘었으니 광고비를 더 쓰죠?",
+              },
+              {
+                from: "oh",
+                to: "kim",
+                text: "방문자는 늘었는데 주문은 그대로예요.",
+              },
+            ],
+          },
+          {
+            mode: "before",
+            actors: [{ id: "kim", gesture: "point" }],
+            dialogue: [
+              {
+                from: "kim",
+                to: "oh",
+                text: "클릭과 구매 전환을 나눠서 보죠.",
+              },
+              {
+                from: "oh",
+                to: "kim",
+                text: "많이 누른다고 많이 사는 건 아니네요?",
+              },
+            ],
+          },
+          {
+            mode: "before",
+            actors: [
+              { id: "leader", expression: "neutral" },
+              { id: "oh", expression: "neutral" },
+            ],
+            dialogue: [
+              {
+                from: "leader",
+                to: "kim",
+                text: "그럼 어디서 고객이 떠나는지 봐야겠군요.",
+              },
+              {
+                from: "kim",
+                to: "leader",
+                text: "맞아요. 장바구니와 결제까지 비교하죠.",
+              },
+            ],
+          },
+          {
+            mode: "before",
+            actors: [
+              { id: "kim", gesture: null, expression: "happy" },
+              { id: "oh", expression: "happy" },
+            ],
+            dialogue: [
+              {
+                from: "oh",
+                to: "leader",
+                text: "다음 주에는 전환율도 함께 보고할게요!",
+              },
+              {
+                from: "leader",
+                to: "oh",
+                text: "좋아요. 같은 기준으로 실험을 확인하죠.",
+              },
+            ],
+          },
+        ],
+        meetingPersonas,
+      ),
+    },
+    {
+      id: "persona-diagram",
+      title: "같은 세 사람의 데이터 흐름 설명",
+      category: "사람·페르소나",
+      description:
+        "회의의 등장인물과 프로필을 그대로 재사용하고, Mermaid 칠판으로 분석 흐름을 설명하는 새 이야기를 만듭니다.",
+      features: ["다른 만화에서 재사용", "Mermaid 칠판", "표정·손·소품"],
+      source: sourceFor(
+        "캠페인 분석의 다음 질문",
+        meetingCast,
+        [
+          {
+            actors: [
+              { id: "kim", gesture: "point" },
+              "leader",
+              { id: "oh", expression: "confused" },
+            ],
+            dialogue: [
+              {
+                from: "oh",
+                to: "kim",
+                text: "전환율은 어떤 순서로 확인하나요?",
+              },
+              {
+                from: "kim",
+                to: "oh",
+                text: "방문에서 주문까지 단계를 나눠 비교해요.",
+              },
+            ],
+            diagram: {
+              type: "mermaid",
+              title: "방문에서 주문까지",
+              height: 240,
+              source:
+                "flowchart LR\n  방문 --> 클릭\n  클릭 --> 장바구니\n  장바구니 --> 주문",
+            },
+          },
+          {
+            mode: "before",
+            actors: [
+              { id: "kim", gesture: null },
+              { id: "oh", expression: "happy" },
+            ],
+            dialogue: [
+              {
+                from: "leader",
+                to: "oh",
+                text: "어느 단계가 달라졌는지 함께 보고해주세요.",
+              },
+              {
+                from: "oh",
+                to: "leader",
+                text: "네, 같은 기간과 기준으로 비교할게요!",
+              },
+            ],
+            transfer: [{ from: "kim", to: "oh", prop: "data" }],
+          },
+        ],
+        meetingPersonas,
+      ),
+    },
     {
       id: "uml-class",
       title: "칠판으로 설명하는 클래스 관계",

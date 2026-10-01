@@ -1,4 +1,10 @@
-import { characters, expressions, gestures, props, escapeXml } from "./assets";
+import {
+  getCharacterAsset,
+  expressions,
+  gestures,
+  props,
+  escapeXml,
+} from "./assets";
 import type { Panel, Comic } from "./model";
 import type { DiagramSvg } from "./diagram";
 const clamp = (value: number, min: number, max: number) =>
@@ -114,7 +120,32 @@ export function renderPanel(
   });
   panel.actors.forEach((actor, index) => {
     const member = cast[actor.id];
-    const asset = characters[member.asset];
+    const asset = getCharacterAsset(member);
+    const human = member.asset === "human";
+    const skin = human ? asset.color : "white";
+    const transferredSides = new Set(
+      panel.transfer.flatMap((relation) => {
+        const partner =
+          relation.from === actor.id
+            ? relation.to
+            : relation.to === actor.id
+              ? relation.from
+              : undefined;
+        if (!partner) return [];
+        const partnerIndex = panel.actors.findIndex(
+          (item) => item.id === partner,
+        );
+        return [centers[partnerIndex] < centers[index] ? "left" : "right"];
+      }),
+    );
+    const restingHands = asset.restingHands
+      ? (actor.gesture || transferredSides.has("left")
+          ? ""
+          : asset.restingHands.left) +
+        (actor.holding || transferredSides.has("right")
+          ? ""
+          : asset.restingHands.right)
+      : "";
     const other = panel.dialogue.find(
       (line) => line.from === actor.id && line.to,
     )?.to;
@@ -132,13 +163,13 @@ export function renderPanel(
     if (labelLines.length > 2)
       throw new Error(`캐릭터 '${actor.id}'의 이름표가 너무 깁니다.`);
     const gesture = actor.gesture
-      ? `<g data-gesture="${actor.gesture}">${gestures[actor.gesture]}</g>`
+      ? `<g data-gesture="${actor.gesture}">${human ? gestures[actor.gesture].replace('fill="white"', `fill="${skin}"`) : gestures[actor.gesture]}</g>`
       : "";
     const holding = actor.holding
-      ? `<g data-holding="${actor.holding}"><circle data-hand="holding" cx="58" cy="20" r="11" fill="white"/><g data-prop="${actor.holding}" transform="translate(73 6)">${props[actor.holding]}</g></g>`
+      ? `<g data-holding="${actor.holding}"><circle data-hand="holding" cx="58" cy="20" r="11" fill="${skin}"/><g data-prop="${actor.holding}" transform="translate(73 6)">${props[actor.holding]}</g></g>`
       : "";
     markup.push(
-      `<g data-character="${escapeXml(actor.id)}" transform="translate(${centers[index]} ${actorYs[index]}) scale(${scales[index]})" stroke="#303341" stroke-width="2.8" stroke-linecap="round"><ellipse cy="69" rx="51" ry="7" fill="#e8edf3" stroke="none"/>${asset.body}<g transform="translate(${faceX} ${asset.faceY})" fill="#303341">${expressions[actor.expression]}</g>${gesture}${holding}<text y="94" text-anchor="middle" stroke="none" fill="#303341" font-size="16">${labelLines.map((part, row) => `<tspan x="0" dy="${row ? 18 : 0}">${escapeXml(part)}</tspan>`).join("")}</text></g>`,
+      `<g data-character="${escapeXml(actor.id)}" transform="translate(${centers[index]} ${actorYs[index]}) scale(${scales[index]})" stroke="#303341" stroke-width="2.8" stroke-linecap="round"><ellipse cy="69" rx="51" ry="7" fill="#e8edf3" stroke="none"/>${asset.body}<g transform="translate(${faceX} ${asset.faceY})" fill="#303341">${expressions[actor.expression]}</g>${restingHands}${gesture}${holding}<text y="94" text-anchor="middle" stroke="none" fill="#303341" font-size="16">${labelLines.map((part, row) => `<tspan x="0" dy="${row ? 18 : 0}">${escapeXml(part)}</tspan>`).join("")}</text></g>`,
     );
   });
   panel.transfer.forEach((relation, index) => {
@@ -155,8 +186,14 @@ export function renderPanel(
     const startY = actorYs[fromIndex] + offset * scales[fromIndex];
     const endY = actorYs[toIndex] + offset * scales[toIndex];
     const angle = (Math.atan2(endY - startY, end - start) * 180) / Math.PI;
+    const handColor = (actorIndex: number) => {
+      const member = cast[panel.actors[actorIndex].id];
+      return member.asset === "human"
+        ? getCharacterAsset(member).color
+        : "white";
+    };
     markup.push(
-      `<g data-transfer="${escapeXml(relation.from)}" data-to="${escapeXml(relation.to)}" stroke="#586c8c" stroke-width="2.5"><path d="M${start} ${startY}L${end} ${endY}" fill="none"/><circle data-hand="transfer" cx="${start}" cy="${startY}" r="${9 * scales[fromIndex]}" fill="white"/><circle data-hand="receive" cx="${end}" cy="${endY}" r="${9 * scales[toIndex]}" fill="white"/><path transform="translate(${end} ${endY}) rotate(${angle})" d="M-12 -5L-4 0L-12 5" fill="none"/><g data-prop="${relation.prop}" transform="translate(${(start + end) / 2} ${(startY + endY) / 2 - 16})">${props[relation.prop]}</g></g>`,
+      `<g data-transfer="${escapeXml(relation.from)}" data-to="${escapeXml(relation.to)}" stroke="#586c8c" stroke-width="2.5"><path d="M${start} ${startY}L${end} ${endY}" fill="none"/><circle data-hand="transfer" cx="${start}" cy="${startY}" r="${9 * scales[fromIndex]}" fill="${handColor(fromIndex)}"/><circle data-hand="receive" cx="${end}" cy="${endY}" r="${9 * scales[toIndex]}" fill="${handColor(toIndex)}"/><path transform="translate(${end} ${endY}) rotate(${angle})" d="M-12 -5L-4 0L-12 5" fill="none"/><g data-prop="${relation.prop}" transform="translate(${(start + end) / 2} ${(startY + endY) / 2 - 16})">${props[relation.prop]}</g></g>`,
     );
   });
   let content = markup.slice(1).join("");

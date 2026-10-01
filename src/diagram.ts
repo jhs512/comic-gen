@@ -8,7 +8,7 @@ export const mermaidVersion = "11.17.2";
 export const mermaidModuleUrl =
   "https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.esm.min.mjs";
 export const mermaidRuntimeUrl =
-  "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.5.0/cdn/comic-gen.mermaid.js";
+  "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.mermaid.js";
 export const maxDiagramSourceLength = 20_000;
 
 interface MermaidApi {

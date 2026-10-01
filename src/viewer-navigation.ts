@@ -127,6 +127,13 @@ export function mountPanelNavigation(
   };
   const onScroll = () => {
     if (moving) return;
+    // A tall later cut can make several early cuts fit at once. Reading from
+    // the start still begins with the first cut, even if another has more area.
+    if (viewport.scrollLeft === 0 && viewport.scrollTop === 0) {
+      current = 0;
+      announce();
+      return;
+    }
     const point = origin();
     const visibleWidth =
       viewport.clientWidth -

@@ -9,7 +9,7 @@ const examples = [...guide.matchAll(/```comic-gen\r?\n([\s\S]*?)```/g)].map(
 test("LLM guide examples parse and render in compact and phone formats", async ({
   page,
 }) => {
-  expect(examples).toHaveLength(5);
+  expect(examples).toHaveLength(6);
   await page.goto("/");
   const outcomes = await page.evaluate(async (sources) => {
     const { readComic } = await import("/src/parse.ts");
@@ -30,7 +30,7 @@ test("LLM guide examples parse and render in compact and phone formats", async (
       }),
     );
   }, examples);
-  expect(outcomes.map((result) => result.panels)).toEqual([1, 1, 1, 4, 1]);
+  expect(outcomes.map((result) => result.panels)).toEqual([1, 4, 1, 1, 4, 1]);
   for (const result of outcomes) {
     expect(result.compact).toEqual([]);
     expect(result.phone).toEqual([]);
