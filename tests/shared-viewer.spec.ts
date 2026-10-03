@@ -949,3 +949,163 @@ test("compatibility and optional entries share unique accessible IDs, body lock 
   await expect(page.locator("#outside")).toHaveText("바깥 버튼");
   await expect(page.locator("main > section")).toHaveCount(2);
 });
+
+test("viewer defaults retain the v0.6 reading and dismissal behavior", async ({
+  page,
+}) => {
+  await documentForViewer(page);
+  await mount(page, source(3));
+  await page.getByRole("button", { name: /만화 읽기/ }).click();
+  await expect(dialog(page)).toBeVisible();
+  await expect(
+    dialog(page).getByRole("button", { name: "닫기", exact: true }),
+  ).toBeVisible();
+  await expect(dialog(page).getByRole("checkbox")).toBeChecked();
+  await expect(dialog(page).getByRole("combobox")).toHaveValue("1");
+  await expect(position(page)).toHaveText("1 / 3컷");
+  await page.mouse.click(2, 2);
+  await expect(dialog(page)).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(dialog(page)).not.toBeVisible();
+});
+
+test("dismissal options are independent and can be overridden per open", async ({
+  page,
+}) => {
+  await documentForViewer(page);
+  await mount(page, source(3));
+  await page.evaluate(async () => {
+    const { createComicViewer } = await import("/sdk/comic-gen.viewer.js");
+    window.optionsViewer = createComicViewer({
+      closeOnBackdrop: true,
+      closeOnEscape: false,
+      showCloseButton: false,
+    });
+    window.optionsViewer.open(window.comicTest.result);
+  });
+  await expect(
+    dialog(page).getByRole("button", { name: "닫기", exact: true }),
+  ).not.toBeVisible();
+  await expect(region(page)).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(dialog(page)).toBeVisible();
+  // Interior whitespace and a drag starting inside must not dismiss the viewer.
+  await dialog(page).locator("h2").click();
+  await expect(dialog(page)).toBeVisible();
+  await page.mouse.move(200, 200);
+  await page.mouse.down();
+  await page.mouse.move(2, 2);
+  await page.mouse.up();
+  await expect(dialog(page)).toBeVisible();
+  await page.mouse.click(2, 2);
+  await expect(dialog(page)).not.toBeVisible();
+  await page.evaluate(() =>
+    window.optionsViewer.open(window.comicTest.result, {
+      closeOnBackdrop: false,
+      closeOnEscape: true,
+      showCloseButton: true,
+    }),
+  );
+  await expect(
+    dialog(page).getByRole("button", { name: "닫기", exact: true }),
+  ).toBeVisible();
+  await page.mouse.click(2, 2);
+  await expect(dialog(page)).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(dialog(page)).not.toBeVisible();
+  await page.evaluate(() => window.optionsViewer.destroy());
+});
+
+test("view state supports initial values, host control, reader changes and cleanup", async ({
+  page,
+}) => {
+  await documentForViewer(page);
+  await mount(page, source(5));
+  await page.evaluate(async () => {
+    const { createComicViewer } = await import("/sdk/comic-gen.viewer.js");
+    window.viewChanges = [];
+    window.optionsViewer = createComicViewer({
+      zoom: 1.25,
+      preventOverflow: false,
+      panelIndex: 2,
+      onChange: (state) => window.viewChanges.push(state),
+    });
+    window.optionsViewer.open(window.comicTest.result);
+  });
+  await expect(position(page)).toHaveText("3 / 5컷");
+  expect(await page.evaluate(() => window.viewChanges.length)).toBe(1);
+  expect(await page.evaluate(() => window.optionsViewer.state)).toEqual({
+    zoom: 1.25,
+    preventOverflow: false,
+    panelIndex: 2,
+  });
+  await page.evaluate(() =>
+    window.optionsViewer.setView({
+      zoom: 2.25,
+      preventOverflow: true,
+      panelIndex: 3,
+    }),
+  );
+  await expect(position(page)).toHaveText("4 / 5컷");
+  expect(await page.evaluate(() => window.viewChanges.length)).toBe(2);
+  await expect(dialog(page).getByRole("combobox")).toHaveValue("2.25");
+  await expect(dialog(page).getByRole("checkbox")).toBeChecked();
+  await dialog(page).getByRole("button", { name: "이전 컷" }).click();
+  await expect(position(page)).toHaveText("3 / 5컷");
+  await dialog(page).getByRole("combobox").selectOption("1.5");
+  expect(await page.evaluate(() => window.viewChanges.at(-1))).toEqual({
+    zoom: 1.5,
+    preventOverflow: true,
+    panelIndex: 2,
+  });
+  expect(
+    await page.evaluate(() => {
+      const before = window.optionsViewer.state;
+      try {
+        window.optionsViewer.setView({ zoom: 0, panelIndex: 99 });
+      } catch {}
+      return (
+        JSON.stringify(before) === JSON.stringify(window.optionsViewer.state)
+      );
+    }),
+  ).toBe(true);
+  await page.evaluate(() => window.optionsViewer.close());
+  expect(await page.evaluate(() => window.optionsViewer.state)).toBeNull();
+  expect(await page.evaluate(() => window.viewChanges.at(-1))).toBeNull();
+  await page.evaluate(() => window.optionsViewer.open(window.comicTest.result));
+  await expect(position(page)).toHaveText("3 / 5컷");
+  await page.evaluate(() => {
+    window.optionsViewer.destroy();
+    window.optionsViewer.destroy();
+    window.comicTest.cleanup();
+  });
+  await expect(page.locator("dialog")).toHaveCount(0);
+  await expect(page.locator("style[data-comic-gen-viewer-styles]")).toHaveCount(
+    0,
+  );
+});
+
+test("card forwards viewer options while keeping its cleanup return value", async ({
+  page,
+}) => {
+  await documentForViewer(page);
+  await mount(page, source(3));
+  await page.evaluate(async () => {
+    const { mountComicCard } = await import("/sdk/comic-gen.viewer.js");
+    window.comicTest.cleanup();
+    window.comicTest.cleanup = mountComicCard(
+      window.comicTest.container,
+      window.comicTest.result,
+      { showCloseButton: false, closeOnBackdrop: true, panelIndex: 1 },
+    );
+  });
+  await page.getByRole("button", { name: /만화 읽기/ }).click();
+  await expect(position(page)).toHaveText("2 / 3컷");
+  await expect(
+    dialog(page).getByRole("button", { name: "닫기", exact: true }),
+  ).not.toBeVisible();
+  await page.mouse.click(2, 2);
+  await expect(dialog(page)).not.toBeVisible();
+  await page.evaluate(() => window.comicTest.cleanup());
+  await expect(page.locator("dialog")).toHaveCount(0);
+});

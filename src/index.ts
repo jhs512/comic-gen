@@ -7,6 +7,7 @@ export { createComicViewer, mountComicCard } from "./viewer";
 export type {
   ComicViewer,
   ComicViewerOptions,
+  ComicViewerState,
   ComicViewerResult,
   ComicViewerPanel,
 } from "./viewer";

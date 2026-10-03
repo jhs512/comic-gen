@@ -1,4 +1,4 @@
-/*! Comic Gen browser SDK v0.6.0
+/*! Comic Gen browser SDK v0.7.0
 Bundled yaml license:
 Copyright Eemeli Aro <eemeli@gmail.com>
 

@@ -8,6 +8,7 @@ export {
 export type {
   ComicViewer,
   ComicViewerOptions,
+  ComicViewerState,
   ComicViewerResult,
   ComicViewerPanel,
 } from "./viewer";

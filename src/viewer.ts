@@ -5,7 +5,27 @@ import {
 } from "./viewer-navigation";
 import { viewerStyles } from "./viewer-styles";
 
+export interface ComicViewerState {
+  readonly zoom: number;
+  readonly preventOverflow: boolean;
+  /** Zero-based index in result.panels. */
+  readonly panelIndex: number;
+}
 export interface ComicViewerOptions {
+  /** Defaults to false, preserving existing backdrop behavior. */
+  closeOnBackdrop?: boolean;
+  /** Defaults to true. Does not affect programmatic close(). */
+  closeOnEscape?: boolean;
+  /** Defaults to true; independent of other dismissal options. */
+  showCloseButton?: boolean;
+  /** Positive scale up to 10; defaults to 1. Fit may cap displayed size. */
+  zoom?: number;
+  /** Fit the largest individual panel in the viewport; defaults to true. */
+  preventOverflow?: boolean;
+  /** Initial zero-based panel index; defaults to 0. */
+  panelIndex?: number;
+  /** Called on open, view changes, and close (null). */
+  onChange?: (state: Readonly<ComicViewerState> | null) => void;
   /** The connected element to focus when this reading session closes. */
   trigger?: HTMLElement;
 }
@@ -23,6 +43,8 @@ export interface ComicViewerResult extends ComicViewerImage {
 }
 export interface ComicViewer {
   readonly isOpen: boolean;
+  readonly state: Readonly<ComicViewerState> | null;
+  setView(view: Partial<ComicViewerState>): void;
   open(result: ComicViewerResult, options?: ComicViewerOptions): void;
   close(): void;
   destroy(): void;
@@ -334,7 +356,77 @@ function blobImage(svg: string, width: number, height: number, alt: string) {
 }
 
 /** A renderer-independent viewer for completed synchronous or asynchronous results. */
-export function createComicViewer(): ComicViewer {
+export function createComicViewer(
+  defaults: ComicViewerOptions = {},
+): ComicViewer {
+  defaults = { ...defaults };
+  let session: ComicViewerOptions = {};
+  let closeButton: HTMLButtonElement;
+  const validateView = (view: Partial<ComicViewerState>, count?: number) => {
+    if (
+      view.zoom !== undefined &&
+      (!Number.isFinite(view.zoom) || view.zoom <= 0 || view.zoom > 10)
+    )
+      throw new RangeError("zoom must be greater than 0 and at most 10.");
+    if (
+      view.panelIndex !== undefined &&
+      (!Number.isInteger(view.panelIndex) ||
+        view.panelIndex < 0 ||
+        (count !== undefined && view.panelIndex >= count))
+    )
+      throw new RangeError("panelIndex must identify an existing panel.");
+    if (
+      view.preventOverflow !== undefined &&
+      typeof view.preventOverflow !== "boolean"
+    )
+      throw new TypeError("preventOverflow must be a boolean.");
+  };
+  const validateOptions = (options: ComicViewerOptions, count?: number) => {
+    validateView(options, count);
+    for (const key of [
+      "closeOnBackdrop",
+      "closeOnEscape",
+      "showCloseButton",
+    ] as const) {
+      if (options[key] !== undefined && typeof options[key] !== "boolean")
+        throw new TypeError(`${key} must be a boolean.`);
+    }
+    if (
+      options.onChange !== undefined &&
+      typeof options.onChange !== "function"
+    )
+      throw new TypeError("onChange must be a function.");
+  };
+  validateOptions(defaults);
+  const readState = (): Readonly<ComicViewerState> | null =>
+    dialog?.open && comic
+      ? Object.freeze({
+          zoom: Number(zoom.value),
+          preventOverflow: preventOverflow.checked,
+          panelIndex: navigation?.currentIndex ?? 0,
+        })
+      : null;
+  let lastState: string | undefined;
+  let changingView = false;
+  const notify = () => {
+    if (changingView) return;
+    const state = readState();
+    const key = JSON.stringify(state);
+    if (key === lastState) return;
+    lastState = key;
+    session.onChange?.(state);
+  };
+  const setZoom = (value: number) => {
+    const text = String(value);
+    if (![...zoom.options].some((option) => option.value === text)) {
+      const option = document.createElement("option");
+      option.value = text;
+      option.textContent = `${Math.round(value * 100)}%`;
+      option.dataset.customZoom = "";
+      zoom.append(option);
+    }
+    zoom.value = text;
+  };
   let dialog: HTMLDialogElement | undefined;
   let viewport: HTMLElement;
   let artwork: HTMLElement;
@@ -392,6 +484,7 @@ export function createComicViewer(): ComicViewer {
     comic = undefined;
     releaseBody?.();
     releaseBody = undefined;
+    const ended = lastState !== undefined && lastState !== "null";
     const previousTrigger = trigger;
     trigger = undefined;
     const otherDialog = [
@@ -402,6 +495,7 @@ export function createComicViewer(): ComicViewer {
       (!otherDialog || otherDialog.contains(previousTrigger))
     )
       previousTrigger.focus({ preventScroll: true });
+    if (ended) notify();
   };
   const close = () => {
     if (dialog?.open) dialog.close();
@@ -409,10 +503,34 @@ export function createComicViewer(): ComicViewer {
   };
   const cancel = (event: Event) => {
     event.preventDefault();
-    close();
+    if (session.closeOnEscape !== false) close();
   };
   const onClose = () => {
     if (!dialog?.open) endSession();
+  };
+  let backdropDown = false;
+  const isBackdrop = (event: MouseEvent) => {
+    if (event.target !== dialog) return false;
+    const box = dialog!.getBoundingClientRect();
+    return (
+      event.clientX < box.left ||
+      event.clientX > box.right ||
+      event.clientY < box.top ||
+      event.clientY > box.bottom
+    );
+  };
+  const pointerDown = (event: PointerEvent) => {
+    backdropDown = event.button === 0 && isBackdrop(event);
+  };
+  const backdropClick = (event: MouseEvent) => {
+    const shouldClose =
+      backdropDown && isBackdrop(event) && session.closeOnBackdrop === true;
+    backdropDown = false;
+    if (shouldClose) close();
+  };
+  const changeView = () => {
+    updateSize();
+    notify();
   };
   const trapTab = (event: KeyboardEvent) => {
     if (event.key !== "Tab" || !dialog?.open) return;
@@ -421,8 +539,9 @@ export function createComicViewer(): ComicViewer {
         "button:not(:disabled), input, select, [tabindex='0']",
       ),
     ];
-    const first = controls[0],
-      last = controls[controls.length - 1];
+    const visibleControls = controls.filter((element) => !element.hidden);
+    const first = visibleControls[0],
+      last = visibleControls[visibleControls.length - 1];
     if (
       (!event.shiftKey && document.activeElement === last) ||
       (event.shiftKey && document.activeElement === first)
@@ -450,9 +569,12 @@ export function createComicViewer(): ComicViewer {
     previous = dialog.querySelector(".comic-previous")!;
     next = dialog.querySelector(".comic-next")!;
     status = dialog.querySelector(".comic-position")!;
-    zoom.addEventListener("change", updateSize);
-    preventOverflow.addEventListener("change", updateSize);
+    closeButton = dialog.querySelector("button")!;
+    zoom.addEventListener("change", changeView);
+    preventOverflow.addEventListener("change", changeView);
     dialog.querySelector("button")!.addEventListener("click", close);
+    dialog.addEventListener("pointerdown", pointerDown);
+    dialog.addEventListener("click", backdropClick);
     dialog.addEventListener("cancel", cancel);
     dialog.addEventListener("close", onClose);
     dialog.addEventListener("keydown", trapTab);
@@ -464,11 +586,29 @@ export function createComicViewer(): ComicViewer {
     get isOpen() {
       return Boolean(dialog?.open);
     },
+    get state() {
+      return readState();
+    },
+    setView: (view) => {
+      if (!dialog?.open || !comic)
+        throw new Error("Open the viewer before setting its view.");
+      validateView(view, comic.result.panels.length);
+      changingView = true;
+      if (view.zoom !== undefined) setZoom(view.zoom);
+      if (view.preventOverflow !== undefined)
+        preventOverflow.checked = view.preventOverflow;
+      updateSize();
+      if (view.panelIndex !== undefined) navigation?.goTo(view.panelIndex);
+      changingView = false;
+      notify();
+    },
     open: (input, options = {}) => {
       if (destroyed) throw new Error("폐기한 만화 뷰어는 다시 열 수 없습니다.");
       const completed = completedComic(input);
+      const settings = { ...defaults, ...options };
+      validateOptions(settings, completed.result.panels.length);
       const focus =
-        options.trigger ??
+        settings.trigger ??
         (dialog?.open
           ? trigger
           : document.activeElement instanceof HTMLElement
@@ -477,11 +617,19 @@ export function createComicViewer(): ComicViewer {
       build();
       navigation?.dispose();
       revokeImage?.();
+      changingView = true;
+      session = settings;
+      lastState = undefined;
+      backdropDown = false;
       comic = completed;
       trigger = focus;
       title.textContent = completed.title;
-      zoom.value = "1";
-      preventOverflow.checked = true;
+      zoom
+        .querySelectorAll("[data-custom-zoom]")
+        .forEach((option) => option.remove());
+      setZoom(settings.zoom ?? 1);
+      preventOverflow.checked = settings.preventOverflow ?? true;
+      closeButton.hidden = settings.showCloseButton === false;
       const resource = blobImage(
         completed.result.svg,
         completed.result.width,
@@ -498,12 +646,14 @@ export function createComicViewer(): ComicViewer {
         previous,
         next,
         status,
+        notify,
       );
       if (!dialog!.open) {
         releaseBody = lockBody();
         try {
           dialog!.showModal();
         } catch (error) {
+          changingView = false;
           endSession();
           throw error;
         }
@@ -511,9 +661,12 @@ export function createComicViewer(): ComicViewer {
       updateSize();
       viewport.scrollTo(0, 0);
       navigation.reset();
-      dialog!
-        .querySelector<HTMLButtonElement>("button")!
-        .focus({ preventScroll: true });
+      navigation.goTo(settings.panelIndex ?? 0);
+      (closeButton.hidden ? viewport : closeButton).focus({
+        preventScroll: true,
+      });
+      changingView = false;
+      notify();
     },
     close,
     destroy: () => {
@@ -522,9 +675,11 @@ export function createComicViewer(): ComicViewer {
       close();
       resize?.disconnect();
       if (dialog) {
-        zoom.removeEventListener("change", updateSize);
-        preventOverflow.removeEventListener("change", updateSize);
+        zoom.removeEventListener("change", changeView);
+        preventOverflow.removeEventListener("change", changeView);
         dialog.querySelector("button")!.removeEventListener("click", close);
+        dialog.removeEventListener("pointerdown", pointerDown);
+        dialog.removeEventListener("click", backdropClick);
         dialog.removeEventListener("cancel", cancel);
         dialog.removeEventListener("close", onClose);
         dialog.removeEventListener("keydown", trapTab);
@@ -540,10 +695,11 @@ export function createComicViewer(): ComicViewer {
 export function mountComicCard(
   container: HTMLElement,
   input: ComicViewerResult,
+  options: ComicViewerOptions = {},
 ): () => void {
   const completed = completedComic(input);
   const releaseStyles = acquireStyles();
-  const viewer = createComicViewer();
+  const viewer = createComicViewer(options);
   const button = document.createElement("button");
   button.type = "button";
   button.className = "comic-card";

@@ -92,6 +92,7 @@ export function mountPanelNavigation(
   previous: HTMLButtonElement,
   next: HTMLButtonElement,
   status: HTMLElement,
+  onChange?: () => void,
 ) {
   let current = 0;
   let moving = false;
@@ -114,6 +115,7 @@ export function mountPanelNavigation(
       height: panel.height * scale,
     }));
   };
+  let announced = 0;
   const announce = () => {
     previous.disabled = current === 0;
     next.disabled = current === panels.length - 1;
@@ -124,6 +126,10 @@ export function mountPanelNavigation(
       viewport.focus();
     const label = `${current + 1} / ${panels.length}컷`;
     if (status.textContent !== label) status.textContent = label;
+    if (announced !== current) {
+      announced = current;
+      onChange?.();
+    }
   };
   const onScroll = () => {
     if (moving) return;
@@ -302,6 +308,10 @@ export function mountPanelNavigation(
   document.addEventListener("pointercancel", outsideUp);
   announce();
   return {
+    get currentIndex() {
+      return current;
+    },
+    goTo: (index: number) => go(index - current),
     capturePosition: () => {
       const point = origin();
       const box = image.getBoundingClientRect();
