@@ -1,14 +1,33 @@
 /** The authored Korean surface normalizes into the existing resolved English model. */
 export const syntaxFields = {
-  comic: { title: "제목", cast: "등장인물", panels: "컷" },
-  cast: { asset: "그림", label: "이름표" },
+  comic: {
+    title: "제목",
+    cast: "등장인물",
+    panels: "컷",
+    personas: "페르소나",
+  },
+  cast: {
+    asset: "그림",
+    label: "이름표",
+    appearance: "외형",
+    persona: "페르소나",
+  },
+  persona: { role: "직무", personality: "성격", speechStyle: "말투" },
+  appearance: {
+    skinColor: "피부색",
+    hairStyle: "머리모양",
+    hairColor: "머리색",
+    outfit: "옷",
+    outfitColor: "옷색",
+    glasses: "안경",
+  },
   panel: {
     mode: "구성",
     actors: "인물",
     dialogue: "대사",
     transfer: "전달",
     removeActors: "제외인물",
-    actions: "소품동작",
+    diagram: "다이어그램",
   },
   actor: {
     id: "식별자",
@@ -28,7 +47,12 @@ export const syntaxFields = {
     fontSize: "글자크기",
   },
   transfer: { from: "주는인물", to: "받는인물", prop: "소품" },
-  action: { actor: "인물", type: "종류", prop: "소품", side: "방향" },
+  diagram: {
+    type: "종류",
+    source: "원문",
+    title: "제목",
+    height: "높이",
+  },
   options: {
     width: "너비",
     font: "글꼴",
@@ -38,7 +62,14 @@ export const syntaxFields = {
 } as const;
 
 export const syntaxValues = {
-  asset: { client: "클라이언트", server: "서버", database: "데이터베이스" },
+  asset: {
+    client: "클라이언트",
+    server: "서버",
+    database: "데이터베이스",
+    human: "사람",
+  },
+  hairStyle: { short: "짧은머리", bob: "단발", long: "긴머리", bald: "민머리" },
+  outfit: { shirt: "셔츠", jacket: "재킷", hoodie: "후드" },
   expression: {
     neutral: "보통",
     happy: "기쁨",
@@ -50,8 +81,7 @@ export const syntaxValues = {
   prop: { request: "요청", data: "데이터", key: "열쇠" },
   mode: { full: "전체", before: "이전" },
   panelFormat: { compact: "기본", phone: "모바일" },
-  action: { receive: "받기", discard: "버리기", drop: "떨어뜨리기", throw: "던지기" },
-  side: { left: "왼쪽", right: "오른쪽" },
+  diagramType: { mermaid: "머메이드" },
 } as const;
 
 type Context = keyof typeof syntaxFields;
@@ -59,10 +89,11 @@ const enumFields: Partial<
   Record<Context, Record<string, keyof typeof syntaxValues>>
 > = {
   cast: { asset: "asset" },
+  appearance: { hairStyle: "hairStyle", outfit: "outfit" },
   actor: { expression: "expression", gesture: "gesture", holding: "prop" },
   panel: { mode: "mode" },
   transfer: { prop: "prop" },
-  action: { type: "action", prop: "prop", side: "side" },
+  diagram: { type: "diagramType" },
   options: { panelFormat: "panelFormat" },
 };
 
@@ -93,7 +124,8 @@ function translate(
     }
     let next: unknown = raw;
     const enumRow = enumFields[context];
-    const valuesName = enumRow && Object.hasOwn(enumRow, field) ? enumRow[field] : undefined;
+    const valuesName =
+      enumRow && Object.hasOwn(enumRow, field) ? enumRow[field] : undefined;
     if (valuesName && typeof raw === "string") {
       const values: Record<string, string> = syntaxValues[valuesName];
       const english = Object.keys(values).find(
@@ -106,6 +138,22 @@ function translate(
       for (const [id, member] of Object.entries(raw))
         cast[id] = translate(member, "cast", korean, `${path}.등장인물.${id}`);
       next = cast;
+    } else if (context === "comic" && field === "personas" && object(raw)) {
+      const personas: Record<string, unknown> = Object.create(null);
+      for (const [id, persona] of Object.entries(raw))
+        personas[id] = translate(
+          persona,
+          "persona",
+          korean,
+          `${path}.페르소나.${id}`,
+        );
+      next = personas;
+    } else if (context === "cast" && field === "persona") {
+      next = translate(raw, "persona", korean, `${path}.페르소나`);
+    } else if (context === "cast" && field === "appearance") {
+      next = translate(raw, "appearance", korean, `${path}.외형`);
+    } else if (context === "panel" && field === "diagram") {
+      next = translate(raw, "diagram", korean, `${path}.다이어그램`);
     } else if (Array.isArray(raw)) {
       const child =
         context === "comic" && field === "panels"
@@ -116,7 +164,7 @@ function translate(
               ? "dialogue"
               : context === "panel" && field === "transfer"
                 ? "transfer"
-                : context === "panel" && field === "actions" ? "action" : undefined;
+                : undefined;
       if (child)
         next = raw.map((item, index) =>
           translate(

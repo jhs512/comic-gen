@@ -13,7 +13,6 @@ export default defineConfig({
         cdn: resolve("cdn.html"),
         gallery: resolve("gallery.html"),
         guide: resolve("guide.html"),
-        viewer: resolve("viewer.html"),
         "comic-gen": resolve("src/index.ts"),
       },
       output: {

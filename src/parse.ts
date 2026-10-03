@@ -1,26 +1,21 @@
 import { parseDocument } from "yaml";
-import { normalizeComic } from "./syntax";
-import { characters, expressions, gestures, props } from "./assets";
-import type {
-  Actor,
-  Dialogue,
-  Transfer,
-  Panel,
-  Comic,
-  CastMember,
-  PropAction,
-} from "./model";
+import { normalizeComic, syntaxFields } from "./syntax";
+import { expressions, gestures, props } from "./assets";
+import { readCharacterDefinitions } from "./character-definition";
+import type { Actor, Dialogue, Transfer, Diagram, Panel, Comic } from "./model";
 
 function record(value: unknown, context: string): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value))
     throw new Error(`${context}: 객체가 필요합니다.`);
   return value as Record<string, unknown>;
 }
-function text(value: unknown, context: string): string {
+function text(value: unknown, context: string, max = 10000): string {
   if (typeof value !== "string" || !value.trim())
     throw new Error(`${context}: 비어 있지 않은 문자열이 필요합니다.`);
-  if (value.length > 10000)
-    throw new Error(`${context}: 텍스트가 너무 깁니다.`);
+  if (value.length > max)
+    throw new Error(
+      `${context}: 텍스트가 너무 깁니다. ${max}자 이내로 작성하세요.`,
+    );
   return value;
 }
 function list(value: unknown, context: string): unknown[] {
@@ -58,47 +53,27 @@ export function readComic(source: string): Comic {
   const doc = parseDocument(source, { uniqueKeys: true });
   if (doc.errors.length) throw new Error(doc.errors[0].message);
   const root = record(normalizeComic(doc.toJS({ maxAliasCount: 20 })), "만화");
-  known(root, ["title", "cast", "panels"], "만화");
-  const cast: Record<string, CastMember> = Object.create(null);
-  for (const [id, raw] of Object.entries(record(root.cast, "cast"))) {
-    const member = record(raw, `cast.${id}`);
-    known(member, ["asset", "label"], `cast.${id}`);
-    const asset = text(member.asset, `cast.${id}.asset`);
-    if (!Object.hasOwn(characters, asset))
-      throw new Error(`cast.${id}: 없는 에셋 '${asset}'.`);
-    cast[id] = {
-      asset,
-      label:
-        member.label === undefined
-          ? id
-          : text(member.label, `cast.${id}.label`),
-    };
-  }
+  known(root, Object.keys(syntaxFields.comic), "만화");
+  const { cast, personas } = readCharacterDefinitions(root.cast, root.personas);
   let previous: Panel | undefined;
-  const panels = list(root.panels, "panels").map((raw, index): Panel => {
+  const panels = list(root.panels, "컷").map((raw, index): Panel => {
     const ctx = `컷 ${index + 1}`;
     const panel = { ...record(raw, ctx) };
-    known(
-      panel,
-      ["actors", "dialogue", "transfer", "actions", "mode", "removeActors"],
-      ctx,
-    );
+    known(panel, Object.keys(syntaxFields.panel), ctx);
     if (
       panel.mode !== undefined &&
       panel.mode !== "before" &&
       panel.mode !== "full"
     )
-      throw new Error(`${ctx}: mode는 full 또는 before여야 합니다.`);
+      throw new Error(`${ctx}: 구성은 전체 또는 이전이어야 합니다.`);
     if (panel.mode === "before") {
       if (!previous)
-        throw new Error(
-          `${ctx}: 첫 컷에서는 before 모드를 사용할 수 없습니다.`,
-        );
+        throw new Error(`${ctx}: 첫 컷에서는 이전 구성을 사용할 수 없습니다.`);
       const inherited: Record<string, unknown>[] = previous.actors.map(
         (actor) => ({ ...actor }),
       );
-      const removed = list(panel.removeActors ?? [], `${ctx}.removeActors`).map(
-        (id) => text(id, `${ctx}.removeActors`),
+      const removed = list(panel.removeActors ?? [], `${ctx}.제외인물`).map(
+        (id) => text(id, `${ctx}.제외인물`),
       );
       for (const id of removed) {
         if (!inherited.some((actor) => actor.id === id))
@@ -107,19 +82,13 @@ export function readComic(source: string): Comic {
       const next = inherited.filter(
         (actor) => !removed.some((id) => id === actor.id),
       );
-      const patches = list(panel.actors ?? [], `${ctx}.actors`);
+      const patches = list(panel.actors ?? [], `${ctx}.인물`);
       const changed = new Set<string>();
       for (const item of patches) {
         const patch =
-          typeof item === "string"
-            ? { id: item }
-            : record(item, `${ctx}.actors`);
-        known(
-          patch,
-          ["id", "expression", "gesture", "holding", "x", "y", "scale"],
-          `${ctx}.actors`,
-        );
-        const id = text(patch.id, `${ctx}.actor.id`);
+          typeof item === "string" ? { id: item } : record(item, `${ctx}.인물`);
+        known(patch, Object.keys(syntaxFields.actor), `${ctx}.인물`);
+        const id = text(patch.id, `${ctx}.인물.식별자`);
         if (changed.has(id))
           throw new Error(`${ctx}: 캐릭터 식별자가 중복됩니다.`);
         changed.add(id);
@@ -137,23 +106,17 @@ export function readComic(source: string): Comic {
       panel.actors =
         panel.actors !== undefined && patches.length === 0 ? [] : next;
     } else if (panel.removeActors !== undefined) {
-      throw new Error(
-        `${ctx}: removeActors는 before 모드에서만 사용할 수 있습니다.`,
-      );
+      throw new Error(`${ctx}: 제외인물은 이전 구성에서만 사용할 수 있습니다.`);
     }
-    const actors = list(panel.actors, `${ctx}.actors`).map((item): Actor => {
+    const actors = list(panel.actors, `${ctx}.인물`).map((item): Actor => {
       const actor =
-        typeof item === "string" ? { id: item } : record(item, `${ctx}.actors`);
-      known(
-        actor,
-        ["id", "expression", "gesture", "holding", "x", "y", "scale"],
-        `${ctx}.actors`,
-      );
-      const id = text(actor.id, `${ctx}.actor.id`);
+        typeof item === "string" ? { id: item } : record(item, `${ctx}.인물`);
+      known(actor, Object.keys(syntaxFields.actor), `${ctx}.인물`);
+      const id = text(actor.id, `${ctx}.인물.식별자`);
       const expression =
         actor.expression === undefined
           ? "neutral"
-          : text(actor.expression, `${ctx}.${id}.expression`);
+          : text(actor.expression, `${ctx}.${id}.표정`);
       if (!Object.hasOwn(cast, id))
         throw new Error(`${ctx}: 없는 캐릭터 '${id}'.`);
       if (!Object.hasOwn(expressions, expression))
@@ -161,11 +124,11 @@ export function readComic(source: string): Comic {
       const gesture =
         actor.gesture === undefined
           ? undefined
-          : text(actor.gesture, `${ctx}.${id}.gesture`);
+          : text(actor.gesture, `${ctx}.${id}.손모양`);
       const holding =
         actor.holding === undefined
           ? undefined
-          : text(actor.holding, `${ctx}.${id}.holding`);
+          : text(actor.holding, `${ctx}.${id}.든소품`);
       if (gesture && !Object.hasOwn(gestures, gesture))
         throw new Error(`${ctx}.${id}: 없는 손 제스처 '${gesture}'.`);
       if (holding && !Object.hasOwn(props, holding))
@@ -175,28 +138,22 @@ export function readComic(source: string): Comic {
         expression,
         gesture,
         holding,
-        x: number(actor.x, 0, 1, `${ctx}.${id}.x`),
-        y: number(actor.y, 0, 1, `${ctx}.${id}.y`),
-        scale: number(actor.scale, 0.5, 1.25, `${ctx}.${id}.scale`) ?? 1,
+        x: number(actor.x, 0, 1, `${ctx}.${id}.가로위치`),
+        y: number(actor.y, 0, 1, `${ctx}.${id}.세로위치`),
+        scale: number(actor.scale, 0.5, 1.25, `${ctx}.${id}.배율`) ?? 1,
       };
     });
     if (actors.length < 1 || actors.length > 3)
       throw new Error(`${ctx}: 캐릭터는 1~3명이어야 합니다.`);
     if (new Set(actors.map((actor) => actor.id)).size !== actors.length)
       throw new Error(`${ctx}: 캐릭터 식별자가 중복됩니다.`);
-    const dialogue = list(panel.dialogue ?? [], `${ctx}.dialogue`).map(
+    const dialogue = list(panel.dialogue ?? [], `${ctx}.대사`).map(
       (item): Dialogue => {
-        const line = record(item, `${ctx}.dialogue`);
-        known(
-          line,
-          ["from", "to", "text", "x", "y", "fontSize"],
-          `${ctx}.dialogue`,
-        );
-        const from = text(line.from, `${ctx}.dialogue.from`);
+        const line = record(item, `${ctx}.대사`);
+        known(line, Object.keys(syntaxFields.dialogue), `${ctx}.대사`);
+        const from = text(line.from, `${ctx}.대사.화자`);
         const to =
-          line.to === undefined
-            ? undefined
-            : text(line.to, `${ctx}.dialogue.to`);
+          line.to === undefined ? undefined : text(line.to, `${ctx}.대사.상대`);
         if (!actors.some((actor) => actor.id === from))
           throw new Error(`${ctx}: 화자 '${from}'가 컷에 없습니다.`);
         if (to && !actors.some((actor) => actor.id === to))
@@ -204,23 +161,22 @@ export function readComic(source: string): Comic {
         return {
           from,
           to,
-          text: text(line.text, `${ctx}.dialogue.text`),
-          x: number(line.x, 0, 1, `${ctx}.dialogue.x`),
-          y: number(line.y, 0, 1, `${ctx}.dialogue.y`),
-          fontSize:
-            number(line.fontSize, 12, 32, `${ctx}.dialogue.fontSize`) ?? 18,
+          text: text(line.text, `${ctx}.대사.내용`),
+          x: number(line.x, 0, 1, `${ctx}.대사.가로위치`),
+          y: number(line.y, 0, 1, `${ctx}.대사.세로위치`),
+          fontSize: number(line.fontSize, 12, 32, `${ctx}.대사.글자크기`) ?? 18,
         };
       },
     );
     if (dialogue.length > 20)
       throw new Error(`${ctx}: 대사는 20개 이내로 작성하세요.`);
-    const transfer = list(panel.transfer ?? [], `${ctx}.transfer`).map(
+    const transfer = list(panel.transfer ?? [], `${ctx}.전달`).map(
       (item): Transfer => {
-        const relation = record(item, `${ctx}.transfer`);
-        known(relation, ["from", "to", "prop"], `${ctx}.transfer`);
-        const from = text(relation.from, `${ctx}.transfer.from`);
-        const to = text(relation.to, `${ctx}.transfer.to`);
-        const prop = text(relation.prop, `${ctx}.transfer.prop`);
+        const relation = record(item, `${ctx}.전달`);
+        known(relation, Object.keys(syntaxFields.transfer), `${ctx}.전달`);
+        const from = text(relation.from, `${ctx}.전달.주는인물`);
+        const to = text(relation.to, `${ctx}.전달.받는인물`);
+        const prop = text(relation.prop, `${ctx}.전달.소품`);
         if (!actors.some((actor) => actor.id === from))
           throw new Error(`${ctx}: 전달 주체 '${from}'가 컷에 없습니다.`);
         if (!actors.some((actor) => actor.id === to))
@@ -234,30 +190,33 @@ export function readComic(source: string): Comic {
     );
     if (transfer.length > 6)
       throw new Error(`${ctx}: 소품 전달은 6개 이내로 작성하세요.`);
-    const actions = list(panel.actions ?? [], `${ctx}.actions`).map((item): PropAction => {
-      const action = record(item, `${ctx}.actions`);
-      known(action, ["actor", "type", "prop", "side"], `${ctx}.actions`);
-      const actor = text(action.actor, `${ctx}.actions.actor`);
-      const type = text(action.type, `${ctx}.actions.type`);
-      const prop = text(action.prop, `${ctx}.actions.prop`);
-      const side = action.side ?? "right";
-      if (!actors.some((item) => item.id === actor)) throw new Error(`${ctx}: 동작 인물 '${actor}'가 컷에 없습니다.`);
-      if (!["receive", "discard", "drop", "throw"].includes(type)) throw new Error(`${ctx}: 동작은 receive, discard, drop, throw 중 하나여야 합니다.`);
-      if (!Object.hasOwn(props, prop)) throw new Error(`${ctx}: 없는 소품 '${prop}'.`);
-      if (side !== "left" && side !== "right") throw new Error(`${ctx}: side는 left 또는 right여야 합니다.`);
-      const member = actors.find((item) => item.id === actor)!;
-      if (member.holding || member.gesture || transfer.some((item) => item.from === actor || item.to === actor)) throw new Error(`${ctx}: 동작 인물은 holding, gesture, transfer와 동시에 사용할 수 없습니다. before에서는 null로 지우세요.`);
-      return {actor, type: type as PropAction["type"], prop, side};
-    });
-    if (actions.length > 3 || new Set(actions.map((item) => item.actor)).size !== actions.length) throw new Error(`${ctx}: 동작은 인물마다 하나씩, 최대 3개입니다.`);
-    previous = { actors, dialogue, transfer, actions };
+    let diagram: Diagram | undefined;
+    if (panel.diagram !== undefined && panel.diagram !== null) {
+      const ctxDiagram = `${ctx}.다이어그램`;
+      const rawDiagram = record(panel.diagram, ctxDiagram);
+      known(rawDiagram, Object.keys(syntaxFields.diagram), ctxDiagram);
+      if (rawDiagram.type !== "mermaid")
+        throw new Error(`${ctxDiagram}.종류: 머메이드여야 합니다.`);
+      diagram = {
+        type: "mermaid",
+        source: text(rawDiagram.source, `${ctxDiagram}.원문`, 20000),
+        title:
+          rawDiagram.title === undefined
+            ? "다이어그램"
+            : text(rawDiagram.title, `${ctxDiagram}.제목`, 100),
+        height: number(rawDiagram.height, 160, 1200, `${ctxDiagram}.높이`),
+      };
+    }
+    // Diagram content belongs to this cut and is never inherited by before mode.
+    previous = { actors, dialogue, transfer, ...(diagram ? { diagram } : {}) };
     return previous;
   });
   if (panels.length < 1 || panels.length > 30)
     throw new Error("컷은 1~30개여야 합니다.");
   return {
-    title: root.title === undefined ? "Comic Gen" : text(root.title, "title"),
+    title: root.title === undefined ? "Comic Gen" : text(root.title, "제목"),
     cast,
     panels,
+    ...(personas ? { personas } : {}),
   };
 }

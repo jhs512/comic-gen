@@ -1,9 +1,13 @@
+import { renderHuman } from "./human";
+import type { CastMember } from "./model";
+
 export interface CharacterAsset {
   body: string;
   faceY: number;
   color: string;
+  restingHands?: { left: string; right: string };
 }
-export const assetVersion = "1";
+export const assetVersion = "2";
 export const characters: Record<string, CharacterAsset> = {
   client: {
     color: "#9fcdfa",
@@ -20,7 +24,15 @@ export const characters: Record<string, CharacterAsset> = {
     faceY: 5,
     body: '<path d="M-52 -39v79c0 23 104 23 104 0v-79" fill="#daccff"/><ellipse cy="-39" rx="52" ry="18" fill="#ece4ff"/><path d="M-52 24c0 23 104 23 104 0" fill="none"/>',
   },
+  human: renderHuman(),
 };
+
+/** Resolve per-person appearance while preserving the original icon assets. */
+export function getCharacterAsset(member: CastMember): CharacterAsset {
+  return member.asset === "human"
+    ? renderHuman(member.appearance)
+    : characters[member.asset];
+}
 export const expressions: Record<string, string> = {
   neutral:
     '<circle cx="-17" cy="-4" r="3.5"/><circle cx="17" cy="-4" r="3.5"/><path d="M-10 17q10 7 20 0" fill="none"/>',

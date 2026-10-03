@@ -1,5 +1,12 @@
-import { characters, expressions, gestures, props, escapeXml } from "./assets";
+import {
+  getCharacterAsset,
+  expressions,
+  gestures,
+  props,
+  escapeXml,
+} from "./assets";
 import type { Panel, Comic } from "./model";
+import type { DiagramSvg } from "./diagram";
 const clamp = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, value));
 
@@ -32,6 +39,7 @@ export function renderPanel(
   width: number,
   font: string,
   format: "compact" | "phone" = "compact",
+  diagram?: DiagramSvg,
 ): { markup: string; height: number } {
   const bubbleWidth = Math.min(width - 80, 390);
   const bubbles = panel.dialogue.map((line) => ({
@@ -45,7 +53,7 @@ export function renderPanel(
   );
   const height = dialogueHeight + 254;
   const radius = Math.max(
-    ...panel.actors.map((actor) => panel.actions.some((action) => action.actor === actor.id) ? 130 : (actor.holding || actor.gesture ? 92 : 60)),
+    ...panel.actors.map((actor) => (actor.holding || actor.gesture ? 92 : 60)),
   );
   const slotWidth = (width - 72) / panel.actors.length;
   const automaticScale = Math.min(
@@ -75,7 +83,7 @@ export function renderPanel(
         Math.abs(actorYs[i] - actorYs[j]) < 120 * Math.max(scales[i], scales[j])
       ) {
         throw new Error(
-          `캐릭터 '${panel.actors[i].id}'와 '${panel.actors[j].id}'가 겹칩니다. x/y 또는 scale을 조정하세요.`,
+          `캐릭터 '${panel.actors[i].id}'와 '${panel.actors[j].id}'가 겹칩니다. 가로위치·세로위치 또는 배율을 조정하세요.`,
         );
       }
     }
@@ -112,7 +120,32 @@ export function renderPanel(
   });
   panel.actors.forEach((actor, index) => {
     const member = cast[actor.id];
-    const asset = characters[member.asset];
+    const asset = getCharacterAsset(member);
+    const human = member.asset === "human";
+    const skin = human ? asset.color : "white";
+    const transferredSides = new Set(
+      panel.transfer.flatMap((relation) => {
+        const partner =
+          relation.from === actor.id
+            ? relation.to
+            : relation.to === actor.id
+              ? relation.from
+              : undefined;
+        if (!partner) return [];
+        const partnerIndex = panel.actors.findIndex(
+          (item) => item.id === partner,
+        );
+        return [centers[partnerIndex] < centers[index] ? "left" : "right"];
+      }),
+    );
+    const restingHands = asset.restingHands
+      ? (actor.gesture || transferredSides.has("left")
+          ? ""
+          : asset.restingHands.left) +
+        (actor.holding || transferredSides.has("right")
+          ? ""
+          : asset.restingHands.right)
+      : "";
     const other = panel.dialogue.find(
       (line) => line.from === actor.id && line.to,
     )?.to;
@@ -130,13 +163,13 @@ export function renderPanel(
     if (labelLines.length > 2)
       throw new Error(`캐릭터 '${actor.id}'의 이름표가 너무 깁니다.`);
     const gesture = actor.gesture
-      ? `<g data-gesture="${actor.gesture}">${gestures[actor.gesture]}</g>`
+      ? `<g data-gesture="${actor.gesture}">${human ? gestures[actor.gesture].replace('fill="white"', `fill="${skin}"`) : gestures[actor.gesture]}</g>`
       : "";
     const holding = actor.holding
-      ? `<g data-holding="${actor.holding}"><circle data-hand="holding" cx="58" cy="20" r="11" fill="white"/><g data-prop="${actor.holding}" transform="translate(73 6)">${props[actor.holding]}</g></g>`
+      ? `<g data-holding="${actor.holding}"><circle data-hand="holding" cx="58" cy="20" r="11" fill="${skin}"/><g data-prop="${actor.holding}" transform="translate(73 6)">${props[actor.holding]}</g></g>`
       : "";
     markup.push(
-      `<g data-character="${escapeXml(actor.id)}" transform="translate(${centers[index]} ${actorYs[index]}) scale(${scales[index]})" stroke="#303341" stroke-width="2.8" stroke-linecap="round"><ellipse cy="69" rx="51" ry="7" fill="#e8edf3" stroke="none"/>${asset.body}<g transform="translate(${faceX} ${asset.faceY})" fill="#303341">${expressions[actor.expression]}</g>${gesture}${holding}<text y="94" text-anchor="middle" stroke="none" fill="#303341" font-size="16">${labelLines.map((part, row) => `<tspan x="0" dy="${row ? 18 : 0}">${escapeXml(part)}</tspan>`).join("")}</text></g>`,
+      `<g data-character="${escapeXml(actor.id)}" transform="translate(${centers[index]} ${actorYs[index]}) scale(${scales[index]})" stroke="#303341" stroke-width="2.8" stroke-linecap="round"><ellipse cy="69" rx="51" ry="7" fill="#e8edf3" stroke="none"/>${asset.body}<g transform="translate(${faceX} ${asset.faceY})" fill="#303341">${expressions[actor.expression]}</g>${restingHands}${gesture}${holding}<text y="94" text-anchor="middle" stroke="none" fill="#303341" font-size="16">${labelLines.map((part, row) => `<tspan x="0" dy="${row ? 18 : 0}">${escapeXml(part)}</tspan>`).join("")}</text></g>`,
     );
   });
   panel.transfer.forEach((relation, index) => {
@@ -153,38 +186,50 @@ export function renderPanel(
     const startY = actorYs[fromIndex] + offset * scales[fromIndex];
     const endY = actorYs[toIndex] + offset * scales[toIndex];
     const angle = (Math.atan2(endY - startY, end - start) * 180) / Math.PI;
+    const handColor = (actorIndex: number) => {
+      const member = cast[panel.actors[actorIndex].id];
+      return member.asset === "human"
+        ? getCharacterAsset(member).color
+        : "white";
+    };
     markup.push(
-      `<g data-transfer="${escapeXml(relation.from)}" data-to="${escapeXml(relation.to)}" stroke="#586c8c" stroke-width="2.5"><path d="M${start} ${startY}L${end} ${endY}" fill="none"/><circle data-hand="transfer" cx="${start}" cy="${startY}" r="${9 * scales[fromIndex]}" fill="white"/><circle data-hand="receive" cx="${end}" cy="${endY}" r="${9 * scales[toIndex]}" fill="white"/><path transform="translate(${end} ${endY}) rotate(${angle})" d="M-12 -5L-4 0L-12 5" fill="none"/><g data-prop="${relation.prop}" transform="translate(${(start + end) / 2} ${(startY + endY) / 2 - 16})">${props[relation.prop]}</g></g>`,
+      `<g data-transfer="${escapeXml(relation.from)}" data-to="${escapeXml(relation.to)}" stroke="#586c8c" stroke-width="2.5"><path d="M${start} ${startY}L${end} ${endY}" fill="none"/><circle data-hand="transfer" cx="${start}" cy="${startY}" r="${9 * scales[fromIndex]}" fill="${handColor(fromIndex)}"/><circle data-hand="receive" cx="${end}" cy="${endY}" r="${9 * scales[toIndex]}" fill="${handColor(toIndex)}"/><path transform="translate(${end} ${endY}) rotate(${angle})" d="M-12 -5L-4 0L-12 5" fill="none"/><g data-prop="${relation.prop}" transform="translate(${(start + end) / 2} ${(startY + endY) / 2 - 16})">${props[relation.prop]}</g></g>`,
     );
   });
-  panel.actions.forEach((action) => {
-    const index = panel.actors.findIndex((actor) => actor.id === action.actor);
-    const s = scales[index];
-    const direction = action.side === "left" ? -1 : 1;
-    const cx = centers[index], cy = actorYs[index];
-    const handX = cx + direction * 62 * s, handY = cy + 20 * s;
-    const outerX = cx + direction * 112 * s;
-    const floorY = cy + 108 * s;
-    const receive = action.type === "receive";
-    const drop = action.type === "drop";
-    const ground = drop || action.type === "throw";
-    const startX = receive ? outerX : handX;
-    const startY = receive ? cy - 48 * s : handY;
-    const endX = receive ? handX : (drop ? handX + direction * 22 * s : outerX);
-    const endY = receive ? handY : (ground ? floorY - 16 * s : cy + 8 * s);
-    const controlX = action.type === "throw" ? outerX + direction * 12 * s : (startX + endX) / 2;
-    const controlY = action.type === "throw" ? cy - 36 * s : (startY + endY) / 2;
-    const angle = Math.atan2(endY - controlY, endX - controlX) * 180 / Math.PI;
-    const propX = receive ? startX : endX;
-    const propY = receive ? startY : endY;
-    markup.push(`<g data-action="${action.type}" data-actor="${escapeXml(action.actor)}" stroke="#586c8c" stroke-width="2.5" stroke-linecap="round"><circle data-hand="action" cx="${handX}" cy="${handY}" r="${10*s}" fill="white"/><path data-trajectory="${action.type}" d="M${startX} ${startY}Q${controlX} ${controlY} ${endX} ${endY}" fill="none" stroke-dasharray="5 4"/><path transform="translate(${endX} ${endY}) rotate(${angle}) scale(${s})" d="M-12 -6L-2 0L-12 6" fill="none"/><g data-prop="${action.prop}" transform="translate(${propX} ${propY}) scale(${s})">${props[action.prop]}</g>${receive ? `<path d="M${outerX-18*s} ${startY-20*s}l${-6*s} ${-6*s}M${outerX+18*s} ${startY-20*s}l${6*s} ${-6*s}"/>` : `<path d="M${handX-direction*10*s} ${handY-17*s}l${direction*8*s} ${-5*s}M${handX-direction*14*s} ${handY+17*s}l${direction*8*s} ${5*s}"/>`}${ground ? `<path data-ground="true" d="M${endX-24*s} ${floorY}h${48*s}"/>` : ""}${action.type === "throw" ? `<path data-impact="true" d="M${endX-19*s} ${floorY-3*s}l${-8*s} ${-10*s}M${endX+19*s} ${floorY-3*s}l${8*s} ${-10*s}M${endX-9*s} ${floorY+5*s}l${-8*s} ${7*s}M${endX+9*s} ${floorY+5*s}l${8*s} ${7*s}"/>` : ""}</g>`);
-  });
+  let content = markup.slice(1).join("");
+  let panelHeight = height;
+  if (diagram && panel.diagram) {
+    const boardWidth = width - 80;
+    const contentWidth = boardWidth - 32;
+    const boardHeight =
+      panel.diagram.height ??
+      clamp((contentWidth * diagram.height) / diagram.width + 58, 180, 1200);
+    const contentHeight = boardHeight - 58;
+    const scale = Math.min(
+      contentWidth / diagram.width,
+      contentHeight / diagram.height,
+    );
+    const diagramX = 56 + (contentWidth - diagram.width * scale) / 2;
+    const diagramY = 66 + (contentHeight - diagram.height * scale) / 2;
+    const titleLines = wrapText(panel.diagram.title, contentWidth, 16, font);
+    if (titleLines.length > 1)
+      throw new Error(
+        "다이어그램 제목이 너무 깁니다. 제목이나 너비를 조정하세요.",
+      );
+    content = `<g data-diagram="mermaid"><rect x="40" y="20" width="${boardWidth}" height="${boardHeight}" rx="10" fill="#f3f7fc" stroke="#8093ab" stroke-width="2"/><text x="56" y="48" font-size="16" font-weight="700">${escapeXml(panel.diagram.title)}</text><g data-diagram-content="mermaid" transform="translate(${diagramX} ${diagramY}) scale(${scale})">${diagram.svg}</g></g><g data-scene="true" transform="translate(0 ${boardHeight + 40})">${content}</g>`;
+    panelHeight += boardHeight + 40;
+  }
   if (format === "phone") {
-    const phoneHeight = height * 2 + 92;
+    const phoneHeight = panelHeight * 2 + 92;
     return {
-      markup: `<rect x="20" y="0" width="${width - 40}" height="${phoneHeight}" rx="18" fill="white" stroke="#303341" stroke-width="2.5"/><g transform="translate(0 ${(phoneHeight - height) / 2})">${markup.slice(1).join("")}</g>`,
+      markup: `<rect x="20" y="0" width="${width - 40}" height="${phoneHeight}" rx="18" fill="white" stroke="#303341" stroke-width="2.5"/><g transform="translate(0 ${(phoneHeight - panelHeight) / 2})">${content}</g>`,
       height: phoneHeight,
     };
   }
+  if (diagram)
+    return {
+      markup: `<rect x="20" y="0" width="${width - 40}" height="${panelHeight}" rx="18" fill="white" stroke="#303341" stroke-width="2.5"/>${content}`,
+      height: panelHeight,
+    };
   return { markup: markup.join(""), height };
 }

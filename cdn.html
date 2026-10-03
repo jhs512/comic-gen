@@ -35,45 +35,128 @@
     <a href="./">← Comic Gen 편집기</a>
     <h1>CDN으로 만화 넣기</h1>
     <p>
-      이 페이지는 main 브랜치의 최신 CDN에서 단일 SDK 파일을 불러옵니다. CDN
-      캐시 때문에 갱신이 지연될 수 있습니다.
+      이 페이지는 v0.6.0 고정 CDN에서 SDK를 불러옵니다. 기존 코드 블록 삽입과
+      렌더링·뷰어를 따로 연결하는 방법을 함께 확인할 수 있습니다.
     </p>
-    <pre data-comic><code>title: CDN에서 불러온 만화
-cast:
-  client: {asset: client, label: 방문자}
-  server: {asset: server, label: 웹 서버}
-panels:
-  - actors: [{id: client, expression: happy}, server]
-    dialogue:
-      - {from: client, to: server, text: "설치 없이 문서에 만화를 넣었어!"}
-      - {from: server, to: client, text: "그림은 네 브라우저에서 만들고 있어."}
-  - mode: before
-    actors: [{id: server, expression: happy}]
-    dialogue: [{from: server, to: client, text: "두 번째 컷은 이전 상태에서 시작해."}]
-  - mode: before
-    transfer: [{from: server, to: client, prop: data}]
-    dialogue: [{from: server, to: client, text: "이 컷도 단독 SVG야."}]
-  - mode: before
-    actors: [{id: client, gesture: wave}]
-    dialogue: [{from: client, to: server, text: "네 컷 완성! 각각 저장할 수 있어."}]
+    <h2>코드 블록을 카드로 표시하기</h2>
+    <pre data-comic hidden><code>제목: CDN에서 불러온 만화
+등장인물:
+  client:
+    그림: 클라이언트
+    이름표: 방문자
+  server:
+    그림: 서버
+    이름표: 웹 서버
+컷:
+  - 인물:
+      - 식별자: client
+        표정: 기쁨
+      - server
+    대사:
+      - 화자: client
+        상대: server
+        내용: 설치 없이 문서에 만화를 넣었어!
+      - 화자: server
+        상대: client
+        내용: 그림은 네 브라우저에서 만들고 있어.
+    다이어그램:
+      종류: 머메이드
+      제목: 요청과 응답
+      높이: 240
+      원문: |
+        sequenceDiagram
+          participant 방문자
+          participant 서버 as 웹 서버
+          방문자->>서버: 요청
+          서버-->>방문자: 응답
+  - 구성: 이전
+    인물:
+      - 식별자: server
+        표정: 기쁨
+    대사:
+      - 화자: server
+        상대: client
+        내용: 두 번째 컷은 이전 상태에서 시작해.
+  - 구성: 이전
+    전달:
+      - 주는인물: server
+        받는인물: client
+        소품: 데이터
+    대사:
+      - 화자: server
+        상대: client
+        내용: 이 컷도 단독 SVG야.
+  - 구성: 이전
+    인물:
+      - 식별자: client
+        손모양: 인사손
+    대사:
+      - 화자: client
+        상대: server
+        내용: 네 컷 완성! 각각 저장할 수 있어.
 </code></pre>
     <p id="status" role="status">CDN에서 SDK를 불러오는 중…</p>
+    <h2 id="optional-viewer">렌더링 결과에 뷰어만 추가하기</h2>
+    <p>
+      렌더링 모듈로 만화를 완성한 뒤 별도 뷰어 모듈에 전달합니다. 아래 카드도
+      같은 네 컷과 Mermaid 다이어그램을 보여줍니다. 미리보기를 열고 컷 이동,
+      화면 넘침 방지와 보기 크기를 확인하세요.
+    </p>
+    <div id="optional-card"></div>
+    <p id="optional-status" role="status">분리 모듈을 불러오는 중…</p>
+    <details>
+      <summary>연결 코드 보기</summary>
+      <pre><code>import { renderPanelsAsync } from
+  'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.render.js';
+import { mountComicCard } from
+  'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.viewer.js';
+const result = await renderPanelsAsync(source, {panelFormat: 'compact'});
+if (result.diagnostics.length) throw new Error(result.diagnostics.join('\n'));
+const cleanup = mountComicCard(document.querySelector('#optional-card'), result);
+// 내용을 바꾸거나 화면을 제거할 때 cleanup()을 호출합니다.</code></pre>
+    </details>
     <script type="module">
+      const source = document.querySelector("pre[data-comic] code").textContent;
       try {
-        const { renderCodeBlocks } =
-          await import("https://cdn.jsdelivr.net/gh/jhs512/comic-gen@main/cdn/comic-gen.js");
+        const { renderCodeBlocksAsync } =
+          await import("https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.js");
         await document.fonts.ready;
-        const results = renderCodeBlocks();
+        const results = await renderCodeBlocksAsync();
         if (results.some((result) => result.diagnostics.length))
           throw new Error(
             results.flatMap((result) => result.diagnostics).join("\n"),
           );
         document.querySelector("#status").textContent =
-          "최신 main SDK · CDN에서 불러오기와 브라우저 렌더링 완료";
+          "v0.6.0 호환 SDK · 네 컷 렌더링 완료";
       } catch (error) {
         const status = document.querySelector("#status");
         status.setAttribute("role", "alert");
         status.textContent = `불러오기 실패: ${error.message}`;
+      }
+      try {
+        const [{ renderPanelsAsync }, { mountComicCard }] = await Promise.all([
+          import("https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.render.js"),
+          import("https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.viewer.js"),
+        ]);
+        await document.fonts.ready;
+        const result = await renderPanelsAsync(source, {
+          panelFormat: "compact",
+        });
+        if (result.diagnostics.length)
+          throw new Error(result.diagnostics.join("\n"));
+        const cleanup = mountComicCard(
+          document.querySelector("#optional-card"),
+          result,
+        );
+        window.addEventListener("pagehide", (event) => {
+          if (!event.persisted) cleanup();
+        });
+        document.querySelector("#optional-status").textContent =
+          `렌더링 모듈 + 선택형 뷰어 · 실제 ${result.panels.length}컷 연결 완료`;
+      } catch (error) {
+        const status = document.querySelector("#optional-status");
+        status.setAttribute("role", "alert");
+        status.textContent = `연결 실패: ${error.message}`;
       }
     </script>
   </body>

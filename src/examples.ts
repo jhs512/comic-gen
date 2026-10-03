@@ -1,6 +1,9 @@
-import { stringify } from "yaml";
+import { parse, stringify } from "yaml";
+import { koreanComic } from "./syntax";
+const koreanSource = (source: string) =>
+  stringify(koreanComic(parse(source)), { lineWidth: 0 });
 
-export const starter = `title: 요청과 응답
+export const starter = koreanSource(`title: 요청과 응답
 cast:
   web: {asset: server, label: 웹 서버}
   db: {asset: database, label: DB}
@@ -11,7 +14,7 @@ panels:
     dialogue:
       - {from: web, to: db, text: "데이터를 부탁해!"}
       - {from: db, to: web, text: "좋아, 바로 찾아볼게!"}
-`;
+`);
 
 export interface Example {
   id: string;
@@ -24,33 +27,312 @@ export interface Example {
 
 function sourceFor(
   title: string,
-  cast: Record<string, { asset: string; label: string }>,
+  cast: Record<string, unknown>,
   panels: unknown[],
+  personas?: Record<string, unknown>,
 ): string {
-  return stringify({ title, cast, panels }, { lineWidth: 0 });
+  return stringify(
+    koreanComic({ title, cast, panels, ...(personas ? { personas } : {}) }),
+    { lineWidth: 0 },
+  );
 }
+
+const meetingPersonas = {
+  analyst: {
+    role: "빅데이터 전문가",
+    personality: "차분하고 근거를 확인한다",
+    speechStyle: "짧은 질문으로 지표를 구분하고 이유를 설명한다",
+  },
+  leader: {
+    role: "마케팅 팀장",
+    personality: "결과를 빠르게 얻고 싶지만 반론을 듣는다",
+    speechStyle: "목표와 다음 행동을 묻는 간결한 존댓말",
+  },
+  newcomer: {
+    role: "신입 마케터",
+    personality: "솔직하고 호기심이 많다",
+    speechStyle: "모르는 점을 구체적으로 질문하고 배운 것을 자기 말로 정리한다",
+  },
+};
+const meetingCast = {
+  kim: {
+    asset: "human",
+    label: "김대리 · 데이터 전문가",
+    persona: "analyst",
+    appearance: {
+      hairStyle: "short",
+      glasses: true,
+      outfit: "jacket",
+      outfitColor: "#5379a7",
+    },
+  },
+  leader: {
+    asset: "human",
+    label: "마케팅 팀장",
+    persona: "leader",
+    appearance: {
+      hairStyle: "bob",
+      hairColor: "#573d36",
+      outfit: "shirt",
+      outfitColor: "#b88646",
+      skinColor: "#d6a279",
+    },
+  },
+  oh: {
+    asset: "human",
+    label: "오사원",
+    persona: "newcomer",
+    appearance: {
+      hairStyle: "short",
+      hairColor: "#303746",
+      outfit: "hoodie",
+      outfitColor: "#609b87",
+    },
+  },
+};
 
 // Keep every example as ordinary authoring code, using the same public renderer as the editor.
 function getExamples(): Example[] {
   return [
-    ...(["receive", "discard", "drop", "throw"] as const).map((type): Example => ({
-      id: `prop-${type}`, title: ({receive:"어디선가 온 데이터를 받기",discard:"불필요한 데이터를 옆으로 버리기",drop:"물건을 아래로 놓기",throw:"바닥으로 힘껏 던지기"})[type],
-      category: "소품 동작", description: "궤적·손·소품 위치로 순간 동작을 표현합니다. 아래 네 컷에서는 받기 → 들기 → 버리기 → 바닥 던지기를 비교하세요.",
-      features: [type, "외부 소품", "4컷 상태와 이벤트"],
-      source: sourceFor("소품과 함께하는 네 컷", {web:{asset:"server",label:"웹 서버"}}, [
-        {actors:[{id:"web",expression:"confused"}],actions:[{actor:"web",type,prop:"data",side:"right"}],dialogue:[{from:"web",text:({receive:"밖에서 데이터가 도착했어!",discard:"필요 없는 건 옆으로!",drop:"살며시 내려놓자.",throw:"이 데이터는 바닥으로!"})[type]}]},
-        {mode:"before",actors:[{id:"web",holding:"data",expression:"happy"}],dialogue:[{from:"web",text:"지금은 데이터를 들고 있어."}]},
-        {mode:"before",actors:[{id:"web",holding:null}],actions:[{actor:"web",type:"discard",prop:"data",side:"left"}],dialogue:[{from:"web",text:"필요 없는 데이터는 버려."}]},
-        {mode:"before",actors:[{id:"web",expression:"angry"}],actions:[{actor:"web",type:"throw",prop:"data"}],dialogue:[{from:"web",text:"바닥으로 휙!"}]},
-      ]),
-    })),
+    {
+      id: "persona-meeting",
+      title: "김대리·팀장·오사원의 캠페인 회의",
+      category: "사람·페르소나",
+      description:
+        "같은 세 사람이 네 컷에 등장해 클릭과 구매 전환을 구분합니다. 직무·성격·말투는 작성 참고이고 외형은 일관되게 유지합니다.",
+      features: ["사람 외형", "페르소나 참조", "3인 티키타카", "이전 컷 상속"],
+      source: sourceFor(
+        "캠페인 회의: 숫자의 함정",
+        meetingCast,
+        [
+          {
+            actors: [
+              "kim",
+              { id: "leader", expression: "happy" },
+              { id: "oh", expression: "confused" },
+            ],
+            dialogue: [
+              {
+                from: "leader",
+                to: "kim",
+                text: "클릭이 늘었으니 광고비를 더 쓰죠?",
+              },
+              {
+                from: "oh",
+                to: "kim",
+                text: "방문자는 늘었는데 주문은 그대로예요.",
+              },
+            ],
+          },
+          {
+            mode: "before",
+            actors: [{ id: "kim", gesture: "point" }],
+            dialogue: [
+              {
+                from: "kim",
+                to: "oh",
+                text: "클릭과 구매 전환을 나눠서 보죠.",
+              },
+              {
+                from: "oh",
+                to: "kim",
+                text: "많이 누른다고 많이 사는 건 아니네요?",
+              },
+            ],
+          },
+          {
+            mode: "before",
+            actors: [
+              { id: "leader", expression: "neutral" },
+              { id: "oh", expression: "neutral" },
+            ],
+            dialogue: [
+              {
+                from: "leader",
+                to: "kim",
+                text: "그럼 어디서 고객이 떠나는지 봐야겠군요.",
+              },
+              {
+                from: "kim",
+                to: "leader",
+                text: "맞아요. 장바구니와 결제까지 비교하죠.",
+              },
+            ],
+          },
+          {
+            mode: "before",
+            actors: [
+              { id: "kim", gesture: null, expression: "happy" },
+              { id: "oh", expression: "happy" },
+            ],
+            dialogue: [
+              {
+                from: "oh",
+                to: "leader",
+                text: "다음 주에는 전환율도 함께 보고할게요!",
+              },
+              {
+                from: "leader",
+                to: "oh",
+                text: "좋아요. 같은 기준으로 실험을 확인하죠.",
+              },
+            ],
+          },
+        ],
+        meetingPersonas,
+      ),
+    },
+    {
+      id: "persona-diagram",
+      title: "같은 세 사람의 데이터 흐름 설명",
+      category: "사람·페르소나",
+      description:
+        "회의의 등장인물과 프로필을 그대로 재사용하고, Mermaid 칠판으로 분석 흐름을 설명하는 새 이야기를 만듭니다.",
+      features: ["다른 만화에서 재사용", "Mermaid 칠판", "표정·손·소품"],
+      source: sourceFor(
+        "캠페인 분석의 다음 질문",
+        meetingCast,
+        [
+          {
+            actors: [
+              { id: "kim", gesture: "point" },
+              "leader",
+              { id: "oh", expression: "confused" },
+            ],
+            dialogue: [
+              {
+                from: "oh",
+                to: "kim",
+                text: "전환율은 어떤 순서로 확인하나요?",
+              },
+              {
+                from: "kim",
+                to: "oh",
+                text: "방문에서 주문까지 단계를 나눠 비교해요.",
+              },
+            ],
+            diagram: {
+              type: "mermaid",
+              title: "방문에서 주문까지",
+              height: 240,
+              source:
+                "flowchart LR\n  방문 --> 클릭\n  클릭 --> 장바구니\n  장바구니 --> 주문",
+            },
+          },
+          {
+            mode: "before",
+            actors: [
+              { id: "kim", gesture: null },
+              { id: "oh", expression: "happy" },
+            ],
+            dialogue: [
+              {
+                from: "leader",
+                to: "oh",
+                text: "어느 단계가 달라졌는지 함께 보고해주세요.",
+              },
+              {
+                from: "oh",
+                to: "leader",
+                text: "네, 같은 기간과 기준으로 비교할게요!",
+              },
+            ],
+            transfer: [{ from: "kim", to: "oh", prop: "data" }],
+          },
+        ],
+        meetingPersonas,
+      ),
+    },
+    {
+      id: "uml-class",
+      title: "칠판으로 설명하는 클래스 관계",
+      category: "UML·다이어그램",
+      description:
+        "한 컷의 칠판에 Mermaid 클래스 다이어그램을 그리고, 아래에서 인물이 관계를 설명합니다.",
+      features: ["클래스 다이어그램", "한글 라벨", "인물과 대사"],
+      source: sourceFor(
+        "회원과 주문의 관계",
+        {
+          teacher: { asset: "server", label: "선생님" },
+          student: { asset: "client", label: "학생" },
+        },
+        [
+          {
+            actors: ["teacher", "student"],
+            dialogue: [
+              {
+                from: "teacher",
+                to: "student",
+                text: "회원 한 명이 여러 주문을 만들 수 있어요.",
+              },
+            ],
+            diagram: {
+              type: "mermaid",
+              title: "회원과 주문 클래스",
+              height: 260,
+              source: `classDiagram
+  direction LR
+  class 회원 {
+    +String 이름
+    +주문하기()
+  }
+  class 주문 {
+    +String 번호
+    +결제하기()
+  }
+  회원 "1" --> "*" 주문 : 생성`,
+            },
+          },
+        ],
+      ),
+    },
+    {
+      id: "uml-sequence",
+      title: "화면으로 읽는 요청 순서",
+      category: "UML·다이어그램",
+      description:
+        "Mermaid 시퀀스 다이어그램과 두 인물의 대사로 요청·조회·응답의 순서를 설명합니다.",
+      features: ["시퀀스 다이어그램", "요청·응답", "컷 안 화면"],
+      source: sourceFor(
+        "요청은 어떤 순서로 흐를까?",
+        {
+          client: { asset: "client", label: "방문자" },
+          server: { asset: "server", label: "웹 서버" },
+        },
+        [
+          {
+            actors: ["client", "server"],
+            dialogue: [
+              {
+                from: "server",
+                to: "client",
+                text: "조회가 끝나면 결과를 응답으로 돌려줘요.",
+              },
+            ],
+            diagram: {
+              type: "mermaid",
+              title: "요청에서 응답까지",
+              height: 440,
+              source: `sequenceDiagram
+  participant 방문자
+  participant 서버 as 웹 서버
+  participant 저장소 as 데이터베이스
+  방문자->>서버: 데이터 요청
+  서버->>저장소: 데이터 조회
+  저장소-->>서버: 조회 결과
+  서버-->>방문자: 응답`,
+            },
+          },
+        ],
+      ),
+    },
     {
       id: "before",
       title: "변화만 적는 네 컷 이야기",
       category: "여러 컷·상속",
       description:
-        "첫 컷을 정의하고 before 모드로 표정·소품만 바꿉니다. 대사는 매 컷 새로 작성합니다.",
-      features: ["4컷", "mode: before", "상태 초기화"],
+        "첫 컷을 정의하고 이전 구성로 표정·소품만 바꿉니다. 대사는 매 컷 새로 작성합니다.",
+      features: ["4컷", "구성: 이전", "상태 초기화"],
       source: `title: 데이터가 도착하기까지
 cast:
   web: {asset: server, label: 웹 서버}
@@ -75,7 +357,7 @@ panels:
       title: "처음 만드는 두 캐릭터 대화",
       category: "빠른 시작",
       description:
-        "cast에 이름을 붙이고 두 캐릭터가 서로 이야기하게 합니다. 대사만 바꾸며 시작하세요.",
+        "등장인물에 이름을 붙이고 두 캐릭터가 서로 이야기하게 합니다. 대사만 바꾸며 시작하세요.",
       features: ["역할 이름표", "대화 상대", "자동 배치"],
       source: starter,
     },
@@ -145,8 +427,8 @@ panels:
       title: "열쇠로 이해하는 인증",
       category: "IT 설명",
       description:
-        "key 소품을 인증 정보에 비유합니다. 이름표는 주제에 맞게 바꿀 수 있습니다.",
-      features: ["key", "holding", "전달 방향"],
+        "열쇠 소품을 인증 정보에 비유합니다. 이름표는 주제에 맞게 바꿀 수 있습니다.",
+      features: ["열쇠", "든소품", "전달 방향"],
       source: sourceFor(
         "인증 정보 확인하기",
         {
@@ -195,7 +477,7 @@ panels:
       category: "IT 설명",
       description:
         "실패와 재시도를 표정 변화로 설명합니다. 한 인물의 표정은 컷마다 달라질 수 있습니다.",
-      features: ["sad → happy", "3컷", "상태 변화"],
+      features: ["슬픔 → 기쁨", "3컷", "상태 변화"],
       source: sourceFor(
         "실패 후 다시 시도하기",
         {
@@ -287,8 +569,8 @@ panels:
       title: "잃어버린 열쇠",
       category: "대화·스토리",
       description:
-        "같은 client 에셋을 서로 다른 두 인물로 사용해 작은 이야기를 만듭니다.",
-      features: ["동일 에셋의 두 인물", "감정 변화", "key 전달"],
+        "같은 클라이언트 에셋을 서로 다른 두 인물로 사용해 작은 이야기를 만듭니다.",
+      features: ["동일 에셋의 두 인물", "감정 변화", "열쇠 전달"],
       source: sourceFor(
         "잃어버린 열쇠",
         {
@@ -360,8 +642,8 @@ panels:
       title: "인사와 가리키기",
       category: "표현",
       description:
-        "wave는 인사, point는 가리키는 몸짓입니다. 지정하지 않은 인물에는 손이 없습니다.",
-      features: ["wave", "point", "손 생략"],
+        "인사손과 가리키는손은 고정된 손 모양입니다. 시간에 따라 움직이지 않으며 지정하지 않은 인물에는 손이 없습니다.",
+      features: ["인사손", "가리키는손", "손 생략"],
       source: sourceFor(
         "손으로도 이야기해요",
         {
@@ -433,7 +715,7 @@ panels:
       category: "배치",
       description:
         "인물의 좌우·크기, 말풍선 위치와 글자 크기를 직접 조절합니다.",
-      features: ["x/y", "scale", "fontSize"],
+      features: ["가로·세로위치", "배율", "글자크기"],
       source: sourceFor(
         "직접 배치해 보기",
         {
@@ -505,7 +787,7 @@ export function findExample(id: string | null): Example {
   );
 }
 
-export const actionExample = `title: 데이터를 전달해요
+export const actionExample = koreanSource(`title: 데이터를 전달해요
 cast:
   browser: {asset: client, label: 클라이언트}
   web: {asset: server, label: 웹 서버}
@@ -527,6 +809,9 @@ panels:
       - {from: db, to: web, text: "여기 데이터야. 응답에 사용해!"}
     transfer:
       - {from: db, to: web, prop: data}
-`;
+`);
 
-export const examples = getExamples();
+export const examples = getExamples().map((example) => ({
+  ...example,
+  source: koreanSource(example.source),
+}));
