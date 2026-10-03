@@ -1,4 +1,4 @@
-/*! Comic Gen browser SDK v0.7.4
+/*! Comic Gen browser SDK v0.7.5
 Bundled yaml license:
 Copyright Eemeli Aro <eemeli@gmail.com>
 
@@ -57,7 +57,7 @@ function cs(s = oe) {
     }
   };
 }
-const an = "5", fs = {
+const an = "6", fs = {
   client: {
     color: "#9fcdfa",
     faceY: 0,
@@ -88,7 +88,7 @@ const us = {
   wave: '<g data-hand="wave"><circle cx="-65" cy="-22" r="12" fill="white"/><path d="M-77 -42l-4 -8m15 2v-10m13 17 5 -7" fill="none"/></g>',
   point: '<g data-hand="point"><circle cx="-65" cy="0" r="11" fill="white"/><path d="M-77 0h-13" fill="none"/></g>'
 }, dt = "M-65 -9Q-76 -9 -79 -18L-85 -22Q-89 -25 -86 -28Q-83 -31 -80 -28L-83.5 -31V-46Q-83.5 -50 -79.75 -50Q-76 -50 -76 -46V-31Q-76 -28 -71.5 -31V-47Q-71.5 -51 -67.75 -51Q-64 -51 -64 -47V-31Q-64 -28 -59.5 -31V-47Q-59.5 -51 -55.75 -51Q-52 -51 -52 -47V-31Q-52 -28 -47.5 -31V-46Q-47.5 -50 -43.75 -50Q-40 -50 -40 -46V-22Q-40 -11 -57 -9Z", ln = {
-  wave: `<g data-hand="wave" stroke-linejoin="round"><g data-wave-trail="left" transform="translate(-64 -20) rotate(-8) scale(.92) translate(64 14)" opacity=".2"><path d="${dt}" fill="none" stroke="#586c8c" stroke-width="2.2"/></g><g data-wave-trail="right" transform="translate(-64 -20) rotate(8) scale(.92) translate(64 14)" opacity=".2"><path d="${dt}" fill="none" stroke="#586c8c" stroke-width="2.2"/></g><path d="M-88 -33q-4 -7 0 -14M-35 -33q4 -7 0 -14" fill="none" stroke="#586c8c" stroke-width="1.8" opacity=".4"/><path d="${dt}" fill="white"/></g>`,
+  wave: `<g data-hand="wave" stroke-linejoin="round"><g data-wave-trail="left" transform="translate(-54 -9) rotate(-28) scale(.85) translate(65 9)" opacity=".3"><path d="${dt}" fill="white"/></g><g data-wave-trail="center" transform="translate(-65 -9) scale(.93) translate(65 9)" opacity=".38"><path d="${dt}" fill="white"/></g><path d="M-89 -38Q-86 -56 -72 -63M-83 -35Q-81 -50 -68 -56" fill="none" stroke="#586c8c" stroke-width="2.7"/><g data-wave-pose="current" transform="translate(-69 -9) rotate(35) translate(65 9)"><path d="${dt}" fill="white"/></g></g>`,
   point: '<g data-hand="point" stroke-linejoin="round"><path d="M-72 -4H-85a4 4 0 0 0 0 8H-74l3 5q3 4 9 2l5 -3q4 -2 3 -7l-1 -6q-1 -5 -6 -6h-4q-5 -1 -7 3Z" fill="white"/><path d="M-68 -7q3 5 8 4" fill="none" stroke-width="2"/></g>'
 }, Je = {
   request: '<rect x="-18" y="-13" width="36" height="26" rx="4" fill="#f9f0cd"/><path d="M-18 -13L0 1l18 -14" fill="none"/>',
@@ -508,7 +508,7 @@ class Ct extends Mt {
         const l = "This should not happen: Alias anchor was not resolved?";
         throw new ReferenceError(l);
       }
-      if (a >= 0 && (c.count += 1, c.aliasCount === 0 && (c.aliasCount = Qe(o, i, r)), c.count * c.aliasCount > a)) {
+      if (a >= 0 && (c.count += 1, c.aliasCount === 0 && (c.aliasCount = Ve(o, i, r)), c.count * c.aliasCount > a)) {
         const l = "Excessive alias count indicates a resource exhaustion attack";
         throw new ReferenceError(l);
       }
@@ -538,19 +538,19 @@ class Ct extends Mt {
     return i;
   }
 }
-function Qe(s, e, t) {
+function Ve(s, e, t) {
   if (Se(e)) {
     const n = e.resolve(s), i = t && n && t.get(n);
     return i ? i.count * i.aliasCount : 0;
   } else if (T(e)) {
     let n = 0;
     for (const i of e.items) {
-      const r = Qe(s, i, t);
+      const r = Ve(s, i, t);
       r > n && (n = r);
     }
     return n;
   } else if (C(e)) {
-    const n = Qe(s, e.key, t), i = Qe(s, e.value, t);
+    const n = Ve(s, e.key, t), i = Ve(s, e.value, t);
     return Math.max(n, i);
   }
   return 1;
@@ -1186,15 +1186,15 @@ ${t.indent}`);
 function On(s, e) {
   (s === "debug" || s === "warn") && console.warn(e);
 }
-const qe = "<<", X = {
-  identify: (s) => s === qe || typeof s == "symbol" && s.description === qe,
+const Fe = "<<", X = {
+  identify: (s) => s === Fe || typeof s == "symbol" && s.description === Fe,
   default: "key",
   tag: "tag:yaml.org,2002:merge",
   test: /^<<$/,
-  resolve: () => Object.assign(new O(Symbol(qe)), {
+  resolve: () => Object.assign(new O(Symbol(Fe)), {
     addToJSMap: Ss
   }),
-  stringify: () => qe
+  stringify: () => Fe
 }, Ln = (s, e) => (X.identify(e) || I(e) && (!e.type || e.type === O.PLAIN) && X.identify(e.value)) && s?.doc.schema.tags.some((t) => t.tag === X.tag && t.default);
 function Ss(s, e, t) {
   const n = Es(s, t);
@@ -1378,7 +1378,7 @@ function ce(s, e) {
     if (C(n) && (n.key === e || n.key === t || I(n.key) && n.key.value === t))
       return n;
 }
-class F extends bs {
+class q extends bs {
   static get tagName() {
     return "tag:yaml.org,2002:map";
   }
@@ -1469,12 +1469,12 @@ class F extends bs {
 const Ne = {
   collection: "map",
   default: !0,
-  nodeClass: F,
+  nodeClass: q,
   tag: "tag:yaml.org,2002:map",
   resolve(s, e) {
     return xe(s) || e("Expected a mapping for this tag"), s;
   },
-  createNode: (s, e, t) => F.from(s, e, t)
+  createNode: (s, e, t) => q.from(s, e, t)
 };
 class fe extends bs {
   static get tagName() {
@@ -1495,11 +1495,11 @@ class fe extends bs {
    * @returns `true` if the item was found and removed.
    */
   delete(e) {
-    const t = Fe(e);
+    const t = qe(e);
     return typeof t != "number" ? !1 : this.items.splice(t, 1).length > 0;
   }
   get(e, t) {
-    const n = Fe(e);
+    const n = qe(e);
     if (typeof n != "number")
       return;
     const i = this.items[n];
@@ -1512,7 +1512,7 @@ class fe extends bs {
    * It may be wrapped in a `Scalar`.
    */
   has(e) {
-    const t = Fe(e);
+    const t = qe(e);
     return typeof t == "number" && t < this.items.length;
   }
   /**
@@ -1523,7 +1523,7 @@ class fe extends bs {
    * It may be wrapped in a `Scalar`.
    */
   set(e, t) {
-    const n = Fe(e);
+    const n = qe(e);
     if (typeof n != "number")
       throw new Error(`Expected a valid index, not ${e}.`);
     const i = this.items[n];
@@ -1561,7 +1561,7 @@ class fe extends bs {
     return r;
   }
 }
-function Fe(s) {
+function qe(s) {
   let e = I(s) ? s.value : s;
   return e && typeof e == "string" && (e = Number(e)), typeof e == "number" && Number.isInteger(e) && e >= 0 ? e : null;
 }
@@ -1605,7 +1605,7 @@ const Oe = {
     return e ? t.options.trueStr : t.options.falseStr;
   }
 };
-function Q({ format: s, minFractionDigits: e, tag: t, value: n }) {
+function V({ format: s, minFractionDigits: e, tag: t, value: n }) {
   if (typeof n == "bigint")
     return String(n);
   const i = typeof n == "number" ? n : Number(n);
@@ -1627,7 +1627,7 @@ const Ls = {
   tag: "tag:yaml.org,2002:float",
   test: /^(?:[-+]?\.(?:inf|Inf|INF)|\.nan|\.NaN|\.NAN)$/,
   resolve: (s) => s.slice(-3).toLowerCase() === "nan" ? NaN : s[0] === "-" ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY,
-  stringify: Q
+  stringify: V
 }, vs = {
   identify: (s) => typeof s == "number",
   default: !0,
@@ -1637,7 +1637,7 @@ const Ls = {
   resolve: (s) => parseFloat(s),
   stringify(s) {
     const e = Number(s.value);
-    return isFinite(e) ? e.toExponential() : Q(s);
+    return isFinite(e) ? e.toExponential() : V(s);
   }
 }, As = {
   identify: (s) => typeof s == "number",
@@ -1648,11 +1648,11 @@ const Ls = {
     const e = new O(parseFloat(s)), t = s.indexOf(".");
     return t !== -1 && s[s.length - 1] === "0" && (e.minFractionDigits = s.length - t - 1), e;
   },
-  stringify: Q
+  stringify: V
 }, ot = (s) => typeof s == "bigint" || Number.isInteger(s), xt = (s, e, t, { intAsBigInt: n }) => n ? BigInt(s) : parseInt(s.substring(e), t);
 function Is(s, e, t) {
   const { value: n } = s;
-  return ot(n) && n >= 0 ? t + n.toString(e) : Q(s);
+  return ot(n) && n >= 0 ? t + n.toString(e) : V(s);
 }
 const Ts = {
   identify: (s) => ot(s) && s >= 0,
@@ -1668,7 +1668,7 @@ const Ts = {
   tag: "tag:yaml.org,2002:int",
   test: /^[-+]?[0-9]+$/,
   resolve: (s, e, t) => xt(s, 0, 10, t),
-  stringify: Q
+  stringify: V
 }, Cs = {
   identify: (s) => ot(s) && s >= 0,
   default: !0,
@@ -1842,7 +1842,7 @@ const Dt = {
 };
 class ye extends fe {
   constructor() {
-    super(), this.add = F.prototype.add.bind(this), this.delete = F.prototype.delete.bind(this), this.get = F.prototype.get.bind(this), this.has = F.prototype.has.bind(this), this.set = F.prototype.set.bind(this), this.tag = ye.tag;
+    super(), this.add = q.prototype.add.bind(this), this.delete = q.prototype.delete.bind(this), this.get = q.prototype.get.bind(this), this.has = q.prototype.has.bind(this), this.set = q.prototype.set.bind(this), this.tag = ye.tag;
   }
   /**
    * If `ctx` is given, the return type is actually `Map<unknown, unknown>`,
@@ -1904,7 +1904,7 @@ const xs = {
   tag: "tag:yaml.org,2002:float",
   test: /^(?:[-+]?\.(?:inf|Inf|INF)|\.nan|\.NaN|\.NAN)$/,
   resolve: (s) => s.slice(-3).toLowerCase() === "nan" ? NaN : s[0] === "-" ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY,
-  stringify: Q
+  stringify: V
 }, Bn = {
   identify: (s) => typeof s == "number",
   default: !0,
@@ -1914,7 +1914,7 @@ const xs = {
   resolve: (s) => parseFloat(s.replace(/_/g, "")),
   stringify(s) {
     const e = Number(s.value);
-    return isFinite(e) ? e.toExponential() : Q(s);
+    return isFinite(e) ? e.toExponential() : V(s);
   }
 }, xn = {
   identify: (s) => typeof s == "number",
@@ -1929,7 +1929,7 @@ const xs = {
     }
     return e;
   },
-  stringify: Q
+  stringify: V
 }, De = (s) => typeof s == "bigint" || Number.isInteger(s);
 function at(s, e, t, { intAsBigInt: n }) {
   const i = s[0];
@@ -1951,13 +1951,13 @@ function at(s, e, t, { intAsBigInt: n }) {
   const r = parseInt(s, t);
   return i === "-" ? -1 * r : r;
 }
-function qt(s, e, t) {
+function Ft(s, e, t) {
   const { value: n } = s;
   if (De(n)) {
     const i = n.toString(e);
     return n < 0 ? "-" + t + i.substr(1) : t + i;
   }
-  return Q(s);
+  return V(s);
 }
 const Pn = {
   identify: De,
@@ -1966,7 +1966,7 @@ const Pn = {
   format: "BIN",
   test: /^[-+]?0b[0-1_]+$/,
   resolve: (s, e, t) => at(s, 2, 2, t),
-  stringify: (s) => qt(s, 2, "0b")
+  stringify: (s) => Ft(s, 2, "0b")
 }, Dn = {
   identify: De,
   default: !0,
@@ -1974,24 +1974,24 @@ const Pn = {
   format: "OCT",
   test: /^[-+]?0[0-7_]+$/,
   resolve: (s, e, t) => at(s, 1, 8, t),
-  stringify: (s) => qt(s, 8, "0")
+  stringify: (s) => Ft(s, 8, "0")
 }, Kn = {
   identify: De,
   default: !0,
   tag: "tag:yaml.org,2002:int",
   test: /^[-+]?[0-9][0-9_]*$/,
   resolve: (s, e, t) => at(s, 0, 10, t),
-  stringify: Q
-}, qn = {
+  stringify: V
+}, Fn = {
   identify: De,
   default: !0,
   tag: "tag:yaml.org,2002:int",
   format: "HEX",
   test: /^[-+]?0x[0-9a-fA-F_]+$/,
   resolve: (s, e, t) => at(s, 2, 16, t),
-  stringify: (s) => qt(s, 16, "0x")
+  stringify: (s) => Ft(s, 16, "0x")
 };
-class we extends F {
+class we extends q {
   constructor(e) {
     super(e), this.tag = we.tag;
   }
@@ -2032,7 +2032,7 @@ class we extends F {
   }
 }
 we.tag = "tag:yaml.org,2002:set";
-const Ft = {
+const qt = {
   collection: "map",
   identify: (s) => s instanceof Set,
   nodeClass: we,
@@ -2058,7 +2058,7 @@ function Ds(s) {
   if (typeof e == "bigint")
     t = (o) => BigInt(o);
   else if (isNaN(e) || !isFinite(e))
-    return Q(s);
+    return V(s);
   let n = "";
   e < 0 && (n = "-", e *= t(-1));
   const i = t(60), r = [e % i];
@@ -2072,7 +2072,7 @@ const Ks = {
   test: /^[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+$/,
   resolve: (s, e, { intAsBigInt: t }) => Rt(s, t),
   stringify: Ds
-}, qs = {
+}, Fs = {
   identify: (s) => typeof s == "number",
   default: !0,
   tag: "tag:yaml.org,2002:float",
@@ -2112,7 +2112,7 @@ const Ks = {
   Pn,
   Dn,
   Kn,
-  qn,
+  Fn,
   jn,
   Bn,
   xn,
@@ -2120,9 +2120,9 @@ const Ks = {
   X,
   Kt,
   Dt,
-  Ft,
+  qt,
   Ks,
-  qs,
+  Fs,
   lt
 ], Wt = /* @__PURE__ */ new Map([
   ["core", Tn],
@@ -2136,7 +2136,7 @@ const Ks = {
   float: As,
   floatExp: vs,
   floatNaN: Ls,
-  floatTime: qs,
+  floatTime: Fs,
   int: Ms,
   intHex: Cs,
   intOct: Ts,
@@ -2147,14 +2147,14 @@ const Ks = {
   omap: Kt,
   pairs: Dt,
   seq: Oe,
-  set: Ft,
+  set: qt,
   timestamp: lt
-}, Fn = {
+}, qn = {
   "tag:yaml.org,2002:binary": Pt,
   "tag:yaml.org,2002:merge": X,
   "tag:yaml.org,2002:omap": Kt,
   "tag:yaml.org,2002:pairs": Dt,
-  "tag:yaml.org,2002:set": Ft,
+  "tag:yaml.org,2002:set": qt,
   "tag:yaml.org,2002:timestamp": lt
 };
 function mt(s, e, t) {
@@ -2185,7 +2185,7 @@ function mt(s, e, t) {
 const Rn = (s, e) => s.key < e.key ? -1 : s.key > e.key ? 1 : 0;
 class Ut {
   constructor({ compat: e, customTags: t, merge: n, resolveKnownTags: i, schema: r, sortMapEntries: o, toStringDefaults: a }) {
-    this.compat = Array.isArray(e) ? mt(e, "compat") : e ? mt(null, e) : null, this.name = typeof r == "string" && r || "core", this.knownTags = i ? Fn : {}, this.tags = mt(t, this.name, n), this.toStringOptions = a ?? null, Object.defineProperty(this, te, { value: Ne }), Object.defineProperty(this, Y, { value: it }), Object.defineProperty(this, ke, { value: Oe }), this.sortMapEntries = typeof o == "function" ? o : o === !0 ? Rn : null;
+    this.compat = Array.isArray(e) ? mt(e, "compat") : e ? mt(null, e) : null, this.name = typeof r == "string" && r || "core", this.knownTags = i ? qn : {}, this.tags = mt(t, this.name, n), this.toStringOptions = a ?? null, Object.defineProperty(this, te, { value: Ne }), Object.defineProperty(this, Y, { value: it }), Object.defineProperty(this, ke, { value: Oe }), this.sortMapEntries = typeof o == "function" ? o : o === !0 ? Rn : null;
   }
   clone() {
     const e = Object.create(Ut.prototype, Object.getOwnPropertyDescriptors(this));
@@ -2450,17 +2450,17 @@ function ue(s) {
     return !0;
   throw new Error("Expected a YAML collection as document contents");
 }
-class Fs extends Error {
+class qs extends Error {
   constructor(e, t, n, i) {
     super(), this.name = e, this.code = n, this.message = i, this.pos = t;
   }
 }
-class Te extends Fs {
+class Te extends qs {
   constructor(e, t, n) {
     super("YAMLParseError", e, t, n);
   }
 }
-class Vn extends Fs {
+class Qn extends qs {
   constructor(e, t, n) {
     super("YAMLWarning", e, t, n);
   }
@@ -2591,8 +2591,8 @@ function Rs(s, e, t) {
   return e.some((r) => i(r.key, t));
 }
 const Zt = "All mapping items must start at the same column";
-function Qn({ composeNode: s, composeEmptyNode: e }, t, n, i, r) {
-  const o = r?.nodeClass ?? F, a = new o(t.schema);
+function Vn({ composeNode: s, composeEmptyNode: e }, t, n, i, r) {
+  const o = r?.nodeClass ?? q, a = new o(t.schema);
   t.atRoot && (t.atRoot = !1);
   let c = n.offset, l = null;
   for (const u of n.items) {
@@ -2692,7 +2692,7 @@ function Ke(s, e, t, n) {
 }
 const gt = "Block collections are not allowed within flow collections", yt = (s) => s && (s.type === "block-map" || s.type === "block-seq");
 function Hn({ composeNode: s, composeEmptyNode: e }, t, n, i, r) {
-  const o = n.start.source === "{", a = o ? "flow map" : "flow sequence", c = r?.nodeClass ?? (o ? F : fe), l = new c(t.schema);
+  const o = n.start.source === "{", a = o ? "flow map" : "flow sequence", c = r?.nodeClass ?? (o ? q : fe), l = new c(t.schema);
   l.flow = !0;
   const u = t.atRoot;
   u && (t.atRoot = !1), t.atKey && (t.atKey = !1);
@@ -2779,7 +2779,7 @@ function Hn({ composeNode: s, composeEmptyNode: e }, t, n, i, r) {
         const v = l;
         Rs(t, v.items, $) && i(N, "DUPLICATE_KEY", "Map keys must be unique"), v.items.push(j);
       } else {
-        const v = new F(t.schema);
+        const v = new q(t.schema);
         v.flow = !0, v.items.push(j);
         const B = (A ?? $).range;
         v.range = [$.range[0], B[1], B[2]], l.items.push(v);
@@ -2804,7 +2804,7 @@ function Hn({ composeNode: s, composeEmptyNode: e }, t, n, i, r) {
   return l;
 }
 function wt(s, e, t, n, i, r) {
-  const o = t.type === "block-map" ? Qn(s, e, t, n, r) : t.type === "block-seq" ? Gn(s, e, t, n, r) : Hn(s, e, t, n, r), a = o.constructor;
+  const o = t.type === "block-map" ? Vn(s, e, t, n, r) : t.type === "block-seq" ? Gn(s, e, t, n, r) : Hn(s, e, t, n, r), a = o.constructor;
   return i === "!" || i === a.tagName ? (o.tag = a.tagName, o) : (i && (o.tag = i), o);
 }
 function Yn(s, e, t, n, i) {
@@ -2814,7 +2814,7 @@ function Yn(s, e, t, n, i) {
     y && (!g || g.offset < y.offset) && i(y, "MISSING_CHAR", "Missing newline after block sequence props");
   }
   const a = t.type === "block-map" ? "map" : t.type === "block-seq" ? "seq" : t.start.source === "{" ? "map" : "seq";
-  if (!r || !o || o === "!" || o === F.tagName && a === "map" || o === fe.tagName && a === "seq")
+  if (!r || !o || o === "!" || o === q.tagName && a === "map" || o === fe.tagName && a === "seq")
     return wt(s, e, t, i, o);
   let c = e.schema.tags.find((d) => d.tag === o && d.collection === a);
   if (!c) {
@@ -3125,7 +3125,7 @@ function ii(s, e, t, n) {
     return n(e - 2, "BAD_DQ_ESCAPE", `Invalid escape sequence ${a}`), a;
   }
 }
-function Vs(s, e, t, n) {
+function Qs(s, e, t, n) {
   const { value: i, type: r, comment: o, range: a } = e.type === "block-scalar" ? Jn(s, e, n) : Xn(e, s.options.strict, n), c = t ? s.directives.tagName(t.source, (f) => n(t, "TAG_RESOLVE_FAILED", f)) : null;
   let l;
   s.options.stringKeys && s.atKey ? l = s.schema[Y] : c ? l = ri(s.schema, i, c, t, n) : e.type === "scalar" ? l = oi(s, i, e, n) : l = s.schema[Y];
@@ -3185,8 +3185,8 @@ function ai(s, e, t) {
   }
   return s;
 }
-const li = { composeNode: Qs, composeEmptyNode: Vt };
-function Qs(s, e, t, n) {
+const li = { composeNode: Vs, composeEmptyNode: Qt };
+function Vs(s, e, t, n) {
   const i = s.atKey, { spaceBefore: r, comment: o, anchor: a, tag: c } = t;
   let l, u = !0;
   switch (e.type) {
@@ -3197,7 +3197,7 @@ function Qs(s, e, t, n) {
     case "single-quoted-scalar":
     case "double-quoted-scalar":
     case "block-scalar":
-      l = Vs(s, e, c, n), a && (l.anchor = a.source.substring(1));
+      l = Qs(s, e, c, n), a && (l.anchor = a.source.substring(1));
       break;
     case "block-map":
     case "block-seq":
@@ -3214,15 +3214,15 @@ function Qs(s, e, t, n) {
       n(e, "UNEXPECTED_TOKEN", f), u = !1;
     }
   }
-  return l ?? (l = Vt(s, e.offset, void 0, null, t, n)), a && l.anchor === "" && n(a, "BAD_ALIAS", "Anchor cannot be an empty string"), i && s.options.stringKeys && (!I(l) || typeof l.value != "string" || l.tag && l.tag !== "tag:yaml.org,2002:str") && n(c ?? e, "NON_STRING_KEY", "With stringKeys, all keys must be strings"), r && (l.spaceBefore = !0), o && (e.type === "scalar" && e.source === "" ? l.comment = o : l.commentBefore = o), s.options.keepSourceTokens && u && (l.srcToken = e), l;
+  return l ?? (l = Qt(s, e.offset, void 0, null, t, n)), a && l.anchor === "" && n(a, "BAD_ALIAS", "Anchor cannot be an empty string"), i && s.options.stringKeys && (!I(l) || typeof l.value != "string" || l.tag && l.tag !== "tag:yaml.org,2002:str") && n(c ?? e, "NON_STRING_KEY", "With stringKeys, all keys must be strings"), r && (l.spaceBefore = !0), o && (e.type === "scalar" && e.source === "" ? l.comment = o : l.commentBefore = o), s.options.keepSourceTokens && u && (l.srcToken = e), l;
 }
-function Vt(s, e, t, n, { spaceBefore: i, comment: r, anchor: o, tag: a, end: c }, l) {
+function Qt(s, e, t, n, { spaceBefore: i, comment: r, anchor: o, tag: a, end: c }, l) {
   const u = {
     type: "scalar",
     offset: ai(e, t, n),
     indent: -1,
     source: ""
-  }, f = Vs(s, u, a, l);
+  }, f = Qs(s, u, a, l);
   return o && (f.anchor = o.source.substring(1), f.anchor === "" && l(o, "BAD_ALIAS", "Anchor cannot be an empty string")), i && (f.spaceBefore = !0), r && (f.comment = r, f.range[2] = c), f;
 }
 function ci({ options: s }, { offset: e, source: t, end: n }, i) {
@@ -3246,7 +3246,7 @@ function fi(s, e, { offset: t, start: n, value: i, end: r }, o) {
     parentIndent: 0,
     startOnNewline: !0
   });
-  u.found && (c.directives.docStart = !0, i && (i.type === "block-map" || i.type === "block-seq") && !u.hasNewline && o(u.end, "MISSING_CHAR", "Block collection cannot start on same line with directives-end marker")), c.contents = i ? Qs(l, i, u, o) : Vt(l, u.end, n, null, u, o);
+  u.found && (c.directives.docStart = !0, i && (i.type === "block-map" || i.type === "block-seq") && !u.hasNewline && o(u.end, "MISSING_CHAR", "Block collection cannot start on same line with directives-end marker")), c.contents = i ? Vs(l, i, u, o) : Qt(l, u.end, n, null, u, o);
   const f = c.contents.range[2], d = Ke(r, f, !1, o);
   return d.comment && (c.comment = d.comment), c.range = [t, f, d.offset], c;
 }
@@ -3282,7 +3282,7 @@ class ui {
   constructor(e = {}) {
     this.doc = null, this.atDirectives = !1, this.prelude = [], this.errors = [], this.warnings = [], this.onError = (t, n, i, r) => {
       const o = ve(t);
-      r ? this.warnings.push(new Vn(o, n, i)) : this.errors.push(new Te(o, n, i));
+      r ? this.warnings.push(new Qn(o, n, i)) : this.errors.push(new Te(o, n, i));
     }, this.directives = new P({ version: e.version || "1.2" }), this.options = e;
   }
   decorate(e, t) {
@@ -3462,7 +3462,7 @@ function hi(s) {
   }
   return null;
 }
-function V(s) {
+function Q(s) {
   switch (s) {
     case void 0:
     case " ":
@@ -3526,7 +3526,7 @@ class mi {
     }
     if (t === "-" || t === ".") {
       const n = this.buffer.substr(e, 3);
-      if ((n === "---" || n === "...") && V(this.buffer[e + 3]))
+      if ((n === "---" || n === "...") && Q(this.buffer[e + 3]))
         return -1;
     }
     return e;
@@ -3603,16 +3603,16 @@ class mi {
       if (!this.atEnd && !this.hasChars(4))
         return this.setNext("line-start");
       const t = this.peek(3);
-      if ((t === "---" || t === "...") && V(this.charAt(3)))
+      if ((t === "---" || t === "...") && Q(this.charAt(3)))
         return yield* this.pushCount(3), this.indentValue = 0, this.indentNext = 0, t === "---" ? "doc" : "stream";
     }
-    return this.indentValue = yield* this.pushSpaces(!1), this.indentNext > this.indentValue && !V(this.charAt(1)) && (this.indentNext = this.indentValue), yield* this.parseBlockStart();
+    return this.indentValue = yield* this.pushSpaces(!1), this.indentNext > this.indentValue && !Q(this.charAt(1)) && (this.indentNext = this.indentValue), yield* this.parseBlockStart();
   }
   *parseBlockStart() {
     const [e, t] = this.peek(2);
     if (!t && !this.atEnd)
       return this.setNext("block-start");
-    if ((e === "-" || e === "?" || e === ":") && V(t)) {
+    if ((e === "-" || e === "?" || e === ":") && Q(t)) {
       const n = (yield* this.pushCount(1)) + (yield* this.pushSpaces(!0));
       return this.indentNext = this.indentValue + 1, this.indentValue += n, "block-start";
     }
@@ -3656,7 +3656,7 @@ class mi {
     const i = this.getLine();
     if (i === null)
       return this.setNext("flow");
-    if ((n !== -1 && n < this.indentNext && i[0] !== "#" || n === 0 && (i.startsWith("---") || i.startsWith("...")) && V(i[3])) && !(n === this.indentNext - 1 && this.flowLevel === 1 && (i[0] === "]" || i[0] === "}")))
+    if ((n !== -1 && n < this.indentNext && i[0] !== "#" || n === 0 && (i.startsWith("---") || i.startsWith("...")) && Q(i[3])) && !(n === this.indentNext - 1 && this.flowLevel === 1 && (i[0] === "]" || i[0] === "}")))
       return this.flowLevel = 0, yield Ys, yield* this.parseLineStart();
     let r = 0;
     for (; i[r] === ","; )
@@ -3679,7 +3679,7 @@ class mi {
         return this.flowKey = !0, yield* this.parseQuotedScalar();
       case ":": {
         const o = this.charAt(1);
-        if (this.flowKey || V(o) || o === ",")
+        if (this.flowKey || Q(o) || o === ",")
           return this.flowKey = !1, yield* this.pushCount(1), yield* this.pushSpaces(!0), "flow";
       }
       // fallthrough
@@ -3734,7 +3734,7 @@ class mi {
       else if (t !== "-")
         break;
     }
-    return yield* this.pushUntil((t) => V(t) || t === "#");
+    return yield* this.pushUntil((t) => Q(t) || t === "#");
   }
   *parseBlockScalar() {
     let e = this.pos - 1, t = 0, n;
@@ -3805,10 +3805,10 @@ class mi {
     for (; i = this.buffer[++n]; )
       if (i === ":") {
         const r = this.buffer[n + 1];
-        if (V(r) || e && Ue.has(r))
+        if (Q(r) || e && Ue.has(r))
           break;
         t = n;
-      } else if (V(i)) {
+      } else if (Q(i)) {
         let r = this.buffer[n + 1];
         if (i === "\r" && (r === `
 ` ? (n += 1, i = `
@@ -3851,7 +3851,7 @@ class mi {
         // this is an error outside flow collections
         case ":": {
           const t = this.flowLevel > 0, n = this.charAt(1);
-          if (V(n) || t && Ue.has(n)) {
+          if (Q(n) || t && Ue.has(n)) {
             t ? this.flowKey && (this.flowKey = !1) : this.indentNext = this.indentValue + 1, e += yield* this.pushCount(1), e += yield* this.pushSpaces(!0);
             continue e;
           }
@@ -3864,7 +3864,7 @@ class mi {
   *pushTag() {
     if (this.charAt(1) === "<") {
       let e = this.pos + 2, t = this.buffer[e];
-      for (; !V(t) && t !== ">"; )
+      for (; !Q(t) && t !== ">"; )
         t = this.buffer[++e];
       return yield* this.pushToIndex(t === ">" ? e + 1 : e, !1);
     } else {
@@ -3947,7 +3947,7 @@ function Js(s) {
       return !1;
   }
 }
-function Ve(s) {
+function Qe(s) {
   switch (s.type) {
     case "document":
       return s.start;
@@ -4205,7 +4205,7 @@ class yi {
   }
   *scalar(e) {
     if (this.type === "map-value-ind") {
-      const t = Ve(this.peek(2)), n = he(t);
+      const t = Qe(this.peek(2)), n = he(t);
       let i;
       e.end ? (i = e.end, i.push(this.sourceToken), delete e.end) : i = [this.sourceToken];
       const r = {
@@ -4462,7 +4462,7 @@ class yi {
       if (n.type === "block-map" && (this.type === "map-value-ind" && n.indent === e.indent || this.type === "newline" && !n.items[n.items.length - 1].sep))
         yield* this.pop(), yield* this.step();
       else if (this.type === "map-value-ind" && n.type !== "flow-collection") {
-        const i = Ve(n), r = he(i);
+        const i = Qe(n), r = he(i);
         ns(e);
         const o = e.end.splice(1, e.end.length);
         o.push(this.sourceToken);
@@ -4526,7 +4526,7 @@ class yi {
         };
       case "explicit-key-ind": {
         this.onKeyLine = !0;
-        const t = Ve(e), n = he(t);
+        const t = Qe(e), n = he(t);
         return n.push(this.sourceToken), {
           type: "block-map",
           offset: this.offset,
@@ -4536,7 +4536,7 @@ class yi {
       }
       case "map-value-ind": {
         this.onKeyLine = !0;
-        const t = Ve(e), n = he(t);
+        const t = Qe(e), n = he(t);
         return {
           type: "block-map",
           offset: this.offset,
@@ -4586,7 +4586,7 @@ function bi(s, e = {}) {
     }
   return n && t && (o.errors.forEach(Xt(s, t)), o.warnings.forEach(Xt(s, t))), o;
 }
-const q = {
+const F = {
   comic: {
     title: "제목",
     cast: "등장인물",
@@ -4681,7 +4681,7 @@ function Ye(s) {
 }
 function ee(s, e, t, n) {
   if (!Ye(s)) return s;
-  const i = q[e], r = /* @__PURE__ */ Object.create(null);
+  const i = F[e], r = /* @__PURE__ */ Object.create(null);
   for (const [o, a] of Object.entries(s)) {
     const c = Object.keys(i).find(
       (g) => o === g || o === i[g]
@@ -4741,7 +4741,7 @@ function Si(s) {
   const e = ee(s, "options", !1, "표시 설정");
   if (!Ye(e)) throw new Error("표시 설정: 객체가 필요합니다.");
   for (const t of Object.keys(e))
-    if (!Object.hasOwn(q.options, t))
+    if (!Object.hasOwn(F.options, t))
       throw new Error(`표시 설정: 알 수 없는 항목 '${t}'.`);
   return e;
 }
@@ -4759,14 +4759,14 @@ function z(s, e, t = 1e4) {
     );
   return s;
 }
-function Qt(s, e, t) {
+function Vt(s, e, t) {
   for (const n of Object.keys(s))
     if (!Object.hasOwn(e, n))
       throw new Error(`${t}: 알 수 없는 항목 '${n}'.`);
 }
 function is(s, e) {
   const t = _e(s, e);
-  Qt(t, q.persona, e);
+  Vt(t, F.persona, e);
   const n = {};
   if (t.role !== void 0 && (n.role = z(t.role, `${e}.직무`, 100)), t.personality !== void 0 && (n.personality = z(t.personality, `${e}.성격`, 300)), t.speechStyle !== void 0 && (n.speechStyle = z(t.speechStyle, `${e}.말투`, 300)), !Object.keys(n).length)
     throw new Error(`${e}: 직무·성격·말투 중 하나 이상 작성하세요.`);
@@ -4790,7 +4790,7 @@ function rs(s, e, t, n) {
 }
 function Ei(s, e) {
   const t = s === void 0 ? {} : _e(s, e);
-  if (Qt(t, q.appearance, e), t.glasses !== void 0 && typeof t.glasses != "boolean")
+  if (Vt(t, F.appearance, e), t.glasses !== void 0 && typeof t.glasses != "boolean")
     throw new Error(`${e}.안경: true 또는 false가 필요합니다.`);
   return {
     skinColor: $t(
@@ -4833,7 +4833,7 @@ function Ni(s, e) {
   const n = /* @__PURE__ */ Object.create(null);
   for (const [i, r] of Object.entries(_e(s, "등장인물"))) {
     const o = `등장인물.${i}`, a = _e(r, o);
-    Qt(a, q.cast, o);
+    Vt(a, F.cast, o);
     const c = z(a.asset, `${o}.그림`);
     if (!Object.hasOwn(fs, c))
       throw new Error(`${o}: 없는 에셋 '${c}'.`);
@@ -4892,12 +4892,12 @@ function Oi(s) {
   const e = bi(s, { uniqueKeys: !0 });
   if (e.errors.length) throw new Error(e.errors[0].message);
   const t = ne(ki(e.toJS({ maxAliasCount: 20 })), "만화");
-  ie(t, Object.keys(q.comic), "만화");
+  ie(t, Object.keys(F.comic), "만화");
   const { cast: n, personas: i } = Ni(t.cast, t.personas);
   let r;
   const o = de(t.panels, "컷").map((a, c) => {
     const l = `컷 ${c + 1}`, u = { ...ne(a, l) };
-    if (ie(u, Object.keys(q.panel), l), u.mode !== void 0 && u.mode !== "before" && u.mode !== "full")
+    if (ie(u, Object.keys(F.panel), l), u.mode !== void 0 && u.mode !== "before" && u.mode !== "full")
       throw new Error(`${l}: 구성은 전체 또는 이전이어야 합니다.`);
     if (u.mode === "before") {
       if (!r)
@@ -4915,7 +4915,7 @@ function Oi(s) {
       ), S = de(u.actors ?? [], `${l}.인물`), k = /* @__PURE__ */ new Set();
       for (const m of S) {
         const b = typeof m == "string" ? { id: m } : ne(m, `${l}.인물`);
-        ie(b, Object.keys(q.actor), `${l}.인물`);
+        ie(b, Object.keys(F.actor), `${l}.인물`);
         const E = x(b.id, `${l}.인물.식별자`);
         if (k.has(E))
           throw new Error(`${l}: 캐릭터 식별자가 중복됩니다.`);
@@ -4933,7 +4933,7 @@ function Oi(s) {
       throw new Error(`${l}: 제외인물은 이전 구성에서만 사용할 수 있습니다.`);
     const f = de(u.actors, `${l}.인물`).map((h) => {
       const p = typeof h == "string" ? { id: h } : ne(h, `${l}.인물`);
-      ie(p, Object.keys(q.actor), `${l}.인물`);
+      ie(p, Object.keys(F.actor), `${l}.인물`);
       const w = x(p.id, `${l}.인물.식별자`), S = p.expression === void 0 ? "neutral" : x(p.expression, `${l}.${w}.표정`);
       if (!Object.hasOwn(n, w))
         throw new Error(`${l}: 없는 캐릭터 '${w}'.`);
@@ -4961,7 +4961,7 @@ function Oi(s) {
     const d = de(u.dialogue ?? [], `${l}.대사`).map(
       (h) => {
         const p = ne(h, `${l}.대사`);
-        ie(p, Object.keys(q.dialogue), `${l}.대사`);
+        ie(p, Object.keys(F.dialogue), `${l}.대사`);
         const w = x(p.from, `${l}.대사.화자`), S = p.to === void 0 ? void 0 : x(p.to, `${l}.대사.상대`);
         if (!f.some((k) => k.id === w))
           throw new Error(`${l}: 화자 '${w}'가 컷에 없습니다.`);
@@ -4982,7 +4982,7 @@ function Oi(s) {
     const g = de(u.transfer ?? [], `${l}.전달`).map(
       (h) => {
         const p = ne(h, `${l}.전달`);
-        ie(p, Object.keys(q.transfer), `${l}.전달`);
+        ie(p, Object.keys(F.transfer), `${l}.전달`);
         const w = x(p.from, `${l}.전달.주는인물`), S = x(p.to, `${l}.전달.받는인물`), k = x(p.prop, `${l}.전달.소품`);
         if (!f.some((m) => m.id === w))
           throw new Error(`${l}: 전달 주체 '${w}'가 컷에 없습니다.`);
@@ -5000,7 +5000,7 @@ function Oi(s) {
     let y;
     if (u.diagram !== void 0 && u.diagram !== null) {
       const h = `${l}.다이어그램`, p = ne(u.diagram, h);
-      if (ie(p, Object.keys(q.diagram), h), p.type !== "mermaid")
+      if (ie(p, Object.keys(F.diagram), h), p.type !== "mermaid")
         throw new Error(`${h}.종류: 머메이드여야 합니다.`);
       y = {
         type: "mermaid",
@@ -5455,7 +5455,7 @@ function Ki(s) {
   if (!r) throw new Error("Mermaid 격리 문서에서 SVG를 읽지 못했습니다.");
   return r.outerHTML;
 }
-function qi(s) {
+function Fi(s) {
   const e = (s.getAttribute("viewBox") ?? "").trim().split(/[\s,]+/).map(Number), t = e.length === 4 ? e[2] : Number.parseFloat(s.getAttribute("width") ?? ""), n = e.length === 4 ? e[3] : Number.parseFloat(s.getAttribute("height") ?? "");
   if (!Number.isFinite(t) || !Number.isFinite(n) || t <= 0 || n <= 0 || t > 2e4 || n > 2e4 || t * n > 16e7)
     throw new Error(
@@ -5463,7 +5463,7 @@ function qi(s) {
     );
   return (e.length !== 4 || e.some((i) => !Number.isFinite(i))) && s.setAttribute("viewBox", `0 0 ${t} ${n}`), s.setAttribute("width", String(t)), s.setAttribute("height", String(n)), s.setAttribute("preserveAspectRatio", "xMidYMid meet"), { width: t, height: n };
 }
-async function Fi(s, e) {
+async function qi(s, e) {
   if (typeof document > "u" || !document.body)
     throw new Error("Mermaid 렌더링에는 브라우저 문서가 필요합니다.");
   _i(s), e = ji(e);
@@ -5527,7 +5527,7 @@ async function Fi(s, e) {
       });
       const u = await l.render(n, s, a);
       c.disconnect();
-      const f = Di(Ki(u.svg)), d = qi(f), g = i.attachShadow({ mode: "closed" });
+      const f = Di(Ki(u.svg)), d = Fi(f), g = i.attachShadow({ mode: "closed" });
       g.append(document.importNode(f, !0));
       const y = g.firstElementChild, h = [y, ...y.querySelectorAll("*")], p = new Set(
         h.map((k) => k.id).filter(Boolean)
@@ -5719,7 +5719,7 @@ async function ls(s, e, t, n = "compact") {
       let u;
       if (a.diagram)
         try {
-          u = await Fi(a.diagram.source, i.font);
+          u = await qi(a.diagram.source, i.font);
         } catch (d) {
           throw new Error(
             `컷 ${o + 1}.다이어그램: ${d instanceof Error ? d.message : "Mermaid 렌더링 실패"}`
@@ -5740,7 +5740,7 @@ async function ls(s, e, t, n = "compact") {
     return sn(i);
   }
 }
-function Vi(s = 2e6) {
+function Qi(s = 2e6) {
   const e = new cn(s);
   return {
     render: (t, n = {}) => as(t, n, e),
@@ -5750,7 +5750,7 @@ function Vi(s = 2e6) {
     clearCache: () => e.clear()
   };
 }
-const ut = Vi(), Qi = ut.render, Gi = ut.renderPanels, Hi = ut.renderAsync, Yi = ut.renderPanelsAsync;
+const ut = Qi(), Vi = ut.render, Gi = ut.renderPanels, Hi = ut.renderAsync, Yi = ut.renderPanelsAsync;
 function Ji(s, e) {
   const t = URL.createObjectURL(s), n = document.createElement("a");
   n.href = t, n.download = e, n.click(), setTimeout(() => URL.revokeObjectURL(t), 1e3);
@@ -5784,18 +5784,18 @@ async function Wi(s, e = 1) {
 }
 export {
   an as assetVersion,
-  Vi as createRenderer,
+  Qi as createRenderer,
   Ji as downloadBlob,
   Wi as exportPng,
-  Qi as renderComic,
+  Vi as renderComic,
   Hi as renderComicAsync,
   Gi as renderPanels,
   Yi as renderPanelsAsync,
-  Vi as 렌더러만들기,
-  Qi as 만화그리기,
+  Qi as 렌더러만들기,
+  Vi as 만화그리기,
   Hi as 만화그리기비동기,
   At as 문법값,
-  q as 문법항목,
+  F as 문법항목,
   Gi as 컷그리기,
   Yi as 컷그리기비동기
 };

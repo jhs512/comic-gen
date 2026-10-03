@@ -8,7 +8,7 @@ export interface CharacterAsset {
   restingHands?: { left: string; right: string };
   pointGesture?: string;
 }
-export const assetVersion = "5";
+export const assetVersion = "6";
 export const characters: Record<string, CharacterAsset> = {
   client: {
     color: "#9fcdfa",
@@ -54,7 +54,7 @@ export const gestures: Record<string, string> = {
 const openIconHand =
   "M-65 -9Q-76 -9 -79 -18L-85 -22Q-89 -25 -86 -28Q-83 -31 -80 -28L-83.5 -31V-46Q-83.5 -50 -79.75 -50Q-76 -50 -76 -46V-31Q-76 -28 -71.5 -31V-47Q-71.5 -51 -67.75 -51Q-64 -51 -64 -47V-31Q-64 -28 -59.5 -31V-47Q-59.5 -51 -55.75 -51Q-52 -51 -52 -47V-31Q-52 -28 -47.5 -31V-46Q-47.5 -50 -43.75 -50Q-40 -50 -40 -46V-22Q-40 -11 -57 -9Z";
 export const iconGestures: Record<string, string> = {
-  wave: `<g data-hand="wave" stroke-linejoin="round"><g data-wave-trail="left" transform="translate(-64 -20) rotate(-8) scale(.92) translate(64 14)" opacity=".2"><path d="${openIconHand}" fill="none" stroke="#586c8c" stroke-width="2.2"/></g><g data-wave-trail="right" transform="translate(-64 -20) rotate(8) scale(.92) translate(64 14)" opacity=".2"><path d="${openIconHand}" fill="none" stroke="#586c8c" stroke-width="2.2"/></g><path d="M-88 -33q-4 -7 0 -14M-35 -33q4 -7 0 -14" fill="none" stroke="#586c8c" stroke-width="1.8" opacity=".4"/><path d="${openIconHand}" fill="white"/></g>`,
+  wave: `<g data-hand="wave" stroke-linejoin="round"><g data-wave-trail="left" transform="translate(-54 -9) rotate(-28) scale(.85) translate(65 9)" opacity=".3"><path d="${openIconHand}" fill="white"/></g><g data-wave-trail="center" transform="translate(-65 -9) scale(.93) translate(65 9)" opacity=".38"><path d="${openIconHand}" fill="white"/></g><path d="M-89 -38Q-86 -56 -72 -63M-83 -35Q-81 -50 -68 -56" fill="none" stroke="#586c8c" stroke-width="2.7"/><g data-wave-pose="current" transform="translate(-69 -9) rotate(35) translate(65 9)"><path d="${openIconHand}" fill="white"/></g></g>`,
   point:
     '<g data-hand="point" stroke-linejoin="round"><path d="M-72 -4H-85a4 4 0 0 0 0 8H-74l3 5q3 4 9 2l5 -3q4 -2 3 -7l-1 -6q-1 -5 -6 -6h-4q-5 -1 -7 3Z" fill="white"/><path d="M-68 -7q3 5 8 4" fill="none" stroke-width="2"/></g>',
 };

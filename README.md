@@ -30,18 +30,18 @@
 ## 최신 CDN과 버전 고정
 
 ```js
-import { 컷그리기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.4/cdn/comic-gen.render.js";
+import { 컷그리기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.5/cdn/comic-gen.render.js";
 ```
 
 `@main`은 주소 변경 없이 main에 게시한 최신 SDK를 사용합니다. `@latest`는 최신 정식 버전 태그를 의미하며 이 프로젝트의 기본 최신 주소는 `@main`으로 통일합니다. [jsDelivr 캐시 정책](https://github.com/jsdelivr/jsdelivr#caching)에 따라 브랜치 URL은 최대 12시간 캐시될 수 있어 모든 사용자에게 즉시 갱신되는 것은 아닙니다. 즉시 특정 수정 버전을 받아야 한다면 새 태그의 고정 URL을 사용하세요.
 
-렌더링 파일에는 YAML 파서와 기본 SVG 에셋이 포함되어 npm 설치가 필요 없습니다. 다이어그램 없는 만화는 이 한 파일로 그립니다. Mermaid 다이어그램을 그릴 때만 Mermaid 11.17.2와 고정 버전의 렌더링 모듈을 추가로 불러옵니다. npm에는 아직 게시하지 않았습니다. 한글 문법은 v0.3.0부터, 컷 안 다이어그램은 v0.4.0부터, 선택형 공용 뷰어는 v0.5.0부터, 사람·외형·페르소나는 v0.6.0부터, 독립적인 뷰어 옵션과 외부 상태 제어는 v0.7.0부터 지원합니다. 재현 가능한 문서에는 `@v0.7.4` 고정 주소를 사용하세요. 기존 태그는 덮어쓰지 않습니다.
+렌더링 파일에는 YAML 파서와 기본 SVG 에셋이 포함되어 npm 설치가 필요 없습니다. 다이어그램 없는 만화는 이 한 파일로 그립니다. Mermaid 다이어그램을 그릴 때만 Mermaid 11.17.2와 고정 버전의 렌더링 모듈을 추가로 불러옵니다. npm에는 아직 게시하지 않았습니다. 한글 문법은 v0.3.0부터, 컷 안 다이어그램은 v0.4.0부터, 선택형 공용 뷰어는 v0.5.0부터, 사람·외형·페르소나는 v0.6.0부터, 독립적인 뷰어 옵션과 외부 상태 제어는 v0.7.0부터 지원합니다. 재현 가능한 문서에는 `@v0.7.5` 고정 주소를 사용하세요. 기존 태그는 덮어쓰지 않습니다.
 
-| 사용할 기능                  | v0.7.4 파일                                                                                        | 포함하는 API                                                            |
+| 사용할 기능                  | v0.7.5 파일                                                                                        | 포함하는 API                                                            |
 | ---------------------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| 렌더링·SVG·PNG 저장          | [comic-gen.render.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.4/cdn/comic-gen.render.js) | `renderComic`, `renderPanels`, 비동기 함수, `createRenderer`, 저장 함수 |
-| 완성한 결과에 카드·뷰어 추가 | [comic-gen.viewer.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.4/cdn/comic-gen.viewer.js) | `mountComicCard`, `createComicViewer`                                   |
-| 기존 문서 삽입을 함께 사용   | [comic-gen.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.4/cdn/comic-gen.js)               | 위 API와 `renderCodeBlocks`, `renderCodeBlocksAsync`                    |
+| 렌더링·SVG·PNG 저장          | [comic-gen.render.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.5/cdn/comic-gen.render.js) | `renderComic`, `renderPanels`, 비동기 함수, `createRenderer`, 저장 함수 |
+| 완성한 결과에 카드·뷰어 추가 | [comic-gen.viewer.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.5/cdn/comic-gen.viewer.js) | `mountComicCard`, `createComicViewer`                                   |
+| 기존 문서 삽입을 함께 사용   | [comic-gen.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.5/cdn/comic-gen.js)               | 위 API와 `renderCodeBlocks`, `renderCodeBlocksAsync`                    |
 
 렌더링과 뷰어 모듈은 각각 사용할 수 있습니다. 렌더링 모듈은 카드·대화상자·뷰어 스타일을 설치하지 않습니다. 뷰어 모듈은 렌더러나 YAML·Mermaid를 불러오지 않고 이미 완성된 결과만 받습니다. 기존 `comic-gen.js` 주소와 동기·비동기 API, 한글 별칭과 반환 구조는 유지합니다.
 
@@ -137,7 +137,7 @@ v0.7.2부터 사람의 `가리키는손`은 옷색 팔·손바닥·손가락을 
 
 v0.7.3부터 도형 캐릭터도 흰색 손바닥·엄지·두께 있는 손가락을 연결해 그립니다. `인사손`은 펼친 손, `가리키는손`은 왼쪽으로 뻗은 손가락으로 구분합니다. 단순한 그림체와 기존 문법·동작 방향은 유지합니다.
 
-v0.7.4의 도형 `인사손`은 네 손가락을 고른 높이로 펼치고 엄지를 벌립니다. 선명한 손바닥 뒤의 옅은 좌우 잔상과 옆쪽 곡선으로 흔드는 인사를 표현합니다. 잔상은 SVG·PNG에 함께 저장되는 정적인 그림입니다.
+v0.7.5의 도형 `인사손`은 네 손가락을 고른 높이로 펼치고 엄지를 벌립니다. 손목을 기울인 선명한 손바닥과 서로 다른 각도로 벌어진 두 잔상, 크게 휘어진 이동선으로 흔드는 인사를 표현합니다. 잔상은 SVG·PNG에 함께 저장되는 정적인 그림입니다.
 
 ```yaml
 인물:
@@ -273,7 +273,7 @@ import {
   렌더러만들기,
   exportPng,
   downloadBlob,
-} from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.4/cdn/comic-gen.render.js";
+} from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.5/cdn/comic-gen.render.js";
 await document.fonts.ready;
 const result = await 컷그리기비동기(source, { 너비: 720, 컷비율: "모바일" });
 if (result.diagnostics.length) {
@@ -318,8 +318,8 @@ async function saveFirstPanel() {
 렌더링 결과만 사용할 수도 있고, 필요할 때 별도 뷰어를 불러올 수도 있습니다. 페이지에 `<div id="comic-card"></div>`를 준비하세요.
 
 ```js
-import { renderPanelsAsync } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.4/cdn/comic-gen.render.js";
-import { mountComicCard } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.4/cdn/comic-gen.viewer.js";
+import { renderPanelsAsync } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.5/cdn/comic-gen.render.js";
+import { mountComicCard } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.5/cdn/comic-gen.viewer.js";
 
 const result = await renderPanelsAsync(source, { panelFormat: "compact" });
 if (result.diagnostics.length) throw new Error(result.diagnostics.join("\n"));
@@ -333,7 +333,7 @@ const cleanup = mountComicCard(document.querySelector("#comic-card"), result);
 자체 미리보기나 버튼에 연결하려면 뷰어 컨트롤러를 사용하세요.
 
 ```js
-import { createComicViewer } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.4/cdn/comic-gen.viewer.js";
+import { createComicViewer } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.5/cdn/comic-gen.viewer.js";
 
 const viewer = createComicViewer();
 const trigger = document.querySelector("#read-comic");
@@ -411,7 +411,7 @@ CodePen의 HTML 영역에 아래 내용을 그대로 넣을 수 있습니다. Ja
     전달: [ { 주는인물: db, 받는인물: web, 소품: 데이터 } ]
 </code></pre>
 <script type="module">
-  import { 코드블록그리기비동기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.4/cdn/comic-gen.js";
+  import { 코드블록그리기비동기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.5/cdn/comic-gen.js";
   await document.fonts.ready;
   await 코드블록그리기비동기();
 </script>

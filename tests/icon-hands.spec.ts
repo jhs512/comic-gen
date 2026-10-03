@@ -65,8 +65,9 @@ test("icon fingers stay filled and connected at small display sizes without clip
                       [-65, -20],
                     ];
               const palm = hand.querySelector<SVGPathElement>(
-                ':scope > path[fill="white"]',
+                '[data-wave-pose="current"] path, :scope > path[fill="white"]',
               );
+              const sampleMatrix = DOMMatrix.fromMatrix(palm!.getCTM()!);
               const fingerTops =
                 gesture === "wave"
                   ? samples
@@ -93,7 +94,7 @@ test("icon fingers stay filled and connected at small display sizes without clip
               const context = canvas.getContext("2d")!;
               context.drawImage(image, 0, 0);
               const brightness = samples.map(([x, y]) => {
-                const point = matrix.transformPoint({ x, y });
+                const point = sampleMatrix.transformPoint({ x, y });
                 const pixel = context.getImageData(
                   Math.floor(point.x),
                   Math.floor(point.y),
