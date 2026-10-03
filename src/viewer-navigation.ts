@@ -149,9 +149,25 @@ export function mountPanelNavigation(
       viewport.clientHeight -
       (parseFloat(getComputedStyle(viewport).paddingTop) || 0) -
       (parseFloat(getComputedStyle(viewport).paddingBottom) || 0);
+    const bounds = screenPanels();
+    const last = bounds[bounds.length - 1];
+    // At the end, two short cuts can be fully visible with equal areas. The
+    // reader has reached the final cut even when rounding favors the earlier one.
+    if (
+      viewport.scrollLeft + viewport.clientWidth >= viewport.scrollWidth - 1 &&
+      viewport.scrollTop + viewport.clientHeight >= viewport.scrollHeight - 1 &&
+      last.x < point.x + visibleWidth &&
+      last.x + last.width > point.x &&
+      last.y < point.y + visibleHeight &&
+      last.y + last.height > point.y
+    ) {
+      current = panels.length - 1;
+      announce();
+      return;
+    }
     let largestVisibleArea = -1;
     let nearest = Infinity;
-    screenPanels().forEach((panel, index) => {
+    bounds.forEach((panel, index) => {
       const visibleArea =
         Math.max(
           0,

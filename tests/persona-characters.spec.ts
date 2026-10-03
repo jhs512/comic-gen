@@ -1,4 +1,5 @@
 import type { Page } from "@playwright/test";
+import type { Comic } from "../src/model";
 import { test, expect } from "./mermaid-fixture";
 
 const rendererModule = "/cdn/comic-gen.render.js";
@@ -128,8 +129,10 @@ function meeting(title = "세 사람의 가입 기능 회의") {
   };
 }
 const source = (value: unknown) => JSON.stringify(value);
-// SHA-256 captured from the fixed public v0.5.0 SDK, without redesigned gestures.
-// Keeping the source and digests here makes this regression independent of the CDN and scratch files.
+// Source, dimensions and historical digests captured from the fixed v0.5.0 SDK.
+// The semantic regression below keeps this fixture independent of the CDN and scratch files,
+// while allowing intentional artwork and canvas sizing redesigns. Historical heights and
+// digests remain archival references rather than assertions.
 const legacyBaseline = {
   version: "v0.5.0",
   source:
@@ -639,24 +642,196 @@ test("persona-only edits preserve SVG and cache, while appearance edits refresh 
   expect(result.changedPanels).toEqual([true, false, true]);
 });
 
-test("icon bodies, expressions and props retain the released SDK's exact SVG bytes", async ({
+test("released icon stories preserve cut order, dimensions, identities, expressions, dialogue and prop transfer through artwork redesigns", async ({
   page,
 }) => {
   await openDocument(page);
   const rendered = await page.evaluate(
     async ({ rendererModule, baseline }) => {
       const sdk = await import(rendererModule);
-      const digest = async (svg) =>
-        [
-          ...new Uint8Array(
-            await crypto.subtle.digest(
-              "SHA-256",
-              new TextEncoder().encode(svg),
+      const parserModule = "/src/parse.ts";
+      const { readComic } = await import(parserModule);
+      const parsed: Comic = readComic(baseline.source);
+      await document.fonts.ready;
+      const inspect = (svg: string) => {
+        document.querySelector("main")!.innerHTML = svg;
+        const root = document.querySelector("main>svg")!;
+        const contains = (outer: DOMRect, inner: DOMRect) =>
+          inner.width > 0 &&
+          inner.height > 0 &&
+          inner.left >= outer.left - 1 &&
+          inner.right <= outer.right + 1 &&
+          inner.top >= outer.top - 1 &&
+          inner.bottom <= outer.bottom + 1;
+        const cuts = [...root.querySelectorAll("g[data-panel]")].map((cut) => {
+          const frameNode = cut.querySelector("rect")!;
+          const frame = frameNode.getBoundingClientRect();
+          const actors = [...cut.querySelectorAll("[data-character]")].map(
+            (actor) => {
+              const face = actor.querySelector("[data-face]")!;
+              const label = actor.querySelector(":scope > text")!;
+              const body = [...actor.children]
+                .filter(
+                  (node) =>
+                    node.localName !== "text" &&
+                    ![
+                      "data-face",
+                      "data-arm",
+                      "data-hand",
+                      "data-gesture",
+                      "data-holding",
+                    ].some((attribute) => node.hasAttribute(attribute)),
+                )
+                .map((node) => node.outerHTML)
+                .join("");
+              return {
+                id: actor.getAttribute("data-character"),
+                label: label.textContent,
+                expression: face.getAttribute("data-face"),
+                face: face.innerHTML,
+                body,
+                gestures: [...actor.querySelectorAll("[data-gesture]")].map(
+                  (node) => node.getAttribute("data-gesture"),
+                ),
+                holding: [...actor.querySelectorAll("[data-holding]")].map(
+                  (node) => node.getAttribute("data-holding"),
+                ),
+                contained: contains(frame, actor.getBoundingClientRect()),
+                visibleFace: contains(frame, face.getBoundingClientRect()),
+                visibleLabel: contains(frame, label.getBoundingClientRect()),
+              };
+            },
+          );
+          const hands = [...cut.querySelectorAll("[data-hand]")].map((hand) => {
+            const palm = hand.querySelector(
+              "path[data-palm], [data-palm] path",
+            );
+            return {
+              id: hand
+                .closest("[data-character]")
+                ?.getAttribute("data-character"),
+              kind: hand.getAttribute("data-hand"),
+              side: hand.getAttribute("data-side"),
+              fill: palm?.getAttribute("fill"),
+              visiblePalm:
+                !!palm && contains(frame, palm.getBoundingClientRect()),
+            };
+          });
+          const transfers = [...cut.querySelectorAll("[data-transfer]")].map(
+            (relation) => {
+              const link = relation.querySelector<SVGPathElement>(
+                "[data-transfer-link]",
+              );
+              const from = relation.getAttribute("data-transfer")!;
+              const to = relation.getAttribute("data-to")!;
+              const connected = (id: string, end: boolean) => {
+                const actor = [
+                  ...cut.querySelectorAll("[data-character]"),
+                ].find((actor) => actor.getAttribute("data-character") === id);
+                const hand = [
+                  ...(actor?.querySelectorAll("[data-hand]") ?? []),
+                ].find(
+                  (node) =>
+                    node.getAttribute("data-side") === (end ? "left" : "right"),
+                );
+                const palm = hand?.querySelector(
+                  "path[data-palm], [data-palm] path",
+                );
+                if (!link || !palm || !link.getScreenCTM()) return false;
+                const local = link.getPointAtLength(
+                  end ? link.getTotalLength() : 0,
+                );
+                const point = new DOMPoint(local.x, local.y).matrixTransform(
+                  link.getScreenCTM()!,
+                );
+                const bounds = palm.getBoundingClientRect();
+                return (
+                  point.x >= bounds.left - 1 &&
+                  point.x <= bounds.right + 1 &&
+                  point.y >= bounds.top - 1 &&
+                  point.y <= bounds.bottom + 1
+                );
+              };
+              return {
+                from,
+                to,
+                props: [...relation.querySelectorAll("[data-prop]")].map(
+                  (node) => node.getAttribute("data-prop"),
+                ),
+                connectedFrom: connected(from, false),
+                connectedTo: connected(to, true),
+              };
+            },
+          );
+          const bounds = [...cut.querySelectorAll("[data-character]")].map(
+            (actor) => actor.getBoundingClientRect(),
+          );
+          return {
+            index: Number(cut.getAttribute("data-panel")),
+            frame: {
+              width: Number(frameNode.getAttribute("width")),
+              height: Number(frameNode.getAttribute("height")),
+            },
+            actors,
+            ordered: bounds.every(
+              (actor, index) =>
+                index === 0 ||
+                actor.left + actor.right >
+                  bounds[index - 1].left + bounds[index - 1].right,
             ),
-          ),
-        ]
-          .map((byte) => byte.toString(16).padStart(2, "0"))
-          .join("");
+            overlap: bounds.some((actor, index) =>
+              bounds
+                .slice(index + 1)
+                .some(
+                  (other) =>
+                    Math.min(actor.right, other.right) >
+                      Math.max(actor.left, other.left) &&
+                    Math.min(actor.bottom, other.bottom) >
+                      Math.max(actor.top, other.top),
+                ),
+            ),
+            dialogue: [...cut.querySelectorAll("[data-dialogue]")].map(
+              (line) => ({
+                from: line.getAttribute("data-dialogue"),
+                to: line.getAttribute("data-to"),
+                text: line.querySelector("text")!.textContent,
+                fontSize: Number(
+                  line.querySelector("text")!.getAttribute("font-size"),
+                ),
+                contained: contains(frame, line.getBoundingClientRect()),
+              }),
+            ),
+            hands,
+            props: [...cut.querySelectorAll("[data-prop]")].map((node) => ({
+              prop: node.getAttribute("data-prop"),
+              holding:
+                node.closest("[data-holding]")?.getAttribute("data-holding") ??
+                null,
+              actor:
+                node
+                  .closest("[data-character]")
+                  ?.getAttribute("data-character") ?? null,
+              from:
+                node
+                  .closest("[data-transfer]")
+                  ?.getAttribute("data-transfer") ?? null,
+              to:
+                node.closest("[data-transfer]")?.getAttribute("data-to") ??
+                null,
+              contained: contains(frame, node.getBoundingClientRect()),
+            })),
+            transfers,
+            humanCount: cut.querySelectorAll("[data-human]").length,
+          };
+        });
+        return {
+          title: root.querySelector("title")!.textContent,
+          width: Number(root.getAttribute("width")),
+          height: Number(root.getAttribute("height")),
+          viewBox: root.getAttribute("viewBox"),
+          cuts,
+        };
+      };
       const cases = [];
       for (const fixture of baseline.cases) {
         const output = sdk.renderPanels(baseline.source, fixture.options);
@@ -664,21 +839,282 @@ test("icon bodies, expressions and props retain the released SDK's exact SVG byt
           throw new Error(output.diagnostics.join("\n"));
         cases.push({
           options: fixture.options,
-          svgHash: await digest(output.svg),
-          panels: await Promise.all(
-            output.panels.map(async (panel) => ({
-              svgHash: await digest(panel.svg),
-              width: panel.width,
-              height: panel.height,
-            })),
-          ),
+          width: output.width,
+          height: output.height,
+          whole: inspect(output.svg),
+          panels: output.panels.map((panel) => ({
+            index: panel.index,
+            width: panel.width,
+            height: panel.height,
+            diagnostics: panel.diagnostics,
+            svg: inspect(panel.svg),
+          })),
         });
       }
-      return cases;
+      return { parsed, cases };
     },
     { rendererModule, baseline: legacyBaseline },
   );
-  expect(rendered).toEqual(legacyBaseline.cases);
+  expect(rendered.parsed.title).toBe("Compatibility");
+  expect(rendered.parsed.cast).toEqual({
+    a: { asset: "client", label: "A" },
+    b: { asset: "server", label: "B" },
+    c: { asset: "database", label: "C" },
+  });
+  expect(
+    rendered.parsed.panels.map((panel) =>
+      panel.actors.map(({ id, expression, gesture, holding, scale }) => ({
+        id,
+        expression,
+        gesture,
+        holding,
+        scale,
+      })),
+    ),
+  ).toEqual([
+    [
+      {
+        id: "a",
+        expression: "happy",
+        gesture: undefined,
+        holding: undefined,
+        scale: 1,
+      },
+      {
+        id: "b",
+        expression: "confused",
+        gesture: undefined,
+        holding: "data",
+        scale: 1,
+      },
+      {
+        id: "c",
+        expression: "neutral",
+        gesture: undefined,
+        holding: undefined,
+        scale: 1,
+      },
+    ],
+    [
+      {
+        id: "a",
+        expression: "sad",
+        gesture: undefined,
+        holding: undefined,
+        scale: 1,
+      },
+      {
+        id: "b",
+        expression: "angry",
+        gesture: undefined,
+        holding: undefined,
+        scale: 1,
+      },
+      {
+        id: "c",
+        expression: "happy",
+        gesture: undefined,
+        holding: undefined,
+        scale: 1,
+      },
+    ],
+  ]);
+  expect(rendered.parsed.panels.map((panel) => panel.transfer)).toEqual([
+    [{ from: "b", to: "c", prop: "data" }],
+    [],
+  ]);
+  expect(rendered.cases).toHaveLength(legacyBaseline.cases.length);
+  for (const [caseIndex, output] of rendered.cases.entries()) {
+    const fixture = legacyBaseline.cases[caseIndex];
+    const height = output.panels.reduce(
+      (sum: number, panel: { height: number }) => sum + panel.height - 92 + 24,
+      68,
+    );
+    expect(output.options).toEqual(fixture.options);
+    expect(output.width).toBe(fixture.options.width);
+    expect(Number.isSafeInteger(output.height)).toBe(true);
+    expect(output.height).toBeGreaterThan(0);
+    expect(output.height).toBe(height);
+    expect(output.whole).toMatchObject({
+      title: "Compatibility",
+      width: fixture.options.width,
+      height,
+      viewBox: `0 0 ${fixture.options.width} ${height}`,
+    });
+    expect(output.whole.cuts).toHaveLength(2);
+    expect(output.panels).toHaveLength(2);
+    for (const [index, panel] of output.panels.entries()) {
+      const { width, height } = panel;
+      expect(width).toBe(fixture.options.width);
+      expect(Number.isSafeInteger(height)).toBe(true);
+      expect(height).toBeGreaterThan(92);
+      expect(panel).toMatchObject({ index, width, height, diagnostics: [] });
+      expect(panel.svg).toMatchObject({
+        title: `Compatibility · ${index + 1}/2`,
+        width,
+        height,
+        viewBox: `0 0 ${panel.width} ${panel.height}`,
+      });
+      expect(panel.svg.cuts).toHaveLength(1);
+      expect(panel.svg.cuts[0].frame).toEqual({
+        width: width - 40,
+        height: height - 92,
+      });
+      expect(panel.svg.cuts).toEqual([output.whole.cuts[index]]);
+    }
+    if (output.options.panelFormat === "phone") {
+      const compact = rendered.cases.find(
+        (item) =>
+          item.options.width === output.options.width &&
+          item.options.panelFormat === "compact",
+      )!;
+      expect(output.whole.cuts.map((cut) => cut.frame.height)).toEqual(
+        compact.whole.cuts.map((cut) => cut.frame.height * 2 + 92),
+      );
+    }
+    expect(output.whole.cuts.map((cut) => cut.index)).toEqual([0, 1]);
+    expect(
+      output.whole.cuts.map((cut) =>
+        cut.actors.map(({ id, label, expression, gestures, holding }) => ({
+          id,
+          label,
+          expression,
+          gestures,
+          holding,
+        })),
+      ),
+    ).toEqual([
+      [
+        { id: "a", label: "A", expression: "happy", gestures: [], holding: [] },
+        {
+          id: "b",
+          label: "B",
+          expression: "confused",
+          gestures: [],
+          holding: ["data"],
+        },
+        {
+          id: "c",
+          label: "C",
+          expression: "neutral",
+          gestures: [],
+          holding: [],
+        },
+      ],
+      [
+        { id: "a", label: "A", expression: "sad", gestures: [], holding: [] },
+        { id: "b", label: "B", expression: "angry", gestures: [], holding: [] },
+        { id: "c", label: "C", expression: "happy", gestures: [], holding: [] },
+      ],
+    ]);
+    expect(output.whole.cuts.map((cut) => cut.dialogue)).toEqual([
+      [
+        { from: "a", to: "b", text: "Hello!", fontSize: 18, contained: true },
+        {
+          from: "b",
+          to: "c",
+          text: "Look at the data.",
+          fontSize: 18,
+          contained: true,
+        },
+      ],
+      [{ from: "c", to: "a", text: "Ready.", fontSize: 18, contained: true }],
+    ]);
+    expect(output.whole.cuts.map((cut) => cut.hands)).toEqual([
+      [
+        {
+          id: "b",
+          kind: "holding",
+          side: "right",
+          fill: "white",
+          visiblePalm: true,
+        },
+        {
+          id: "c",
+          kind: "receive",
+          side: "left",
+          fill: "white",
+          visiblePalm: true,
+        },
+      ],
+      [],
+    ]);
+    expect(
+      output.whole.cuts.map((cut) =>
+        [...cut.props].sort((left, right) => {
+          const first = JSON.stringify([
+            left.actor,
+            left.holding,
+            left.from,
+            left.to,
+            left.prop,
+          ]);
+          const second = JSON.stringify([
+            right.actor,
+            right.holding,
+            right.from,
+            right.to,
+            right.prop,
+          ]);
+          return first === second ? 0 : first < second ? -1 : 1;
+        }),
+      ),
+    ).toEqual([
+      [
+        {
+          prop: "data",
+          holding: "data",
+          actor: "b",
+          from: null,
+          to: null,
+          contained: true,
+        },
+        {
+          prop: "data",
+          holding: null,
+          actor: null,
+          from: "b",
+          to: "c",
+          contained: true,
+        },
+      ],
+      [],
+    ]);
+    expect(output.whole.cuts.map((cut) => cut.transfers)).toEqual([
+      [
+        {
+          from: "b",
+          to: "c",
+          props: ["data"],
+          connectedFrom: true,
+          connectedTo: true,
+        },
+      ],
+      [],
+    ]);
+    const faces = new Map<string | null, string>();
+    for (const cut of output.whole.cuts) {
+      expect(cut.humanCount).toBe(0);
+      expect(cut.ordered).toBe(true);
+      expect(cut.overlap).toBe(false);
+      expect(new Set(cut.actors.map((actor) => actor.body)).size).toBe(3);
+      for (const actor of cut.actors) {
+        expect(actor.contained).toBe(true);
+        expect(actor.visibleFace).toBe(true);
+        expect(actor.visibleLabel).toBe(true);
+        expect(actor.body.length).toBeGreaterThan(0);
+        expect(actor.face.length).toBeGreaterThan(0);
+        if (faces.has(actor.expression))
+          expect(actor.face).toBe(faces.get(actor.expression));
+        faces.set(actor.expression, actor.face);
+      }
+    }
+    expect(faces.size).toBe(5);
+    expect(new Set(faces.values()).size).toBe(5);
+    expect(output.whole.cuts[1].actors.map((actor) => actor.body)).toEqual(
+      output.whole.cuts[0].actors.map((actor) => actor.body),
+    );
+  }
 });
 
 test("human appearance variants support inherited expressions, gestures and props as static SVG without loading Mermaid", async ({
@@ -748,25 +1184,23 @@ test("human appearance variants support inherited expressions, gestures and prop
         faces: Object.fromEntries(
           [...cut.querySelectorAll("[data-character]")].map((actor) => [
             actor.getAttribute("data-character"),
-            actor.querySelector(':scope > g[transform^="translate("]')
-              .innerHTML,
+            actor.querySelector("[data-face]")!.innerHTML,
+          ]),
+        ),
+        expressions: Object.fromEntries(
+          [...cut.querySelectorAll("[data-character]")].map((actor) => [
+            actor.getAttribute("data-character"),
+            actor.querySelector("[data-face]")!.getAttribute("data-face"),
           ]),
         ),
         hands: [...cut.querySelectorAll("[data-hand]")].map((node) => {
           const actor = node.closest("[data-character]");
-          const relation = node.closest("[data-transfer]");
+          const palm = node.querySelector("path[data-palm], [data-palm] path");
           return {
-            id:
-              actor?.getAttribute("data-character") ??
-              relation.getAttribute(
-                node.getAttribute("data-hand") === "receive"
-                  ? "data-to"
-                  : "data-transfer",
-              ),
-            fill: (node.localName === "circle"
-              ? node
-              : node.querySelector("circle")
-            ).getAttribute("fill"),
+            id: actor!.getAttribute("data-character")!,
+            kind: node.getAttribute("data-hand"),
+            fill: palm?.getAttribute("fill"),
+            palm: palm?.localName,
           };
         }),
         humanCount: cut.querySelectorAll("[data-human]").length,
@@ -833,15 +1267,44 @@ test("human appearance variants support inherited expressions, gestures and prop
     [],
     [],
   ]);
+  expect(result.cuts.map((cut) => cut.expressions)).toEqual([
+    { planner: "neutral", developer: "confused", reviewer: "neutral" },
+    { planner: "neutral", developer: "happy", reviewer: "neutral" },
+    { planner: "neutral", developer: "happy", reviewer: "confused" },
+    { planner: "neutral", developer: "happy", reviewer: "happy" },
+  ]);
   expect(result.cuts[0].faces.developer).not.toBe(
     result.cuts[1].faces.developer,
   );
   expect(result.cuts[1].faces.developer).toBe(result.cuts[2].faces.developer);
   expect(result.cuts[0].faces.reviewer).not.toBe(result.cuts[2].faces.reviewer);
   expect(result.cuts[2].faces.reviewer).not.toBe(result.cuts[3].faces.reviewer);
+  expect(
+    result.cuts.map((cut) => cut.hands.map(({ id, kind }) => ({ id, kind }))),
+  ).toEqual([
+    [
+      { id: "planner", kind: "point" },
+      { id: "planner", kind: "holding" },
+    ],
+    [{ id: "developer", kind: "holding" }],
+    [{ id: "developer", kind: "point" }],
+    [
+      { id: "planner", kind: "transfer" },
+      { id: "developer", kind: "receive" },
+      { id: "reviewer", kind: "wave" },
+    ],
+  ]);
+  const skinById: Record<string, string> = Object.fromEntries(
+    Object.entries(cast).map(([id, member]) => [
+      id,
+      member.appearance.skinColor,
+    ]),
+  );
   for (const cut of result.cuts)
-    for (const hand of cut.hands)
-      expect(hand.fill).toBe(cast[hand.id].appearance.skinColor);
+    for (const hand of cut.hands) {
+      expect(hand.palm).toBe("path");
+      expect(hand.fill).toBe(skinById[hand.id]);
+    }
   expect(result.forbidden).toBe(0);
   expect(result.events).toEqual([]);
   expect(network).toEqual([]);

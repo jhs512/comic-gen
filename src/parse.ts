@@ -1,6 +1,6 @@
 import { parseDocument } from "yaml";
 import { normalizeComic, syntaxFields } from "./syntax";
-import { expressions, gestures, props } from "./assets";
+import { expressions, gestureNames, props } from "./assets";
 import { readCharacterDefinitions } from "./character-definition";
 import type { Actor, Dialogue, Transfer, Diagram, Panel, Comic } from "./model";
 
@@ -129,7 +129,7 @@ export function readComic(source: string): Comic {
         actor.holding === undefined
           ? undefined
           : text(actor.holding, `${ctx}.${id}.든소품`);
-      if (gesture && !Object.hasOwn(gestures, gesture))
+      if (gesture && !gestureNames.includes(gesture))
         throw new Error(`${ctx}.${id}: 없는 손 제스처 '${gesture}'.`);
       if (holding && !Object.hasOwn(props, holding))
         throw new Error(`${ctx}.${id}: 없는 소품 '${holding}'.`);

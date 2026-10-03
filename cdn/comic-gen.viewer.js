@@ -1,47 +1,47 @@
-/*! Comic Gen browser SDK v0.7.5
+/*! Comic Gen browser SDK v0.7.6
 */
-function W(e, r = 0) {
-  return [...e.querySelectorAll("g[data-panel]")].map((c, l) => {
-    if (c.getAttribute("data-panel") !== String(l + r))
+function Z(e, r = 0) {
+  return [...e.querySelectorAll("g[data-panel]")].map((c, d) => {
+    if (c.getAttribute("data-panel") !== String(d + r))
       throw new TypeError("만화의 컷 순서가 올바르지 않습니다.");
     const g = c.querySelector("rect");
     if (!g) throw new TypeError("만화에 컷 프레임이 없습니다.");
     let w = new DOMMatrix();
     for (let y = g; y && y !== e.documentElement; y = y.parentElement) {
-      let d = new DOMMatrix();
-      const T = y.getAttribute("transform") ?? "", B = /(matrix|translate|scale|rotate|skewX|skewY)\(([^)]*)\)/g;
+      let l = new DOMMatrix();
+      const T = y.getAttribute("transform") ?? "", P = /(matrix|translate|scale|rotate|skewX|skewY)\(([^)]*)\)/g;
       let N = T;
-      for (const z of T.matchAll(B)) {
+      for (const z of T.matchAll(P)) {
         const E = z[2].trim().split(/[\s,]+/).map(Number);
         if (!E.length || E.some((O) => !Number.isFinite(O)))
           throw new TypeError("만화의 컷 변환이 올바르지 않습니다.");
-        const [v, A = 0, k = 0] = E;
+        const [v, A = 0, L = 0] = E;
         switch (z[1]) {
           case "matrix":
             if (E.length !== 6)
               throw new TypeError("올바른 컷 행렬이 필요합니다.");
-            d = d.multiply(new DOMMatrix(E));
+            l = l.multiply(new DOMMatrix(E));
             break;
           case "translate":
-            d = d.translate(v, A);
+            l = l.translate(v, A);
             break;
           case "scale":
-            d = d.scale(v, E[1] ?? v);
+            l = l.scale(v, E[1] ?? v);
             break;
           case "rotate":
-            d = d.translate(A, k).rotate(v).translate(-A, -k);
+            l = l.translate(A, L).rotate(v).translate(-A, -L);
             break;
           case "skewX":
-            d = d.skewX(v);
+            l = l.skewX(v);
             break;
           case "skewY":
-            d = d.skewY(v);
+            l = l.skewY(v);
             break;
         }
         N = N.replace(z[0], "");
       }
       if (N.trim()) throw new TypeError("지원하지 않는 컷 변환입니다.");
-      w = d.multiply(w);
+      w = l.multiply(w);
     }
     const a = Number(g.getAttribute("x") ?? 0), n = Number(g.getAttribute("y") ?? 0), s = Number(g.getAttribute("width")), m = Number(g.getAttribute("height"));
     if (![a, n, s, m].every(Number.isFinite) || s <= 0 || m <= 0)
@@ -51,134 +51,138 @@ function W(e, r = 0) {
       [a + s, n],
       [a, n + m],
       [a + s, n + m]
-    ].map(([y, d]) => w.transformPoint(new DOMPoint(y, d))), h = Math.min(...i.map((y) => y.x)), M = Math.min(...i.map((y) => y.y));
+    ].map(([y, l]) => w.transformPoint(new DOMPoint(y, l))), p = Math.min(...i.map((y) => y.x)), M = Math.min(...i.map((y) => y.y));
     return {
-      x: h,
+      x: p,
       y: M,
-      width: Math.max(...i.map((y) => y.x)) - h,
+      width: Math.max(...i.map((y) => y.x)) - p,
       height: Math.max(...i.map((y) => y.y)) - M
     };
   });
 }
-function ie(e, r, c, l, g, w, a, n) {
+function ie(e, r, c, d, g, w, a, n) {
   let s = 0, m = !1, i = 0;
-  const h = () => {
-    const o = e.getBoundingClientRect(), f = getComputedStyle(e);
+  const p = () => {
+    const t = e.getBoundingClientRect(), f = getComputedStyle(e);
     return {
-      x: o.x + e.clientLeft + (parseFloat(f.paddingLeft) || 0),
-      y: o.y + e.clientTop + (parseFloat(f.paddingTop) || 0)
+      x: t.x + e.clientLeft + (parseFloat(f.paddingLeft) || 0),
+      y: t.y + e.clientTop + (parseFloat(f.paddingTop) || 0)
     };
   }, M = () => {
-    const o = r.getBoundingClientRect(), f = o.width / l;
+    const t = r.getBoundingClientRect(), f = t.width / d;
     return c.map((b) => ({
-      x: o.x + b.x * f,
-      y: o.y + b.y * f,
+      x: t.x + b.x * f,
+      y: t.y + b.y * f,
       width: b.width * f,
       height: b.height * f
     }));
   };
   let y = 0;
-  const d = () => {
+  const l = () => {
     g.disabled = s === 0, w.disabled = s === c.length - 1, (document.activeElement === g && g.disabled || document.activeElement === w && w.disabled) && e.focus();
-    const o = `${s + 1} / ${c.length}컷`;
-    a.textContent !== o && (a.textContent = o), y !== s && (y = s, n?.());
+    const t = `${s + 1} / ${c.length}컷`;
+    a.textContent !== t && (a.textContent = t), y !== s && (y = s, n?.());
   }, T = () => {
     if (m) return;
     if (e.scrollLeft === 0 && e.scrollTop === 0) {
-      s = 0, d();
+      s = 0, l();
       return;
     }
-    const o = h(), f = e.clientWidth - (parseFloat(getComputedStyle(e).paddingLeft) || 0) - (parseFloat(getComputedStyle(e).paddingRight) || 0), b = e.clientHeight - (parseFloat(getComputedStyle(e).paddingTop) || 0) - (parseFloat(getComputedStyle(e).paddingBottom) || 0);
-    let x = -1, C = 1 / 0;
-    M().forEach((L, Y) => {
-      const G = Math.max(
+    const t = p(), f = e.clientWidth - (parseFloat(getComputedStyle(e).paddingLeft) || 0) - (parseFloat(getComputedStyle(e).paddingRight) || 0), b = e.clientHeight - (parseFloat(getComputedStyle(e).paddingTop) || 0) - (parseFloat(getComputedStyle(e).paddingBottom) || 0), x = M(), k = x[x.length - 1];
+    if (e.scrollLeft + e.clientWidth >= e.scrollWidth - 1 && e.scrollTop + e.clientHeight >= e.scrollHeight - 1 && k.x < t.x + f && k.x + k.width > t.x && k.y < t.y + b && k.y + k.height > t.y) {
+      s = c.length - 1, l();
+      return;
+    }
+    let B = -1, K = 1 / 0;
+    x.forEach((C, G) => {
+      const X = Math.max(
         0,
-        Math.min(L.x + L.width, o.x + f) - Math.max(L.x, o.x)
+        Math.min(C.x + C.width, t.x + f) - Math.max(C.x, t.x)
       ) * Math.max(
         0,
-        Math.min(L.y + L.height, o.y + b) - Math.max(L.y, o.y)
-      ), q = Math.hypot(
-        Math.max(L.x - o.x, 0, o.x - L.x - L.width),
-        Math.max(L.y - o.y, 0, o.y - L.y - L.height)
+        Math.min(C.y + C.height, t.y + b) - Math.max(C.y, t.y)
+      ), H = Math.hypot(
+        Math.max(C.x - t.x, 0, t.x - C.x - C.width),
+        Math.max(C.y - t.y, 0, t.y - C.y - C.height)
       );
-      (G > x || G === x && q < C) && (x = G, C = q, s = Y);
-    }), d();
-  }, B = () => {
+      (X > B || X === B && H < K) && (B = X, K = H, s = G);
+    }), l();
+  }, P = () => {
     cancelAnimationFrame(i), m = !0;
-    const o = e.scrollLeft, f = e.scrollTop;
+    const t = e.scrollLeft, f = e.scrollTop;
     i = requestAnimationFrame(() => {
       i = requestAnimationFrame(() => {
-        m = !1, (e.scrollLeft !== o || e.scrollTop !== f) && T();
+        m = !1, (e.scrollLeft !== t || e.scrollTop !== f) && T();
       });
     });
-  }, N = (o, f = s) => {
-    if (s = Math.max(0, Math.min(c.length - 1, f + o)), s === f) {
-      d();
+  }, N = (t, f = s) => {
+    if (s = Math.max(0, Math.min(c.length - 1, f + t)), s === f) {
+      l();
       return;
     }
-    const b = M()[s], x = h();
+    const b = M()[s], x = p();
     e.scrollTo({
       left: e.scrollLeft + b.x - x.x,
       top: e.scrollTop + b.y - x.y,
       behavior: "instant"
-    }), B(), d();
-  }, z = () => N(-1), E = () => N(1), v = (o) => {
-    o.target !== e || o.altKey || o.ctrlKey || o.metaKey || o.shiftKey || (o.key === "ArrowLeft" || o.key === "ArrowRight") && (o.preventDefault(), N(o.key === "ArrowLeft" ? -1 : 1));
+    }), P(), l();
+  }, z = () => N(-1), E = () => N(1), v = (t) => {
+    t.target !== e || t.altKey || t.ctrlKey || t.metaKey || t.shiftKey || (t.key === "ArrowLeft" || t.key === "ArrowRight") && (t.preventDefault(), N(t.key === "ArrowLeft" ? -1 : 1));
   }, A = /* @__PURE__ */ new Set();
-  let k, O = !1;
-  const $ = (o) => {
-    if (A.add(o.pointerId), O = !1, A.size !== 1 || !o.isPrimary || o.button !== 0) {
-      k = void 0;
+  let L, O = !1;
+  const $ = (t) => {
+    if (A.add(t.pointerId), O = !1, A.size !== 1 || !t.isPrimary || t.button !== 0) {
+      L = void 0;
       return;
     }
-    k = {
-      id: o.pointerId,
-      x: o.clientX,
-      y: o.clientY,
+    L = {
+      id: t.pointerId,
+      x: t.clientX,
+      y: t.clientY,
       moved: !1
     };
-  }, P = (o) => {
-    k?.id === o.pointerId && Math.hypot(o.clientX - k.x, o.clientY - k.y) > 8 && (k.moved = !0);
-  }, D = (o) => {
-    O = A.size === 1 && k?.id === o.pointerId && !k.moved, A.delete(o.pointerId), k = void 0;
-  }, I = (o) => {
-    o ? A.delete(o.pointerId) : A.clear(), k = void 0, O = !1;
-  }, V = (o) => {
+  }, q = (t) => {
+    L?.id === t.pointerId && Math.hypot(t.clientX - L.x, t.clientY - L.y) > 8 && (L.moved = !0);
+  }, D = (t) => {
+    O = A.size === 1 && L?.id === t.pointerId && !L.moved, A.delete(t.pointerId), L = void 0;
+  }, I = (t) => {
+    t ? A.delete(t.pointerId) : A.clear(), L = void 0, O = !1;
+  }, V = (t) => {
     const f = O;
-    if (O = !1, !f || o.detail > 1 || o.ctrlKey || o.metaKey || o.altKey || o.shiftKey || o.target !== r)
+    if (O = !1, !f || t.detail > 1 || t.ctrlKey || t.metaKey || t.altKey || t.shiftKey || t.target !== r)
       return;
     const b = M(), x = b.findIndex(
-      (C) => o.clientX >= C.x && o.clientX <= C.x + C.width && o.clientY >= C.y && o.clientY <= C.y + C.height
+      (k) => t.clientX >= k.x && t.clientX <= k.x + k.width && t.clientY >= k.y && t.clientY <= k.y + k.height
     );
     x >= 0 && (e.focus({ preventScroll: !0 }), N(
-      o.clientX < b[x].x + b[x].width / 2 ? -1 : 1,
+      t.clientX < b[x].x + b[x].width / 2 ? -1 : 1,
       x
     ));
-  }, F = (o) => {
-    e.contains(o.target) || I(o);
+  }, F = (t) => {
+    e.contains(t.target) || I(t);
   };
-  return r.draggable = !1, g.addEventListener("click", z), w.addEventListener("click", E), e.addEventListener("scroll", T), e.addEventListener("keydown", v), e.addEventListener("pointerdown", $), e.addEventListener("pointermove", P), e.addEventListener("pointerup", D), e.addEventListener("pointercancel", I), e.addEventListener("click", V), document.addEventListener("pointerup", F), document.addEventListener("pointercancel", F), d(), {
+  return r.draggable = !1, g.addEventListener("click", z), w.addEventListener("click", E), e.addEventListener("scroll", T), e.addEventListener("keydown", v), e.addEventListener("pointerdown", $), e.addEventListener("pointermove", q), e.addEventListener("pointerup", D), e.addEventListener("pointercancel", I), e.addEventListener("click", V), document.addEventListener("pointerup", F), document.addEventListener("pointercancel", F), l(), {
     get currentIndex() {
       return s;
     },
-    goTo: (o) => N(o - s),
+    goTo: (t) => N(t - s),
     capturePosition: () => {
-      const o = h(), f = r.getBoundingClientRect(), b = f.width / l;
-      return { x: (o.x - f.x) / b, y: (o.y - f.y) / b };
+      const t = p(), f = r.getBoundingClientRect(), b = f.width / d;
+      return { x: (t.x - f.x) / b, y: (t.y - f.y) / b };
     },
-    restorePosition: (o) => {
-      const f = e.scrollLeft, b = e.scrollTop, x = r.getBoundingClientRect(), C = h(), L = x.width / l;
+    restorePosition: (t) => {
+      const f = e.scrollLeft, b = e.scrollTop, x = r.getBoundingClientRect(), k = p(), B = x.width / d;
       e.scrollTo({
-        left: e.scrollLeft + x.x + o.x * L - C.x,
-        top: e.scrollTop + x.y + o.y * L - C.y,
+        left: e.scrollLeft + x.x + t.x * B - k.x,
+        top: e.scrollTop + x.y + t.y * B - k.y,
         behavior: "instant"
-      }), (e.scrollLeft !== f || e.scrollTop !== b) && B(), d();
+      }), (e.scrollLeft !== f || e.scrollTop !== b) && P(), l();
     },
     reset: () => {
-      cancelAnimationFrame(i), m = !1, s = 0, I(), d();
+      cancelAnimationFrame(i), m = !1, s = 0, I(), l();
     },
     dispose: () => {
-      cancelAnimationFrame(i), g.removeEventListener("click", z), w.removeEventListener("click", E), e.removeEventListener("scroll", T), e.removeEventListener("keydown", v), e.removeEventListener("pointerdown", $), e.removeEventListener("pointermove", P), e.removeEventListener("pointerup", D), e.removeEventListener("pointercancel", I), e.removeEventListener("click", V), document.removeEventListener("pointerup", F), document.removeEventListener("pointercancel", F), I();
+      cancelAnimationFrame(i), g.removeEventListener("click", z), w.removeEventListener("click", E), e.removeEventListener("scroll", T), e.removeEventListener("keydown", v), e.removeEventListener("pointerdown", $), e.removeEventListener("pointermove", q), e.removeEventListener("pointerup", D), e.removeEventListener("pointercancel", I), e.removeEventListener("click", V), document.removeEventListener("pointerup", F), document.removeEventListener("pointercancel", F), I();
     }
   };
 }
@@ -219,7 +223,7 @@ const ne = `
   .comic-card[data-comic-gen-card] { gap:12px; padding:12px; }
   [data-comic-gen-card] .comic-card-thumbnail { flex-basis:88px; width:88px; height:80px; }
 }
-`, Z = "http://www.w3.org/2000/svg", _ = /^#[\p{L}_][\p{L}\p{N}_:.-]*$/u, re = /* @__PURE__ */ new Set([
+`, _ = "http://www.w3.org/2000/svg", J = /^#[\p{L}_][\p{L}\p{N}_:.-]*$/u, re = /* @__PURE__ */ new Set([
   "fill",
   "stroke",
   "filter",
@@ -280,20 +284,20 @@ const ne = `
   "feSpotLight",
   "feTile"
 ]);
-function J(e) {
+function Q(e) {
   if (!e || typeof e.svg != "string" || !e.svg || e.svg.length > 64e6 || !Number.isFinite(e.width) || e.width <= 0 || e.width > 1e6 || !Number.isFinite(e.height) || e.height <= 0 || e.height > 1e6 || e.diagnostics !== void 0 && (!Array.isArray(e.diagnostics) || e.diagnostics.length))
     throw new TypeError("완성된 코믹젠 렌더 결과가 필요합니다.");
   if (/<!DOCTYPE|<!ENTITY|<\?/i.test(e.svg))
     throw new TypeError("정적 코믹젠 SVG만 뷰어에 전달하세요.");
-  const r = new DOMParser().parseFromString(e.svg, "image/svg+xml"), c = r.documentElement, l = (c.getAttribute("viewBox") ?? `0 0 ${e.width} ${e.height}`).trim().split(/[\s,]+/).map(Number);
-  if (c.localName !== "svg" || c.namespaceURI !== Z || r.querySelector("parsererror") || l.length !== 4 || l[0] !== 0 || l[1] !== 0 || l[2] !== e.width || l[3] !== e.height || Number(c.getAttribute("width")) !== e.width || Number(c.getAttribute("height")) !== e.height)
+  const r = new DOMParser().parseFromString(e.svg, "image/svg+xml"), c = r.documentElement, d = (c.getAttribute("viewBox") ?? `0 0 ${e.width} ${e.height}`).trim().split(/[\s,]+/).map(Number);
+  if (c.localName !== "svg" || c.namespaceURI !== _ || r.querySelector("parsererror") || d.length !== 4 || d[0] !== 0 || d[1] !== 0 || d[2] !== e.width || d[3] !== e.height || Number(c.getAttribute("width")) !== e.width || Number(c.getAttribute("height")) !== e.height)
     throw new TypeError("만화 SVG와 렌더 결과의 크기가 일치해야 합니다.");
   for (const g of [c, ...c.querySelectorAll("*")]) {
-    if (g.namespaceURI !== Z || !ce.has(g.localName))
+    if (g.namespaceURI !== _ || !ce.has(g.localName))
       throw new TypeError("외부 리소스나 실행 가능한 SVG는 지원하지 않습니다.");
     for (const w of g.attributes) {
       const a = w.localName.toLowerCase(), n = w.value;
-      if (a.startsWith("on") || a === "base" && w.namespaceURI === "http://www.w3.org/XML/1998/namespace" || a === "href" && !_.test(n))
+      if (a.startsWith("on") || a === "base" && w.namespaceURI === "http://www.w3.org/XML/1998/namespace" || a === "href" && !J.test(n))
         throw new TypeError(
           "외부 링크나 이벤트가 포함된 SVG는 지원하지 않습니다."
         );
@@ -303,61 +307,61 @@ function J(e) {
         throw new TypeError("정적 코믹젠 SVG 색상과 참조만 지원합니다.");
       for (const s of n.matchAll(/url\s*\(([^)]*)\)/gi)) {
         const m = s[1].trim().replace(/^(['"])(.*)\1$/, "$2");
-        if (!_.test(m))
+        if (!J.test(m))
           throw new TypeError("SVG의 외부 리소스는 지원하지 않습니다.");
       }
     }
   }
   return r;
 }
-function Q(e) {
-  const r = J(e);
+function ee(e) {
+  const r = Q(e);
   if (!Array.isArray(e.panels) || e.panels.length < 1 || e.panels.length > 30)
     throw new TypeError("만화에는 실제 렌더된 1~30개의 컷이 필요합니다.");
-  const c = [], l = e.panels.map((n, s) => {
+  const c = [], d = e.panels.map((n, s) => {
     if (n.index !== s)
       throw new TypeError("만화의 개별 컷 순서가 일치해야 합니다.");
-    const m = W(J(n), s);
+    const m = Z(Q(n), s);
     if (m.length !== 1 || ![m[0].x, m[0].y, m[0].width, m[0].height].every(
       Number.isFinite
     ) || m[0].width <= 0 || m[0].height <= 0 || m[0].x < 0 || m[0].y < 0 || m[0].x + m[0].width > n.width + 1 || m[0].y + m[0].height > n.height + 1)
       throw new TypeError("개별 컷 SVG에는 한 개의 컷 프레임이 필요합니다.");
     return c.push(m[0]), { ...n };
-  }), g = W(r);
-  if (g.length !== l.length || g.some(
+  }), g = Z(r);
+  if (g.length !== d.length || g.some(
     (n) => ![n.x, n.y, n.width, n.height].every(Number.isFinite) || n.width <= 0 || n.height <= 0 || n.x < 0 || n.y < 0 || n.x + n.width > e.width + 1 || n.y + n.height > e.height + 1
   ))
     throw new TypeError("만화의 컷 프레임과 렌더 결과가 일치해야 합니다.");
-  const w = r.documentElement.getAttribute("aria-label") ?? r.documentElement.querySelector("title")?.textContent ?? "만화", a = l.map((n, s) => {
-    const m = g[s], i = c[s], h = Math.max(
+  const w = r.documentElement.getAttribute("aria-label") ?? r.documentElement.querySelector("title")?.textContent ?? "만화", a = d.map((n, s) => {
+    const m = g[s], i = c[s], p = Math.max(
       m.width / i.width,
       m.height / i.height
     );
-    return { width: n.width * h, height: n.height * h };
+    return { width: n.width * p, height: n.height * p };
   });
   return {
-    result: { ...e, panels: l },
+    result: { ...e, panels: d },
     title: w,
     bounds: g,
     panelWidth: Math.max(...a.map((n) => n.width)),
     panelHeight: Math.max(...a.map((n) => n.height))
   };
 }
-const H = /* @__PURE__ */ Symbol.for("comic-gen.viewer.document-state.v1");
-function U() {
+const U = /* @__PURE__ */ Symbol.for("comic-gen.viewer.document-state.v1");
+function j() {
   const e = document;
-  return e[H] || Object.defineProperty(e, H, {
+  return e[U] || Object.defineProperty(e, U, {
     value: { bodyLocks: /* @__PURE__ */ new WeakMap(), nextId: 0 }
-  }), e[H];
+  }), e[U];
 }
-function ee() {
-  const e = U();
+function te() {
+  const e = j();
   let r = e.styles;
   if (r)
     r.element.isConnected || document.head.append(r.element);
   else {
-    const l = document.createElement("style");
-    l.dataset.comicGenViewerStyles = "", l.textContent = ne, document.head.append(l), r = { element: l, count: 0 }, e.styles = r;
+    const d = document.createElement("style");
+    d.dataset.comicGenViewerStyles = "", d.textContent = ne, document.head.append(d), r = { element: d, count: 0 }, e.styles = r;
   }
   r.count++;
   let c = !1;
@@ -366,25 +370,25 @@ function ee() {
   };
 }
 function ae() {
-  const e = U().bodyLocks, r = document.body;
+  const e = j().bodyLocks, r = document.body;
   let c = e.get(r);
   c || (c = {
     count: 0,
     value: r.style.getPropertyValue("overflow"),
     priority: r.style.getPropertyPriority("overflow")
   }, e.set(r, c), r.style.setProperty("overflow", "hidden", "important")), c.count++;
-  let l = !1;
+  let d = !1;
   return () => {
-    l || (l = !0, --c.count === 0 && (c.value ? r.style.setProperty("overflow", c.value, c.priority) : r.style.removeProperty("overflow"), e.delete(r)));
+    d || (d = !0, --c.count === 0 && (c.value ? r.style.setProperty("overflow", c.value, c.priority) : r.style.removeProperty("overflow"), e.delete(r)));
   };
 }
-function te(e, r, c, l) {
+function oe(e, r, c, d) {
   const g = document.createElement("img"), w = URL.createObjectURL(new Blob([e], { type: "image/svg+xml" }));
   Object.assign(g, {
     src: w,
     width: r,
     height: c,
-    alt: l,
+    alt: d,
     decoding: "async",
     draggable: !1
   });
@@ -399,111 +403,111 @@ function te(e, r, c, l) {
 function se(e = {}) {
   e = { ...e };
   let r = {}, c;
-  const l = (t, p) => {
-    if (t.zoom !== void 0 && (!Number.isFinite(t.zoom) || t.zoom <= 0 || t.zoom > 10))
+  const d = (o, h) => {
+    if (o.zoom !== void 0 && (!Number.isFinite(o.zoom) || o.zoom <= 0 || o.zoom > 10))
       throw new RangeError("zoom must be greater than 0 and at most 10.");
-    if (t.panelIndex !== void 0 && (!Number.isInteger(t.panelIndex) || t.panelIndex < 0 || p !== void 0 && t.panelIndex >= p))
+    if (o.panelIndex !== void 0 && (!Number.isInteger(o.panelIndex) || o.panelIndex < 0 || h !== void 0 && o.panelIndex >= h))
       throw new RangeError("panelIndex must identify an existing panel.");
-    if (t.preventOverflow !== void 0 && typeof t.preventOverflow != "boolean")
+    if (o.preventOverflow !== void 0 && typeof o.preventOverflow != "boolean")
       throw new TypeError("preventOverflow must be a boolean.");
-  }, g = (t, p) => {
-    l(t, p);
+  }, g = (o, h) => {
+    d(o, h);
     for (const u of [
       "closeOnBackdrop",
       "closeOnEmptyArea",
       "closeOnEscape",
       "showCloseButton"
     ])
-      if (t[u] !== void 0 && typeof t[u] != "boolean")
+      if (o[u] !== void 0 && typeof o[u] != "boolean")
         throw new TypeError(`${u} must be a boolean.`);
-    if (t.onChange !== void 0 && typeof t.onChange != "function")
+    if (o.onChange !== void 0 && typeof o.onChange != "function")
       throw new TypeError("onChange must be a function.");
   };
   g(e);
   const w = () => i?.open && E ? Object.freeze({
-    zoom: Number(d.value),
+    zoom: Number(l.value),
     preventOverflow: T.checked,
     panelIndex: v?.currentIndex ?? 0
   }) : null;
   let a, n = !1;
   const s = () => {
     if (n) return;
-    const t = w(), p = JSON.stringify(t);
-    p !== a && (a = p, r.onChange?.(t));
-  }, m = (t) => {
-    const p = String(t);
-    if (![...d.options].some((u) => u.value === p)) {
+    const o = w(), h = JSON.stringify(o);
+    h !== a && (a = h, r.onChange?.(o));
+  }, m = (o) => {
+    const h = String(o);
+    if (![...l.options].some((u) => u.value === h)) {
       const u = document.createElement("option");
-      u.value = p, u.textContent = `${Math.round(t * 100)}%`, u.dataset.customZoom = "", d.append(u);
+      u.value = h, u.textContent = `${Math.round(o * 100)}%`, u.dataset.customZoom = "", l.append(u);
     }
-    d.value = p;
+    l.value = h;
   };
-  let i, h, M, y, d, T, B, N, z, E, v, A, k, O, $, P, D = !1;
+  let i, p, M, y, l, T, P, N, z, E, v, A, L, O, $, q, D = !1;
   const I = () => {
     if (!i?.open || !E) return;
-    const t = v?.capturePosition();
-    h.dataset.preventOverflow = String(T.checked);
-    const p = E.result;
-    let u = p.width * Number(d.value);
+    const o = v?.capturePosition();
+    p.dataset.preventOverflow = String(T.checked);
+    const h = E.result;
+    let u = h.width * Number(l.value);
     if (T.checked) {
-      const S = getComputedStyle(h), X = Math.max(
+      const S = getComputedStyle(p), Y = Math.max(
         0,
-        h.clientWidth - (parseFloat(S.paddingLeft) || 0) - (parseFloat(S.paddingRight) || 0)
+        p.clientWidth - (parseFloat(S.paddingLeft) || 0) - (parseFloat(S.paddingRight) || 0)
       ), R = Math.max(
         0,
-        h.clientHeight - (parseFloat(S.paddingTop) || 0) - (parseFloat(S.paddingBottom) || 0)
+        p.clientHeight - (parseFloat(S.paddingTop) || 0) - (parseFloat(S.paddingBottom) || 0)
       );
       u = Math.min(
         u,
-        X * p.width / E.panelWidth,
-        R * p.width / E.panelHeight
+        Y * h.width / E.panelWidth,
+        R * h.width / E.panelHeight
       );
     }
-    M.style.width = `${Math.max(0, u)}px`, t && Number.isFinite(t.x) && Number.isFinite(t.y) && v?.restorePosition(t);
+    M.style.width = `${Math.max(0, u)}px`, o && Number.isFinite(o.x) && Number.isFinite(o.y) && v?.restorePosition(o);
   }, V = () => {
-    v?.dispose(), v = void 0, k?.(), k = void 0, M?.replaceChildren(), E = void 0, O?.(), O = void 0;
-    const t = a !== void 0 && a !== "null", p = P;
-    P = void 0;
+    v?.dispose(), v = void 0, L?.(), L = void 0, M?.replaceChildren(), E = void 0, O?.(), O = void 0;
+    const o = a !== void 0 && a !== "null", h = q;
+    q = void 0;
     const u = [
       ...document.querySelectorAll("dialog[open]")
     ].find((S) => S !== i);
-    p?.isConnected && (!u || u.contains(p)) && p.focus({ preventScroll: !0 }), t && s();
+    h?.isConnected && (!u || u.contains(h)) && h.focus({ preventScroll: !0 }), o && s();
   }, F = () => {
     i?.open && i.close(), V();
-  }, o = (t) => {
-    t.preventDefault(), r.closeOnEscape !== !1 && F();
+  }, t = (o) => {
+    o.preventDefault(), r.closeOnEscape !== !1 && F();
   }, f = () => {
     i?.open || V();
   };
   let b = !1, x;
-  const C = (t) => {
-    if (t.target !== i) return !1;
-    const p = i.getBoundingClientRect();
-    return t.clientX < p.left || t.clientX > p.right || t.clientY < p.top || t.clientY > p.bottom;
-  }, L = (t) => {
-    if (t.target !== h) return !1;
-    const p = h.getBoundingClientRect();
-    return t.clientX >= p.left + h.clientLeft && t.clientX < p.left + h.clientLeft + h.clientWidth && t.clientY >= p.top + h.clientTop && t.clientY < p.top + h.clientTop + h.clientHeight;
-  }, Y = (t) => {
-    x = t.button === 0 && t.isPrimary && L(t) ? { x: t.clientX, y: t.clientY } : void 0, b = t.button === 0 && C(t);
-  }, G = (t) => {
-    const p = b && C(t) && r.closeOnBackdrop === !0 || !!(x && L(t) && r.closeOnEmptyArea === !0 && Math.hypot(t.clientX - x.x, t.clientY - x.y) <= 8);
-    x = void 0, b = !1, p && F();
-  }, q = () => {
+  const k = (o) => {
+    if (o.target !== i) return !1;
+    const h = i.getBoundingClientRect();
+    return o.clientX < h.left || o.clientX > h.right || o.clientY < h.top || o.clientY > h.bottom;
+  }, B = (o) => {
+    if (o.target !== p) return !1;
+    const h = p.getBoundingClientRect();
+    return o.clientX >= h.left + p.clientLeft && o.clientX < h.left + p.clientLeft + p.clientWidth && o.clientY >= h.top + p.clientTop && o.clientY < h.top + p.clientTop + p.clientHeight;
+  }, K = (o) => {
+    x = o.button === 0 && o.isPrimary && B(o) ? { x: o.clientX, y: o.clientY } : void 0, b = o.button === 0 && k(o);
+  }, C = (o) => {
+    const h = b && k(o) && r.closeOnBackdrop === !0 || !!(x && B(o) && r.closeOnEmptyArea === !0 && Math.hypot(o.clientX - x.x, o.clientY - x.y) <= 8);
+    x = void 0, b = !1, h && F();
+  }, G = () => {
     I(), s();
-  }, j = (t) => {
-    if (t.key !== "Tab" || !i?.open) return;
+  }, X = (o) => {
+    if (o.key !== "Tab" || !i?.open) return;
     const u = [
       ...i.querySelectorAll(
         "button:not(:disabled), input, select, [tabindex='0']"
       )
-    ].filter((R) => !R.hidden), S = u[0], X = u[u.length - 1];
-    (!t.shiftKey && document.activeElement === X || t.shiftKey && document.activeElement === S) && (t.preventDefault(), (t.shiftKey ? X : S).focus());
-  }, oe = () => {
+    ].filter((R) => !R.hidden), S = u[0], Y = u[u.length - 1];
+    (!o.shiftKey && document.activeElement === Y || o.shiftKey && document.activeElement === S) && (o.preventDefault(), (o.shiftKey ? Y : S).focus());
+  }, H = () => {
     if (i) return;
-    $ = ee();
-    const t = `comic-gen-viewer-${++U().nextId}`;
-    i = document.createElement("dialog"), i.className = "comic-viewer", i.dataset.comicGenViewer = "", i.setAttribute("aria-labelledby", `${t}-title`), i.setAttribute("aria-describedby", `${t}-help`), i.innerHTML = `<div class="comic-viewer-toolbar"><h2 class="comic-viewer-title" id="${t}-title"></h2><button type="button" autofocus>닫기</button><div class="comic-viewer-controls"><label class="comic-viewer-checkbox"><input type="checkbox" checked>화면 넘침 방지</label><label>보기 크기 <select><option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option></select></label><div class="comic-viewer-navigation"><button type="button" class="comic-previous" aria-label="이전 컷">←</button><span class="comic-position" role="status" aria-live="polite"></span><button type="button" class="comic-next" aria-label="다음 컷">→</button></div></div></div><p class="comic-viewer-help" id="${t}-help">화면 넘침 방지는 한 컷의 너비·높이를 화면에 맞춥니다. 다음 컷은 아래로 스크롤해 읽습니다. 컷 왼쪽은 이전, 오른쪽은 다음 컷입니다. 읽기 영역에서 ←/→ 키로도 이동합니다.</p><div class="comic-viewer-viewport" tabindex="0" role="region" aria-label="만화 읽기 영역"><div class="comic-viewer-artwork"></div></div>`, y = i.querySelector("h2"), h = i.querySelector(".comic-viewer-viewport"), M = i.querySelector(".comic-viewer-artwork"), d = i.querySelector("select"), T = i.querySelector('input[type="checkbox"]'), B = i.querySelector(".comic-previous"), N = i.querySelector(".comic-next"), z = i.querySelector(".comic-position"), c = i.querySelector("button"), d.addEventListener("change", q), T.addEventListener("change", q), i.querySelector("button").addEventListener("click", F), i.addEventListener("pointerdown", Y), i.addEventListener("click", G), i.addEventListener("cancel", o), i.addEventListener("close", f), i.addEventListener("keydown", j), document.body.append(i), A = new ResizeObserver(I), A.observe(h);
+    $ = te();
+    const o = `comic-gen-viewer-${++j().nextId}`;
+    i = document.createElement("dialog"), i.className = "comic-viewer", i.dataset.comicGenViewer = "", i.setAttribute("aria-labelledby", `${o}-title`), i.setAttribute("aria-describedby", `${o}-help`), i.innerHTML = `<div class="comic-viewer-toolbar"><h2 class="comic-viewer-title" id="${o}-title"></h2><button type="button" autofocus>닫기</button><div class="comic-viewer-controls"><label class="comic-viewer-checkbox"><input type="checkbox" checked>화면 넘침 방지</label><label>보기 크기 <select><option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option></select></label><div class="comic-viewer-navigation"><button type="button" class="comic-previous" aria-label="이전 컷">←</button><span class="comic-position" role="status" aria-live="polite"></span><button type="button" class="comic-next" aria-label="다음 컷">→</button></div></div></div><p class="comic-viewer-help" id="${o}-help">화면 넘침 방지는 한 컷의 너비·높이를 화면에 맞춥니다. 다음 컷은 아래로 스크롤해 읽습니다. 컷 왼쪽은 이전, 오른쪽은 다음 컷입니다. 읽기 영역에서 ←/→ 키로도 이동합니다.</p><div class="comic-viewer-viewport" tabindex="0" role="region" aria-label="만화 읽기 영역"><div class="comic-viewer-artwork"></div></div>`, y = i.querySelector("h2"), p = i.querySelector(".comic-viewer-viewport"), M = i.querySelector(".comic-viewer-artwork"), l = i.querySelector("select"), T = i.querySelector('input[type="checkbox"]'), P = i.querySelector(".comic-previous"), N = i.querySelector(".comic-next"), z = i.querySelector(".comic-position"), c = i.querySelector("button"), l.addEventListener("change", G), T.addEventListener("change", G), i.querySelector("button").addEventListener("click", F), i.addEventListener("pointerdown", K), i.addEventListener("click", C), i.addEventListener("cancel", t), i.addEventListener("close", f), i.addEventListener("keydown", X), document.body.append(i), A = new ResizeObserver(I), A.observe(p);
   };
   return {
     get isOpen() {
@@ -512,29 +516,29 @@ function se(e = {}) {
     get state() {
       return w();
     },
-    setView: (t) => {
+    setView: (o) => {
       if (!i?.open || !E)
         throw new Error("Open the viewer before setting its view.");
-      l(t, E.result.panels.length), n = !0, t.zoom !== void 0 && m(t.zoom), t.preventOverflow !== void 0 && (T.checked = t.preventOverflow), I(), t.panelIndex !== void 0 && v?.goTo(t.panelIndex), n = !1, s();
+      d(o, E.result.panels.length), n = !0, o.zoom !== void 0 && m(o.zoom), o.preventOverflow !== void 0 && (T.checked = o.preventOverflow), I(), o.panelIndex !== void 0 && v?.goTo(o.panelIndex), n = !1, s();
     },
-    open: (t, p = {}) => {
+    open: (o, h = {}) => {
       if (D) throw new Error("폐기한 만화 뷰어는 다시 열 수 없습니다.");
-      const u = Q(t), S = { ...e, ...p };
+      const u = ee(o), S = { ...e, ...h };
       g(S, u.result.panels.length);
-      const X = S.trigger ?? (i?.open ? P : document.activeElement instanceof HTMLElement ? document.activeElement : void 0);
-      oe(), v?.dispose(), k?.(), n = !0, r = S, a = void 0, b = !1, x = void 0, E = u, P = X, y.textContent = u.title, d.querySelectorAll("[data-custom-zoom]").forEach((K) => K.remove()), m(S.zoom ?? 1), T.checked = S.preventOverflow ?? !0, c.hidden = S.showCloseButton === !1;
-      const R = te(
+      const Y = S.trigger ?? (i?.open ? q : document.activeElement instanceof HTMLElement ? document.activeElement : void 0);
+      H(), v?.dispose(), L?.(), n = !0, r = S, a = void 0, b = !1, x = void 0, E = u, q = Y, y.textContent = u.title, l.querySelectorAll("[data-custom-zoom]").forEach((W) => W.remove()), m(S.zoom ?? 1), T.checked = S.preventOverflow ?? !0, c.hidden = S.showCloseButton === !1;
+      const R = oe(
         u.result.svg,
         u.result.width,
         u.result.height,
         u.title
       );
-      if (k = R.revoke, M.replaceChildren(R.image), v = ie(
-        h,
+      if (L = R.revoke, M.replaceChildren(R.image), v = ie(
+        p,
         R.image,
         u.bounds,
         u.result.width,
-        B,
+        P,
         N,
         z,
         s
@@ -542,43 +546,43 @@ function se(e = {}) {
         O = ae();
         try {
           i.showModal();
-        } catch (K) {
-          throw n = !1, V(), K;
+        } catch (W) {
+          throw n = !1, V(), W;
         }
       }
-      I(), h.scrollTo(0, 0), v.reset(), v.goTo(S.panelIndex ?? 0), (c.hidden ? h : c).focus({
+      I(), p.scrollTo(0, 0), v.reset(), v.goTo(S.panelIndex ?? 0), (c.hidden ? p : c).focus({
         preventScroll: !0
       }), n = !1, s();
     },
     close: F,
     destroy: () => {
-      D || (D = !0, F(), A?.disconnect(), i && (d.removeEventListener("change", q), T.removeEventListener("change", q), i.querySelector("button").removeEventListener("click", F), i.removeEventListener("pointerdown", Y), i.removeEventListener("click", G), i.removeEventListener("cancel", o), i.removeEventListener("close", f), i.removeEventListener("keydown", j), i.remove()), $?.(), $ = void 0);
+      D || (D = !0, F(), A?.disconnect(), i && (l.removeEventListener("change", G), T.removeEventListener("change", G), i.querySelector("button").removeEventListener("click", F), i.removeEventListener("pointerdown", K), i.removeEventListener("click", C), i.removeEventListener("cancel", t), i.removeEventListener("close", f), i.removeEventListener("keydown", X), i.remove()), $?.(), $ = void 0);
     }
   };
 }
 function le(e, r, c = {}) {
-  const l = Q(r), g = ee(), w = se(c), a = document.createElement("button");
-  a.type = "button", a.className = "comic-card", a.dataset.comicGenCard = "", a.setAttribute("aria-haspopup", "dialog"), a.setAttribute("aria-label", `${l.title} · 만화 읽기`);
+  const d = ee(r), g = te(), w = se(c), a = document.createElement("button");
+  a.type = "button", a.className = "comic-card", a.dataset.comicGenCard = "", a.setAttribute("aria-haspopup", "dialog"), a.setAttribute("aria-label", `${d.title} · 만화 읽기`);
   const n = document.createElement("span");
   n.className = "comic-card-thumbnail", n.setAttribute("aria-hidden", "true");
-  const s = l.result.panels[0], m = te(
+  const s = d.result.panels[0], m = oe(
     s.svg,
     s.width,
     s.height,
-    `${l.title} · 1/${l.result.panels.length}`
+    `${d.title} · 1/${d.result.panels.length}`
   );
   n.append(m.image);
   const i = document.createElement("span");
   i.className = "comic-card-copy";
-  const h = document.createElement("strong");
-  h.textContent = l.title;
+  const p = document.createElement("strong");
+  p.textContent = d.title;
   const M = document.createElement("span");
-  M.textContent = `${l.result.panels.length}컷 · 만화 읽기 ↗`, i.append(h, M), a.append(n, i);
-  const y = () => w.open(l.result, { trigger: a });
+  M.textContent = `${d.result.panels.length}컷 · 만화 읽기 ↗`, i.append(p, M), a.append(n, i);
+  const y = () => w.open(d.result, { trigger: a });
   a.addEventListener("click", y), e.replaceChildren(a);
-  let d = !1;
+  let l = !1;
   return () => {
-    d || (d = !0, a.removeEventListener("click", y), w.destroy(), m.revoke(), a.remove(), g());
+    l || (l = !0, a.removeEventListener("click", y), w.destroy(), m.revoke(), a.remove(), g());
   };
 }
 export {
