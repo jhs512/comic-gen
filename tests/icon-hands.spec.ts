@@ -58,11 +58,26 @@ test("icon fingers stay filled and connected at small display sizes without clip
                       [-67, 0],
                     ]
                   : [
-                      [-77.5, -40],
-                      [-64.5, -47],
-                      [-51.5, -40],
+                      [-79.75, -42],
+                      [-67.75, -42],
+                      [-55.75, -42],
+                      [-43.75, -42],
                       [-65, -20],
                     ];
+              const palm = hand.querySelector<SVGPathElement>(
+                ':scope > path[fill="white"]',
+              );
+              const fingerTops =
+                gesture === "wave"
+                  ? samples
+                      .slice(0, 4)
+                      .map(([x]) =>
+                        Array.from(
+                          { length: 30 },
+                          (_, index) => -60 + index,
+                        ).find((y) => palm!.isPointInFill(new DOMPoint(x, y))),
+                      )
+                  : [];
               // Paint the actual hand on a contrasting background so white fill
               // can be distinguished from empty space at mobile display sizes.
               const image = new Image();
@@ -96,6 +111,10 @@ test("icon fingers stay filled and connected at small display sizes without clip
                 displayWidth,
                 asset: actor.getAttribute("data-character"),
                 brightness,
+                balancedFingers:
+                  gesture !== "wave" ||
+                  (fingerTops.every((y) => y !== undefined) &&
+                    Math.max(...fingerTops) - Math.min(...fingerTops) <= 2),
                 withinBounds:
                   box.x - 1.4 >= -92 &&
                   box.x + box.width + 1.4 <= 92 &&
@@ -109,6 +128,7 @@ test("icon fingers stay filled and connected at small display sizes without clip
   expect(checks).toHaveLength(72);
   for (const check of checks) {
     expect(check.withinBounds, JSON.stringify(check)).toBe(true);
+    expect(check.balancedFingers, JSON.stringify(check)).toBe(true);
     for (const value of check.brightness)
       expect(value, JSON.stringify(check)).toBeGreaterThan(185);
   }
