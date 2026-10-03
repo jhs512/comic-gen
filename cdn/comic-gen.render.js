@@ -1,4 +1,4 @@
-/*! Comic Gen browser SDK v0.7.2
+/*! Comic Gen browser SDK v0.7.3
 Bundled yaml license:
 Copyright Eemeli Aro <eemeli@gmail.com>
 
@@ -27,7 +27,7 @@ const oe = Object.freeze({
     throw new Error("사람의 외형 색상은 #RGB 또는 #RRGGBB로 작성하세요.");
   return s;
 };
-function cs(s = oe) {
+function ls(s = oe) {
   const e = ht(s.skinColor), t = ht(s.hairColor), n = ht(s.outfitColor), i = {
     short: "",
     bob: `<path d="M-37 -24Q-42 -56 0 -58Q42 -56 37 -24L41 17Q29 26 20 15H-20Q-29 26 -41 17Z" fill="${t}"/>`,
@@ -57,7 +57,7 @@ function cs(s = oe) {
     }
   };
 }
-const on = "3", fs = {
+const on = "4", cs = {
   client: {
     color: "#9fcdfa",
     faceY: 0,
@@ -73,20 +73,23 @@ const on = "3", fs = {
     faceY: 5,
     body: '<path d="M-52 -39v79c0 23 104 23 104 0v-79" fill="#daccff"/><ellipse cy="-39" rx="52" ry="18" fill="#ece4ff"/><path d="M-52 24c0 23 104 23 104 0" fill="none"/>'
   },
-  human: cs()
+  human: ls()
 };
-function Gt(s) {
-  return s.asset === "human" ? cs(s.appearance) : fs[s.asset];
+function Qt(s) {
+  return s.asset === "human" ? ls(s.appearance) : cs[s.asset];
 }
-const us = {
+const fs = {
   neutral: '<circle cx="-17" cy="-4" r="3.5"/><circle cx="17" cy="-4" r="3.5"/><path d="M-10 17q10 7 20 0" fill="none"/>',
   happy: '<path d="M-25 -2q8 -12 16 0m18 0q8 -12 16 0M-13 16q13 18 26 0" fill="none"/>',
   confused: '<circle cx="-17" cy="-4" r="3.5"/><circle cx="17" cy="-4" r="3.5"/><path d="M-24 -17l13 -5m21 1 14 4M-8 18q8 -6 16 0" fill="none"/>',
   sad: '<circle cx="-17" cy="-4" r="3.5"/><circle cx="17" cy="-4" r="3.5"/><path d="M-12 23q12 -14 24 0" fill="none"/>',
   angry: '<path d="M-25 -16l15 6m20 0 15 -6M-10 20h20" fill="none"/><circle cx="-17" cy="-1" r="3"/><circle cx="17" cy="-1" r="3"/>'
-}, kt = {
+}, us = {
   wave: '<g data-hand="wave"><circle cx="-65" cy="-22" r="12" fill="white"/><path d="M-77 -42l-4 -8m15 2v-10m13 17 5 -7" fill="none"/></g>',
   point: '<g data-hand="point"><circle cx="-65" cy="0" r="11" fill="white"/><path d="M-77 0h-13" fill="none"/></g>'
+}, an = {
+  wave: '<g data-hand="wave" stroke-linejoin="round"><path d="M-66 -9Q-78 -9 -81 -20L-87 -26Q-91 -30 -88 -33Q-85 -36 -81 -32V-44Q-81 -48 -77.5 -48Q-74 -48 -74 -44V-31Q-74 -29 -68 -31V-50Q-68 -54 -64.5 -54Q-61 -54 -61 -50V-31Q-61 -29 -55 -31V-44Q-55 -48 -51.5 -48Q-48 -48 -48 -44V-22Q-48 -11 -59 -9Z" fill="white"/><path d="M-84 -48l-4 -5m23 -5v-6m16 11 4 -5" fill="none"/></g>',
+  point: '<g data-hand="point" stroke-linejoin="round"><path d="M-72 -4H-85a4 4 0 0 0 0 8H-74l3 5q3 4 9 2l5 -3q4 -2 3 -7l-1 -6q-1 -5 -6 -6h-4q-5 -1 -7 3Z" fill="white"/><path d="M-68 -7q3 5 8 4" fill="none" stroke-width="2"/></g>'
 }, Je = {
   request: '<rect x="-18" y="-13" width="36" height="26" rx="4" fill="#f9f0cd"/><path d="M-18 -13L0 1l18 -14" fill="none"/>',
   data: '<path d="M-16 -12v23c0 10 32 10 32 0v-23" fill="#daccff"/><ellipse cy="-12" rx="16" ry="6" fill="#ece4ff"/>',
@@ -104,7 +107,7 @@ function K(s) {
     })[e]
   );
 }
-class an {
+class ln {
   constructor(e = 2e6) {
     if (this.maxBytes = e, !Number.isFinite(e) || e < 0)
       throw new Error("캐시 크기는 0 이상의 숫자여야 합니다.");
@@ -135,7 +138,7 @@ class an {
     this.entries.clear(), this.size = 0;
   }
 }
-const It = /* @__PURE__ */ Symbol.for("yaml.alias"), St = /* @__PURE__ */ Symbol.for("yaml.document"), te = /* @__PURE__ */ Symbol.for("yaml.map"), hs = /* @__PURE__ */ Symbol.for("yaml.pair"), Y = /* @__PURE__ */ Symbol.for("yaml.scalar"), ke = /* @__PURE__ */ Symbol.for("yaml.seq"), U = /* @__PURE__ */ Symbol.for("yaml.node.type"), Se = (s) => !!s && typeof s == "object" && s[U] === It, et = (s) => !!s && typeof s == "object" && s[U] === St, xe = (s) => !!s && typeof s == "object" && s[U] === te, C = (s) => !!s && typeof s == "object" && s[U] === hs, T = (s) => !!s && typeof s == "object" && s[U] === Y, Pe = (s) => !!s && typeof s == "object" && s[U] === ke;
+const Tt = /* @__PURE__ */ Symbol.for("yaml.alias"), kt = /* @__PURE__ */ Symbol.for("yaml.document"), te = /* @__PURE__ */ Symbol.for("yaml.map"), hs = /* @__PURE__ */ Symbol.for("yaml.pair"), Y = /* @__PURE__ */ Symbol.for("yaml.scalar"), ke = /* @__PURE__ */ Symbol.for("yaml.seq"), U = /* @__PURE__ */ Symbol.for("yaml.node.type"), Se = (s) => !!s && typeof s == "object" && s[U] === Tt, et = (s) => !!s && typeof s == "object" && s[U] === kt, xe = (s) => !!s && typeof s == "object" && s[U] === te, C = (s) => !!s && typeof s == "object" && s[U] === hs, T = (s) => !!s && typeof s == "object" && s[U] === Y, Pe = (s) => !!s && typeof s == "object" && s[U] === ke;
 function I(s) {
   if (s && typeof s == "object")
     switch (s[U]) {
@@ -148,7 +151,7 @@ function I(s) {
 function M(s) {
   if (s && typeof s == "object")
     switch (s[U]) {
-      case It:
+      case Tt:
       case te:
       case Y:
       case ke:
@@ -156,18 +159,18 @@ function M(s) {
     }
   return !1;
 }
-const ds = (s) => (T(s) || I(s)) && !!s.anchor, ae = /* @__PURE__ */ Symbol("break visit"), ln = /* @__PURE__ */ Symbol("skip children"), Me = /* @__PURE__ */ Symbol("remove node");
+const ds = (s) => (T(s) || I(s)) && !!s.anchor, ae = /* @__PURE__ */ Symbol("break visit"), cn = /* @__PURE__ */ Symbol("skip children"), Me = /* @__PURE__ */ Symbol("remove node");
 function Ee(s, e) {
-  const t = cn(e);
+  const t = fn(e);
   et(s) ? pe(null, s.contents, t, Object.freeze([s])) === Me && (s.contents = null) : pe(null, s, t, Object.freeze([]));
 }
 Ee.BREAK = ae;
-Ee.SKIP = ln;
+Ee.SKIP = cn;
 Ee.REMOVE = Me;
 function pe(s, e, t, n) {
-  const i = fn(s, e, t, n);
+  const i = un(s, e, t, n);
   if (M(i) || C(i))
-    return un(s, n, i), pe(s, i, t, n);
+    return hn(s, n, i), pe(s, i, t, n);
   if (typeof i != "symbol") {
     if (I(e)) {
       n = Object.freeze(n.concat(e));
@@ -195,7 +198,7 @@ function pe(s, e, t, n) {
   }
   return i;
 }
-function cn(s) {
+function fn(s) {
   return typeof s == "object" && (s.Collection || s.Node || s.Value) ? Object.assign({
     Alias: s.Node,
     Map: s.Node,
@@ -210,7 +213,7 @@ function cn(s) {
     Seq: s.Collection
   }, s) : s;
 }
-function fn(s, e, t, n) {
+function un(s, e, t, n) {
   if (typeof t == "function")
     return t(s, e, n);
   if (xe(e))
@@ -224,7 +227,7 @@ function fn(s, e, t, n) {
   if (Se(e))
     return t.Alias?.(s, e, n);
 }
-function un(s, e, t) {
+function hn(s, e, t) {
   const n = e[e.length - 1];
   if (I(n))
     n.items[s] = t;
@@ -237,14 +240,14 @@ function un(s, e, t) {
     throw new Error(`Cannot replace node with ${i} parent`);
   }
 }
-const hn = {
+const dn = {
   "!": "%21",
   ",": "%2C",
   "[": "%5B",
   "]": "%5D",
   "{": "%7B",
   "}": "%7D"
-}, dn = (s) => s.replace(/[!,[\]{}]/g, (e) => hn[e]);
+}, pn = (s) => s.replace(/[!,[\]{}]/g, (e) => dn[e]);
 class P {
   constructor(e, t) {
     this.docStart = null, this.docEnd = !1, this.yaml = Object.assign({}, P.defaultYaml, e), this.tags = Object.assign({}, P.defaultTags, t);
@@ -334,7 +337,7 @@ class P {
   tagString(e) {
     for (const [t, n] of Object.entries(this.tags))
       if (e.startsWith(n))
-        return t + dn(e.substring(n.length));
+        return t + pn(e.substring(n.length));
     return e[0] === "!" ? e : `!<${e}>`;
   }
   toString(e) {
@@ -377,7 +380,7 @@ function gs(s, e) {
       return n;
   }
 }
-function pn(s, e) {
+function mn(s, e) {
   const t = [], n = /* @__PURE__ */ new Map();
   let i = null;
   return {
@@ -444,7 +447,7 @@ function R(s, e, t) {
   }
   return typeof s == "bigint" && !t?.keep ? Number(s) : s;
 }
-class Mt {
+class It {
   constructor(e) {
     Object.defineProperty(this, U, { value: e });
   }
@@ -471,9 +474,9 @@ class Mt {
     return typeof r == "function" ? me(r, { "": a }, "", a) : a;
   }
 }
-class Ct extends Mt {
+class Mt extends It {
   constructor(e) {
-    super(It), this.source = e, Object.defineProperty(this, "tag", {
+    super(Tt), this.source = e, Object.defineProperty(this, "tag", {
       set() {
         throw new Error("Alias nodes cannot have tags");
       }
@@ -553,7 +556,7 @@ function Qe(s, e, t) {
   return 1;
 }
 const ys = (s) => !s || typeof s != "function" && typeof s != "object";
-class O extends Mt {
+class O extends It {
   constructor(e) {
     super(Y), this.value = e;
   }
@@ -569,8 +572,8 @@ O.BLOCK_LITERAL = "BLOCK_LITERAL";
 O.PLAIN = "PLAIN";
 O.QUOTE_DOUBLE = "QUOTE_DOUBLE";
 O.QUOTE_SINGLE = "QUOTE_SINGLE";
-const mn = "tag:yaml.org,2002:";
-function gn(s, e, t) {
+const gn = "tag:yaml.org,2002:";
+function yn(s, e, t) {
   if (e) {
     const n = t.filter((r) => r.tag === e), i = n.find((r) => !r.format) ?? n[0];
     if (!i)
@@ -591,11 +594,11 @@ function je(s, e, t) {
   let c;
   if (n && s && typeof s == "object") {
     if (c = a.get(s), c)
-      return c.anchor ?? (c.anchor = i(s)), new Ct(c.anchor);
+      return c.anchor ?? (c.anchor = i(s)), new Mt(c.anchor);
     c = { anchor: null, node: null }, a.set(s, c);
   }
-  e?.startsWith("!!") && (e = mn + e.slice(2));
-  let l = gn(s, e, o.tags);
+  e?.startsWith("!!") && (e = gn + e.slice(2));
+  let l = yn(s, e, o.tags);
   if (!l) {
     if (s && typeof s.toJSON == "function" && (s = s.toJSON()), !s || typeof s != "object") {
       const f = new O(s);
@@ -628,7 +631,7 @@ function We(s, e, t) {
   });
 }
 const Te = (s) => s == null || typeof s == "object" && !!s[Symbol.iterator]().next().done;
-class ws extends Mt {
+class ws extends It {
   constructor(e, t) {
     super(e), Object.defineProperty(this, "schema", {
       value: t,
@@ -723,14 +726,14 @@ class ws extends Mt {
     }
   }
 }
-const yn = (s) => s.replace(/^(?!$)(?: $)?/gm, "#");
+const wn = (s) => s.replace(/^(?!$)(?: $)?/gm, "#");
 function W(s, e) {
   return /^\n+$/.test(s) ? s.substring(1) : e ? s.replace(/^(?! *$)/gm, e) : s;
 }
 const le = (s, e, t) => s.endsWith(`
 `) ? W(t, e) : t.includes(`
 `) ? `
-` + W(t, e) : (s.endsWith(" ") ? "" : " ") + t, bs = "flow", Et = "block", Ge = "quoted";
+` + W(t, e) : (s.endsWith(" ") ? "" : " ") + t, bs = "flow", St = "block", Ge = "quoted";
 function tt(s, e, t = "flow", { indentAtStart: n, lineWidth: i = 80, minContentWidth: r = 20, onFold: o, onOverflow: a } = {}) {
   if (!i || i < 0)
     return s;
@@ -742,7 +745,7 @@ function tt(s, e, t = "flow", { indentAtStart: n, lineWidth: i = 80, minContentW
   let f = i - e.length;
   typeof n == "number" && (n > i - Math.max(2, r) ? l.push(0) : f = i - n);
   let d, g, y = !1, h = -1, p = -1, w = -1;
-  t === Et && (h = Ht(s, h, e.length), h !== -1 && (f = h + c));
+  t === St && (h = Gt(s, h, e.length), h !== -1 && (f = h + c));
   for (let k; k = s[h += 1]; ) {
     if (t === Ge && k === "\\") {
       switch (p = h, s[h + 1]) {
@@ -762,7 +765,7 @@ function tt(s, e, t = "flow", { indentAtStart: n, lineWidth: i = 80, minContentW
     }
     if (k === `
 `)
-      t === Et && (h = Ht(s, h, e.length)), f = h + e.length + c, d = void 0;
+      t === St && (h = Gt(s, h, e.length)), f = h + e.length + c, d = void 0;
     else {
       if (k === " " && g && g !== " " && g !== `
 ` && g !== "	") {
@@ -797,7 +800,7 @@ ${e}${s.slice(m + 1, b)}`);
   }
   return S;
 }
-function Ht(s, e, t) {
+function Gt(s, e, t) {
   let n = e, i = e + 1, r = s[i];
   for (; r === " " || r === "	"; )
     if (e < i + t)
@@ -816,7 +819,7 @@ const st = (s, e) => ({
   lineWidth: s.options.lineWidth,
   minContentWidth: s.options.minContentWidth
 }), nt = (s) => /^(%|---|\.\.\.)/m.test(s);
-function wn(s, e, t) {
+function bn(s, e, t) {
   if (!e || e < 0)
     return !1;
   const n = e - t, i = s.length;
@@ -893,7 +896,7 @@ function Ce(s, e) {
       }
   return o = a ? o + t.slice(a) : t, n ? o : tt(o, r, Ge, st(e, !1));
 }
-function Nt(s, e) {
+function Et(s, e) {
   if (e.options.singleQuote === !1 || e.implicitKey && s.includes(`
 `) || /[ \t]\n|\n[ \t]/.test(s))
     return Ce(s, e);
@@ -908,24 +911,24 @@ function ge(s, e) {
     n = Ce;
   else {
     const i = s.includes('"'), r = s.includes("'");
-    i && !r ? n = Nt : r && !i ? n = Ce : n = t ? Nt : Ce;
+    i && !r ? n = Et : r && !i ? n = Ce : n = t ? Et : Ce;
   }
   return n(s, e);
 }
-let Ot;
+let Nt;
 try {
-  Ot = new RegExp(`(^|(?<!
+  Nt = new RegExp(`(^|(?<!
 ))
 +(?!
 |$)`, "g");
 } catch {
-  Ot = /\n+(?!\n|$)/g;
+  Nt = /\n+(?!\n|$)/g;
 }
 function He({ comment: s, type: e, value: t }, n, i, r) {
   const { blockQuote: o, commentString: a, lineWidth: c } = n.options;
   if (!o || /\n[\t ]+$/.test(t))
     return ge(t, n);
-  const l = n.indent || (n.forceBlockIndent || nt(t) ? "  " : ""), u = o === "literal" ? !0 : o === "folded" || e === O.BLOCK_FOLDED ? !1 : e === O.BLOCK_LITERAL ? !0 : !wn(t, c, l.length);
+  const l = n.indent || (n.forceBlockIndent || nt(t) ? "  " : ""), u = o === "literal" ? !0 : o === "folded" || e === O.BLOCK_FOLDED ? !1 : e === O.BLOCK_LITERAL ? !0 : !bn(t, c, l.length);
   if (!t)
     return u ? `|
 ` : `>
@@ -941,7 +944,7 @@ function He({ comment: s, type: e, value: t }, n, i, r) {
   const y = g.indexOf(`
 `);
   y === -1 ? f = "-" : t === g || y !== g.length - 1 ? (f = "+", r && r()) : f = "", g && (t = t.slice(0, -g.length), g[g.length - 1] === `
-` && (g = g.slice(0, -1)), g = g.replace(Ot, `$&${l}`));
+` && (g = g.slice(0, -1)), g = g.replace(Nt, `$&${l}`));
   let h = !1, p, w = -1;
   for (p = 0; p < t.length; ++p) {
     const b = t[p];
@@ -964,7 +967,7 @@ $&`).replace(/(?:^|\n)([\t ].*)(?:([\n\t ]*)\n(?![\n\t ]))?/g, "$1$2").replace(/
     o !== "folded" && e !== O.BLOCK_FOLDED && (N.onOverflow = () => {
       E = !0;
     });
-    const $ = tt(`${S}${b}${g}`, l, Et, N);
+    const $ = tt(`${S}${b}${g}`, l, St, N);
     if (!E)
       return `>${m}
 ${l}${$}`;
@@ -972,7 +975,7 @@ ${l}${$}`;
   return t = t.replace(/\n+/g, `$&${l}`), `|${m}
 ${l}${S}${t}${g}`;
 }
-function bn(s, e, t, n) {
+function $n(s, e, t, n) {
   const { type: i, value: r } = s, { actualString: o, implicitKey: a, indent: c, indentStep: l, inFlow: u } = e;
   if (a && r.includes(`
 `) || u && /[[\]{},]/.test(r))
@@ -998,7 +1001,7 @@ ${c}`);
   }
   return a ? f : tt(f, c, bs, st(e, !1));
 }
-function _t(s, e, t, n) {
+function Ct(s, e, t, n) {
   const { implicitKey: i, inFlow: r } = e, o = typeof s.value == "string" ? s : Object.assign({}, s, { value: String(s.value) });
   let { type: a } = s;
   a !== O.QUOTE_DOUBLE && /[\x00-\x08\x0b-\x1f\x7f-\x9f\u{D800}-\u{DFFF}]/u.test(o.value) && (a = O.QUOTE_DOUBLE);
@@ -1010,9 +1013,9 @@ function _t(s, e, t, n) {
       case O.QUOTE_DOUBLE:
         return Ce(o.value, e);
       case O.QUOTE_SINGLE:
-        return Nt(o.value, e);
+        return Et(o.value, e);
       case O.PLAIN:
-        return bn(o, e, t, n);
+        return $n(o, e, t, n);
       default:
         return null;
     }
@@ -1028,7 +1031,7 @@ function _t(s, e, t, n) {
 function $s(s, e) {
   const t = Object.assign({
     blockQuote: !0,
-    commentString: yn,
+    commentString: wn,
     defaultKeyType: null,
     defaultStringType: "PLAIN",
     directives: null,
@@ -1067,7 +1070,7 @@ function $s(s, e) {
     options: t
   };
 }
-function $n(s, e) {
+function kn(s, e) {
   if (e.tag) {
     const i = s.filter((r) => r.tag === e.tag);
     if (i.length > 0)
@@ -1090,7 +1093,7 @@ function $n(s, e) {
   }
   return t;
 }
-function kn(s, e, { anchors: t, doc: n }) {
+function Sn(s, e, { anchors: t, doc: n }) {
   if (!n.directives)
     return "";
   const i = [], r = (T(s) || I(s)) && s.anchor;
@@ -1110,14 +1113,14 @@ function be(s, e, t, n) {
   }
   let i;
   const r = M(s) ? s : e.doc.createNode(s, { onTagObj: (c) => i = c });
-  i ?? (i = $n(e.doc.schema.tags, r));
-  const o = kn(r, i, e);
+  i ?? (i = kn(e.doc.schema.tags, r));
+  const o = Sn(r, i, e);
   o.length > 0 && (e.indentAtStart = (e.indentAtStart ?? 0) + o.length + 1);
-  const a = typeof i.stringify == "function" ? i.stringify(r, e, t, n) : T(r) ? _t(r, e, t, n) : r.toString(e, t, n);
+  const a = typeof i.stringify == "function" ? i.stringify(r, e, t, n) : T(r) ? Ct(r, e, t, n) : r.toString(e, t, n);
   return o ? T(r) || a[0] === "{" || a[0] === "[" ? `${o} ${a}` : `${o}
 ${e.indent}${a}` : a;
 }
-function Sn({ key: s, value: e }, t, n, i) {
+function En({ key: s, value: e }, t, n, i) {
   const { allNullValues: r, doc: o, indent: a, indentStep: c, options: { commentString: l, indentSeq: u, simpleKeys: f } } = t;
   let d = M(s) && s.comment || null;
   if (f) {
@@ -1180,7 +1183,7 @@ ${t.indent}`);
 `) && (E = "");
   return p += E + b, t.inFlow ? m && n && n() : k && !m ? p += le(p, t.indent, l(k)) : h && i && i(), p;
 }
-function En(s, e) {
+function Nn(s, e) {
   (s === "debug" || s === "warn") && console.warn(e);
 }
 const Fe = "<<", X = {
@@ -1192,7 +1195,7 @@ const Fe = "<<", X = {
     addToJSMap: ks
   }),
   stringify: () => Fe
-}, Nn = (s, e) => (X.identify(e) || T(e) && (!e.type || e.type === O.PLAIN) && X.identify(e.value)) && s?.doc.schema.tags.some((t) => t.tag === X.tag && t.default);
+}, On = (s, e) => (X.identify(e) || T(e) && (!e.type || e.type === O.PLAIN) && X.identify(e.value)) && s?.doc.schema.tags.some((t) => t.tag === X.tag && t.default);
 function ks(s, e, t) {
   const n = Ss(s, t);
   if (Pe(n))
@@ -1224,7 +1227,7 @@ function Ss(s, e) {
 function Es(s, e, { key: t, value: n }) {
   if (M(t) && t.addToJSMap)
     t.addToJSMap(s, e, n);
-  else if (Nn(s, t))
+  else if (On(s, t))
     ks(s, e, n);
   else {
     const i = R(t, "", s);
@@ -1233,7 +1236,7 @@ function Es(s, e, { key: t, value: n }) {
     else if (e instanceof Set)
       e.add(i);
     else {
-      const r = On(t, i, s), o = R(n, r, s);
+      const r = Ln(t, i, s), o = R(n, r, s);
       r in e ? Object.defineProperty(e, r, {
         value: o,
         writable: !0,
@@ -1244,7 +1247,7 @@ function Es(s, e, { key: t, value: n }) {
   }
   return e;
 }
-function On(s, e, t) {
+function Ln(s, e, t) {
   if (e === null)
     return "";
   if (typeof e != "object")
@@ -1258,13 +1261,13 @@ function On(s, e, t) {
     const i = s.toString(n);
     if (!t.mapKeyWarned) {
       let r = JSON.stringify(i);
-      r.length > 40 && (r = r.substring(0, 36) + '..."'), En(t.doc.options.logLevel, `Keys with collection values will be stringified due to JS Object restrictions: ${r}. Set mapAsMap: true to use object keys.`), t.mapKeyWarned = !0;
+      r.length > 40 && (r = r.substring(0, 36) + '..."'), Nn(t.doc.options.logLevel, `Keys with collection values will be stringified due to JS Object restrictions: ${r}. Set mapAsMap: true to use object keys.`), t.mapKeyWarned = !0;
     }
     return i;
   }
   return JSON.stringify(e);
 }
-function jt(s, e, t) {
+function _t(s, e, t) {
   const n = je(s, void 0, t), i = je(e, void 0, t);
   return new D(n, i);
 }
@@ -1281,13 +1284,13 @@ class D {
     return Es(t, n, this);
   }
   toString(e, t, n) {
-    return e?.doc ? Sn(this, e, t, n) : JSON.stringify(this);
+    return e?.doc ? En(this, e, t, n) : JSON.stringify(this);
   }
 }
 function Ns(s, e, t) {
-  return (e.inFlow ?? s.flow ? vn : Ln)(s, e, t);
+  return (e.inFlow ?? s.flow ? An : vn)(s, e, t);
 }
-function Ln({ comment: s, items: e }, t, { blockItemPrefix: n, flowChars: i, itemIndent: r, onChompKeep: o, onComment: a }) {
+function vn({ comment: s, items: e }, t, { blockItemPrefix: n, flowChars: i, itemIndent: r, onChompKeep: o, onComment: a }) {
   const { indent: c, options: { commentString: l } } = t, u = Object.assign({}, t, { indent: r, type: null });
   let f = !1;
   const d = [];
@@ -1319,7 +1322,7 @@ ${c}${h}` : `
   return s ? (g += `
 ` + W(l(s), c), a && a()) : f && o && o(), g;
 }
-function vn({ items: s }, e, { flowChars: t, itemIndent: n }) {
+function An({ items: s }, e, { flowChars: t, itemIndent: n }) {
   const { indent: i, indentStep: r, flowCollectionPadding: o, options: { commentString: a } } = e;
   n += r;
   const c = Object.assign({}, e, {
@@ -1392,7 +1395,7 @@ class q extends ws {
         l = r.call(t, c, l);
       else if (Array.isArray(r) && !r.includes(c))
         return;
-      (l !== void 0 || i) && o.items.push(jt(c, l, n));
+      (l !== void 0 || i) && o.items.push(_t(c, l, n));
     };
     if (t instanceof Map)
       for (const [c, l] of t)
@@ -1577,7 +1580,7 @@ const Oe = {
   tag: "tag:yaml.org,2002:str",
   resolve: (s) => s,
   stringify(s, e, t, n) {
-    return e = Object.assign({ actualString: !0 }, e), _t(s, e, t, n);
+    return e = Object.assign({ actualString: !0 }, e), Ct(s, e, t, n);
   }
 }, rt = {
   identify: (s) => s == null,
@@ -1587,14 +1590,14 @@ const Oe = {
   test: /^(?:~|[Nn]ull|NULL)?$/,
   resolve: () => new O(null),
   stringify: ({ source: s }, e) => typeof s == "string" && rt.test.test(s) ? s : e.options.nullStr
-}, Bt = {
+}, jt = {
   identify: (s) => typeof s == "boolean",
   default: !0,
   tag: "tag:yaml.org,2002:bool",
   test: /^(?:[Tt]rue|TRUE|[Ff]alse|FALSE)$/,
   resolve: (s) => new O(s[0] === "t" || s[0] === "T"),
   stringify({ source: s, value: e }, t) {
-    if (s && Bt.test.test(s)) {
+    if (s && jt.test.test(s)) {
       const n = s[0] === "t" || s[0] === "T";
       if (e === n)
         return s;
@@ -1646,7 +1649,7 @@ const Os = {
     return t !== -1 && s[s.length - 1] === "0" && (e.minFractionDigits = s.length - t - 1), e;
   },
   stringify: Q
-}, ot = (s) => typeof s == "bigint" || Number.isInteger(s), xt = (s, e, t, { intAsBigInt: n }) => n ? BigInt(s) : parseInt(s.substring(e), t);
+}, ot = (s) => typeof s == "bigint" || Number.isInteger(s), Bt = (s, e, t, { intAsBigInt: n }) => n ? BigInt(s) : parseInt(s.substring(e), t);
 function As(s, e, t) {
   const { value: n } = s;
   return ot(n) && n >= 0 ? t + n.toString(e) : Q(s);
@@ -1657,14 +1660,14 @@ const Ts = {
   tag: "tag:yaml.org,2002:int",
   format: "OCT",
   test: /^0o[0-7]+$/,
-  resolve: (s, e, t) => xt(s, 2, 8, t),
+  resolve: (s, e, t) => Bt(s, 2, 8, t),
   stringify: (s) => As(s, 8, "0o")
 }, Is = {
   identify: ot,
   default: !0,
   tag: "tag:yaml.org,2002:int",
   test: /^[-+]?[0-9]+$/,
-  resolve: (s, e, t) => xt(s, 0, 10, t),
+  resolve: (s, e, t) => Bt(s, 0, 10, t),
   stringify: Q
 }, Ms = {
   identify: (s) => ot(s) && s >= 0,
@@ -1672,14 +1675,14 @@ const Ts = {
   tag: "tag:yaml.org,2002:int",
   format: "HEX",
   test: /^0x[0-9a-fA-F]+$/,
-  resolve: (s, e, t) => xt(s, 2, 16, t),
+  resolve: (s, e, t) => Bt(s, 2, 16, t),
   stringify: (s) => As(s, 16, "0x")
-}, An = [
+}, Tn = [
   Ne,
   Oe,
   it,
   rt,
-  Bt,
+  jt,
   Ts,
   Is,
   Ms,
@@ -1687,10 +1690,10 @@ const Ts = {
   Ls,
   vs
 ];
-function Yt(s) {
+function Ht(s) {
   return typeof s == "bigint" || Number.isInteger(s);
 }
-const Re = ({ value: s }) => JSON.stringify(s), Tn = [
+const Re = ({ value: s }) => JSON.stringify(s), In = [
   {
     identify: (s) => typeof s == "string",
     default: !0,
@@ -1716,12 +1719,12 @@ const Re = ({ value: s }) => JSON.stringify(s), Tn = [
     stringify: Re
   },
   {
-    identify: Yt,
+    identify: Ht,
     default: !0,
     tag: "tag:yaml.org,2002:int",
     test: /^-?(?:0|[1-9][0-9]*)$/,
     resolve: (s, e, { intAsBigInt: t }) => t ? BigInt(s) : parseInt(s, 10),
-    stringify: ({ value: s }) => Yt(s) ? s.toString() : JSON.stringify(s)
+    stringify: ({ value: s }) => Ht(s) ? s.toString() : JSON.stringify(s)
   },
   {
     identify: (s) => typeof s == "number",
@@ -1731,14 +1734,14 @@ const Re = ({ value: s }) => JSON.stringify(s), Tn = [
     resolve: (s) => parseFloat(s),
     stringify: Re
   }
-], In = {
+], Mn = {
   default: !0,
   tag: "",
   test: /^/,
   resolve(s, e) {
     return e(`Unresolved plain scalar ${JSON.stringify(s)}`), s;
   }
-}, Mn = [Ne, Oe].concat(Tn, In), Pt = {
+}, Cn = [Ne, Oe].concat(In, Mn), xt = {
   identify: (s) => s instanceof Uint8Array,
   // Buffer inherits from Uint8Array
   default: !1,
@@ -1779,7 +1782,7 @@ const Re = ({ value: s }) => JSON.stringify(s), Tn = [
       a = u.join(e === O.BLOCK_LITERAL ? `
 ` : " ");
     }
-    return _t({ comment: s, type: e, value: a }, n, i, r);
+    return Ct({ comment: s, type: e, value: a }, n, i, r);
   }
 };
 function Cs(s, e) {
@@ -1826,11 +1829,11 @@ function _s(s, e, t) {
           throw new TypeError(`Expected tuple with one key, not ${l.length} keys`);
       } else
         a = o;
-      i.items.push(jt(a, c, t));
+      i.items.push(_t(a, c, t));
     }
   return i;
 }
-const Dt = {
+const Pt = {
   collection: "seq",
   default: !1,
   tag: "tag:yaml.org,2002:pairs",
@@ -1864,7 +1867,7 @@ class ye extends fe {
   }
 }
 ye.tag = "tag:yaml.org,2002:omap";
-const Kt = {
+const Dt = {
   collection: "seq",
   identify: (s) => s instanceof Map,
   nodeClass: ye,
@@ -1895,14 +1898,14 @@ const Bs = {
   test: /^(?:N|n|[Nn]o|NO|[Ff]alse|FALSE|[Oo]ff|OFF)$/,
   resolve: () => new O(!1),
   stringify: js
-}, Cn = {
+}, _n = {
   identify: (s) => typeof s == "number",
   default: !0,
   tag: "tag:yaml.org,2002:float",
   test: /^(?:[-+]?\.(?:inf|Inf|INF)|\.nan|\.NaN|\.NAN)$/,
   resolve: (s) => s.slice(-3).toLowerCase() === "nan" ? NaN : s[0] === "-" ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY,
   stringify: Q
-}, _n = {
+}, jn = {
   identify: (s) => typeof s == "number",
   default: !0,
   tag: "tag:yaml.org,2002:float",
@@ -1913,7 +1916,7 @@ const Bs = {
     const e = Number(s.value);
     return isFinite(e) ? e.toExponential() : Q(s);
   }
-}, jn = {
+}, Bn = {
   identify: (s) => typeof s == "number",
   default: !0,
   tag: "tag:yaml.org,2002:float",
@@ -1948,7 +1951,7 @@ function at(s, e, t, { intAsBigInt: n }) {
   const r = parseInt(s, t);
   return i === "-" ? -1 * r : r;
 }
-function Ft(s, e, t) {
+function Kt(s, e, t) {
   const { value: n } = s;
   if (De(n)) {
     const i = n.toString(e);
@@ -1956,37 +1959,37 @@ function Ft(s, e, t) {
   }
   return Q(s);
 }
-const Bn = {
+const xn = {
   identify: De,
   default: !0,
   tag: "tag:yaml.org,2002:int",
   format: "BIN",
   test: /^[-+]?0b[0-1_]+$/,
   resolve: (s, e, t) => at(s, 2, 2, t),
-  stringify: (s) => Ft(s, 2, "0b")
-}, xn = {
+  stringify: (s) => Kt(s, 2, "0b")
+}, Pn = {
   identify: De,
   default: !0,
   tag: "tag:yaml.org,2002:int",
   format: "OCT",
   test: /^[-+]?0[0-7_]+$/,
   resolve: (s, e, t) => at(s, 1, 8, t),
-  stringify: (s) => Ft(s, 8, "0")
-}, Pn = {
+  stringify: (s) => Kt(s, 8, "0")
+}, Dn = {
   identify: De,
   default: !0,
   tag: "tag:yaml.org,2002:int",
   test: /^[-+]?[0-9][0-9_]*$/,
   resolve: (s, e, t) => at(s, 0, 10, t),
   stringify: Q
-}, Dn = {
+}, Kn = {
   identify: De,
   default: !0,
   tag: "tag:yaml.org,2002:int",
   format: "HEX",
   test: /^[-+]?0x[0-9a-fA-F_]+$/,
   resolve: (s, e, t) => at(s, 2, 16, t),
-  stringify: (s) => Ft(s, 16, "0x")
+  stringify: (s) => Kt(s, 16, "0x")
 };
 class we extends q {
   constructor(e) {
@@ -2024,12 +2027,12 @@ class we extends q {
     const { replacer: i } = n, r = new this(e);
     if (t && Symbol.iterator in Object(t))
       for (let o of t)
-        typeof i == "function" && (o = i.call(t, o, o)), r.items.push(jt(o, null, n));
+        typeof i == "function" && (o = i.call(t, o, o)), r.items.push(_t(o, null, n));
     return r;
   }
 }
 we.tag = "tag:yaml.org,2002:set";
-const qt = {
+const Ft = {
   collection: "map",
   identify: (s) => s instanceof Set,
   nodeClass: we,
@@ -2046,7 +2049,7 @@ const qt = {
     return s;
   }
 };
-function Rt(s, e) {
+function qt(s, e) {
   const t = s[0], n = t === "-" || t === "+" ? s.substring(1) : s, i = (o) => e ? BigInt(o) : Number(o), r = n.replace(/_/g, "").split(":").reduce((o, a) => o * i(60) + i(a), i(0));
   return t === "-" ? i(-1) * r : r;
 }
@@ -2067,7 +2070,7 @@ const Ds = {
   tag: "tag:yaml.org,2002:int",
   format: "TIME",
   test: /^[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+$/,
-  resolve: (s, e, { intAsBigInt: t }) => Rt(s, t),
+  resolve: (s, e, { intAsBigInt: t }) => qt(s, t),
   stringify: Ps
 }, Ks = {
   identify: (s) => typeof s == "number",
@@ -2075,7 +2078,7 @@ const Ds = {
   tag: "tag:yaml.org,2002:float",
   format: "TIME",
   test: /^[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+\.[0-9_]*$/,
-  resolve: (s) => Rt(s, !1),
+  resolve: (s) => qt(s, !1),
   stringify: Ps
 }, lt = {
   identify: (s) => s instanceof Date,
@@ -2093,43 +2096,43 @@ const Ds = {
     let l = Date.UTC(t, n - 1, i, r || 0, o || 0, a || 0, c);
     const u = e[8];
     if (u && u !== "Z") {
-      let f = Rt(u, !1);
+      let f = qt(u, !1);
       Math.abs(f) < 30 && (f *= 60), l -= 6e4 * f;
     }
     return new Date(l);
   },
   stringify: ({ value: s }) => s?.toISOString().replace(/(T00:00:00)?\.000Z$/, "") ?? ""
-}, Jt = [
+}, Yt = [
   Ne,
   Oe,
   it,
   rt,
   Bs,
   xs,
-  Bn,
   xn,
   Pn,
   Dn,
-  Cn,
+  Kn,
   _n,
   jn,
-  Pt,
+  Bn,
+  xt,
   X,
-  Kt,
   Dt,
-  qt,
+  Pt,
+  Ft,
   Ds,
   Ks,
   lt
-], Wt = /* @__PURE__ */ new Map([
-  ["core", An],
+], Jt = /* @__PURE__ */ new Map([
+  ["core", Tn],
   ["failsafe", [Ne, Oe, it]],
-  ["json", Mn],
-  ["yaml11", Jt],
-  ["yaml-1.1", Jt]
-]), zt = {
-  binary: Pt,
-  bool: Bt,
+  ["json", Cn],
+  ["yaml11", Yt],
+  ["yaml-1.1", Yt]
+]), Wt = {
+  binary: xt,
+  bool: jt,
   float: vs,
   floatExp: Ls,
   floatNaN: Os,
@@ -2141,21 +2144,21 @@ const Ds = {
   map: Ne,
   merge: X,
   null: rt,
-  omap: Kt,
-  pairs: Dt,
+  omap: Dt,
+  pairs: Pt,
   seq: Oe,
-  set: qt,
+  set: Ft,
   timestamp: lt
-}, Kn = {
-  "tag:yaml.org,2002:binary": Pt,
+}, Fn = {
+  "tag:yaml.org,2002:binary": xt,
   "tag:yaml.org,2002:merge": X,
-  "tag:yaml.org,2002:omap": Kt,
-  "tag:yaml.org,2002:pairs": Dt,
-  "tag:yaml.org,2002:set": qt,
+  "tag:yaml.org,2002:omap": Dt,
+  "tag:yaml.org,2002:pairs": Pt,
+  "tag:yaml.org,2002:set": Ft,
   "tag:yaml.org,2002:timestamp": lt
 };
 function pt(s, e, t) {
-  const n = Wt.get(e);
+  const n = Jt.get(e);
   if (n && !s)
     return t && !n.includes(X) ? n.concat(X) : n.slice();
   let i = n;
@@ -2163,7 +2166,7 @@ function pt(s, e, t) {
     if (Array.isArray(s))
       i = [];
     else {
-      const r = Array.from(Wt.keys()).filter((o) => o !== "yaml11").map((o) => JSON.stringify(o)).join(", ");
+      const r = Array.from(Jt.keys()).filter((o) => o !== "yaml11").map((o) => JSON.stringify(o)).join(", ");
       throw new Error(`Unknown schema "${e}"; use one of ${r} or define customTags array`);
     }
   if (Array.isArray(s))
@@ -2171,25 +2174,25 @@ function pt(s, e, t) {
       i = i.concat(r);
   else typeof s == "function" && (i = s(i.slice()));
   return t && (i = i.concat(X)), i.reduce((r, o) => {
-    const a = typeof o == "string" ? zt[o] : o;
+    const a = typeof o == "string" ? Wt[o] : o;
     if (!a) {
-      const c = JSON.stringify(o), l = Object.keys(zt).map((u) => JSON.stringify(u)).join(", ");
+      const c = JSON.stringify(o), l = Object.keys(Wt).map((u) => JSON.stringify(u)).join(", ");
       throw new Error(`Unknown custom tag ${c}; use one of ${l}`);
     }
     return r.includes(a) || r.push(a), r;
   }, []);
 }
-const Fn = (s, e) => s.key < e.key ? -1 : s.key > e.key ? 1 : 0;
-class Ut {
+const qn = (s, e) => s.key < e.key ? -1 : s.key > e.key ? 1 : 0;
+class Rt {
   constructor({ compat: e, customTags: t, merge: n, resolveKnownTags: i, schema: r, sortMapEntries: o, toStringDefaults: a }) {
-    this.compat = Array.isArray(e) ? pt(e, "compat") : e ? pt(null, e) : null, this.name = typeof r == "string" && r || "core", this.knownTags = i ? Kn : {}, this.tags = pt(t, this.name, n), this.toStringOptions = a ?? null, Object.defineProperty(this, te, { value: Ne }), Object.defineProperty(this, Y, { value: it }), Object.defineProperty(this, ke, { value: Oe }), this.sortMapEntries = typeof o == "function" ? o : o === !0 ? Fn : null;
+    this.compat = Array.isArray(e) ? pt(e, "compat") : e ? pt(null, e) : null, this.name = typeof r == "string" && r || "core", this.knownTags = i ? Fn : {}, this.tags = pt(t, this.name, n), this.toStringOptions = a ?? null, Object.defineProperty(this, te, { value: Ne }), Object.defineProperty(this, Y, { value: it }), Object.defineProperty(this, ke, { value: Oe }), this.sortMapEntries = typeof o == "function" ? o : o === !0 ? qn : null;
   }
   clone() {
-    const e = Object.create(Ut.prototype, Object.getOwnPropertyDescriptors(this));
+    const e = Object.create(Rt.prototype, Object.getOwnPropertyDescriptors(this));
     return e.tags = this.tags.slice(), e;
   }
 }
-function qn(s, e) {
+function Rn(s, e) {
   const t = [];
   let n = e.directives === !0;
   if (e.directives !== !1 && s.directives) {
@@ -2234,7 +2237,7 @@ function qn(s, e) {
 }
 class ct {
   constructor(e, t, n) {
-    this.commentBefore = null, this.comment = null, this.errors = [], this.warnings = [], Object.defineProperty(this, U, { value: St });
+    this.commentBefore = null, this.comment = null, this.errors = [], this.warnings = [], Object.defineProperty(this, U, { value: kt });
     let i = null;
     typeof t == "function" || Array.isArray(t) ? i = t : n === void 0 && t && (n = t, t = void 0);
     const r = Object.assign({
@@ -2258,7 +2261,7 @@ class ct {
    */
   clone() {
     const e = Object.create(ct.prototype, {
-      [U]: { value: St }
+      [U]: { value: kt }
     });
     return e.commentBefore = this.commentBefore, e.comment = this.comment, e.errors = this.errors.slice(), e.warnings = this.warnings.slice(), e.options = Object.assign({}, this.options), this.directives && (e.directives = this.directives.clone()), e.schema = this.schema.clone(), e.contents = M(this.contents) ? this.contents.clone(e.schema) : this.contents, this.range && (e.range = this.range.slice()), e;
   }
@@ -2285,7 +2288,7 @@ class ct {
       e.anchor = // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       !t || n.has(t) ? gs(t || "a", n) : t;
     }
-    return new Ct(e.anchor);
+    return new Mt(e.anchor);
   }
   createNode(e, t, n) {
     let i;
@@ -2295,7 +2298,7 @@ class ct {
       const p = (S) => typeof S == "number" || S instanceof String || S instanceof Number, w = t.filter(p).map(String);
       w.length > 0 && (t = t.concat(w)), i = t;
     } else n === void 0 && t && (n = t, t = void 0);
-    const { aliasDuplicateObjects: r, anchorPrefix: o, flow: a, keepUndefined: c, onTagObj: l, tag: u } = n ?? {}, { onAnchor: f, setAnchors: d, sourceObjects: g } = pn(
+    const { aliasDuplicateObjects: r, anchorPrefix: o, flow: a, keepUndefined: c, onTagObj: l, tag: u } = n ?? {}, { onAnchor: f, setAnchors: d, sourceObjects: g } = mn(
       this,
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       o || "a"
@@ -2403,7 +2406,7 @@ class ct {
     if (t.schema instanceof Object)
       this.schema = t.schema;
     else if (n)
-      this.schema = new Ut(Object.assign(n, t));
+      this.schema = new Rt(Object.assign(n, t));
     else
       throw new Error("With a null YAML version, the { schema: Schema } option is required");
   }
@@ -2439,7 +2442,7 @@ class ct {
       const t = JSON.stringify(e.indent);
       throw new Error(`"indent" option must be a positive integer, not ${t}`);
     }
-    return qn(this, e);
+    return Rn(this, e);
   }
 }
 function ue(s) {
@@ -2457,12 +2460,12 @@ class Ie extends Fs {
     super("YAMLParseError", e, t, n);
   }
 }
-class Rn extends Fs {
+class Un extends Fs {
   constructor(e, t, n) {
     super("YAMLWarning", e, t, n);
   }
 }
-const Xt = (s, e) => (t) => {
+const zt = (s, e) => (t) => {
   if (t.pos[0] === -1)
     return;
   t.linePos = t.pos.map((a) => e.linePos(a));
@@ -2574,7 +2577,7 @@ function Be(s) {
       return !0;
   }
 }
-function Lt(s, e, t) {
+function Ot(s, e, t) {
   if (e?.type === "flow-collection") {
     const n = e.end[0];
     n.indent === s && (n.source === "]" || n.source === "}") && Be(e) && t(n, "BAD_INDENT", "Flow end indicator should be more indented than parent", !0);
@@ -2587,8 +2590,8 @@ function qs(s, e, t) {
   const i = typeof n == "function" ? n : (r, o) => r === o || T(r) && T(o) && r.value === o.value;
   return e.some((r) => i(r.key, t));
 }
-const Zt = "All mapping items must start at the same column";
-function Un({ composeNode: s, composeEmptyNode: e }, t, n, i, r) {
+const Xt = "All mapping items must start at the same column";
+function Vn({ composeNode: s, composeEmptyNode: e }, t, n, i, r) {
   const o = r?.nodeClass ?? q, a = new o(t.schema);
   t.atRoot && (t.atRoot = !1);
   let c = n.offset, l = null;
@@ -2602,16 +2605,16 @@ function Un({ composeNode: s, composeEmptyNode: e }, t, n, i, r) {
       startOnNewline: !0
     }), p = !h.found;
     if (p) {
-      if (d && (d.type === "block-seq" ? i(c, "BLOCK_AS_IMPLICIT_KEY", "A block sequence may not be used as an implicit map key") : "indent" in d && d.indent !== n.indent && i(c, "BAD_INDENT", Zt)), !h.anchor && !h.tag && !g) {
+      if (d && (d.type === "block-seq" ? i(c, "BLOCK_AS_IMPLICIT_KEY", "A block sequence may not be used as an implicit map key") : "indent" in d && d.indent !== n.indent && i(c, "BAD_INDENT", Xt)), !h.anchor && !h.tag && !g) {
         l = h.end, h.comment && (a.comment ? a.comment += `
 ` + h.comment : a.comment = h.comment);
         continue;
       }
       (h.newlineAfterProp || Be(d)) && i(d ?? f[f.length - 1], "MULTILINE_IMPLICIT_KEY", "Implicit keys need to be on a single line");
-    } else h.found?.indent !== n.indent && i(c, "BAD_INDENT", Zt);
+    } else h.found?.indent !== n.indent && i(c, "BAD_INDENT", Xt);
     t.atKey = !0;
     const w = h.end, S = d ? s(t, d, h, i) : e(t, w, f, null, h, i);
-    t.schema.compat && Lt(n.indent, d, i), t.atKey = !1, qs(t, a.items, S) && i(w, "DUPLICATE_KEY", "Map keys must be unique");
+    t.schema.compat && Ot(n.indent, d, i), t.atKey = !1, qs(t, a.items, S) && i(w, "DUPLICATE_KEY", "Map keys must be unique");
     const k = $e(g ?? [], {
       indicator: "map-value-ind",
       next: y,
@@ -2623,7 +2626,7 @@ function Un({ composeNode: s, composeEmptyNode: e }, t, n, i, r) {
     if (c = k.end, k.found) {
       p && (y?.type === "block-map" && !k.hasNewline && i(c, "BLOCK_AS_IMPLICIT_KEY", "Nested mappings are not allowed in compact mappings"), t.options.strict && h.start < k.found.offset - 1024 && i(S.range, "KEY_OVER_1024_CHARS", "The : indicator must be at most 1024 chars after the start of an implicit block mapping key"));
       const m = y ? s(t, y, k, i) : e(t, c, g, null, k, i);
-      t.schema.compat && Lt(n.indent, y, i), c = m.range[2];
+      t.schema.compat && Ot(n.indent, y, i), c = m.range[2];
       const b = new D(S, m);
       t.options.keepSourceTokens && (b.srcToken = u), a.items.push(b);
     } else {
@@ -2635,7 +2638,7 @@ function Un({ composeNode: s, composeEmptyNode: e }, t, n, i, r) {
   }
   return l && l < c && i(l, "IMPOSSIBLE", "Map comment with trailing content"), a.range = [n.offset, c, l ?? c], a;
 }
-function Vn({ composeNode: s, composeEmptyNode: e }, t, n, i, r) {
+function Qn({ composeNode: s, composeEmptyNode: e }, t, n, i, r) {
   const o = r?.nodeClass ?? fe, a = new o(t.schema);
   t.atRoot && (t.atRoot = !1), t.atKey && (t.atKey = !1);
   let c = n.offset, l = null;
@@ -2656,7 +2659,7 @@ function Vn({ composeNode: s, composeEmptyNode: e }, t, n, i, r) {
         continue;
       }
     const g = f ? s(t, f, d, i) : e(t, d.end, u, null, d, i);
-    t.schema.compat && Lt(n.indent, f, i), c = g.range[2], a.items.push(g);
+    t.schema.compat && Ot(n.indent, f, i), c = g.range[2], a.items.push(g);
   }
   return a.range = [n.offset, c, l ?? c], a;
 }
@@ -2688,7 +2691,7 @@ function Ke(s, e, t, n) {
   return { comment: i, offset: e };
 }
 const mt = "Block collections are not allowed within flow collections", gt = (s) => s && (s.type === "block-map" || s.type === "block-seq");
-function Qn({ composeNode: s, composeEmptyNode: e }, t, n, i, r) {
+function Gn({ composeNode: s, composeEmptyNode: e }, t, n, i, r) {
   const o = n.start.source === "{", a = o ? "flow map" : "flow sequence", c = r?.nodeClass ?? (o ? q : fe), l = new c(t.schema);
   l.flow = !0;
   const u = t.atRoot;
@@ -2801,10 +2804,10 @@ function Qn({ composeNode: s, composeEmptyNode: e }, t, n, i, r) {
   return l;
 }
 function yt(s, e, t, n, i, r) {
-  const o = t.type === "block-map" ? Un(s, e, t, n, r) : t.type === "block-seq" ? Vn(s, e, t, n, r) : Qn(s, e, t, n, r), a = o.constructor;
+  const o = t.type === "block-map" ? Vn(s, e, t, n, r) : t.type === "block-seq" ? Qn(s, e, t, n, r) : Gn(s, e, t, n, r), a = o.constructor;
   return i === "!" || i === a.tagName ? (o.tag = a.tagName, o) : (i && (o.tag = i), o);
 }
-function Gn(s, e, t, n, i) {
+function Hn(s, e, t, n, i) {
   const r = n.tag, o = r ? e.directives.tagName(r.source, (d) => i(r, "TAG_RESOLVE_FAILED", d)) : null;
   if (t.type === "block-seq") {
     const { anchor: d, newlineAfterProp: g } = n, y = d && r ? d.offset > r.offset ? d : r : d ?? r;
@@ -2824,11 +2827,11 @@ function Gn(s, e, t, n, i) {
   const l = yt(s, e, t, i, o, c), u = c.resolve?.(l, (d) => i(r, "TAG_RESOLVE_FAILED", d), e.options) ?? l, f = M(u) ? u : new O(u);
   return f.range = l.range, f.tag = o, c?.format && (f.format = c.format), f;
 }
-function Hn(s, e, t) {
-  const n = e.offset, i = Yn(e, s.options.strict, t);
+function Yn(s, e, t) {
+  const n = e.offset, i = Jn(e, s.options.strict, t);
   if (!i)
     return { value: "", type: null, comment: "", range: [n, n, n] };
-  const r = i.mode === ">" ? O.BLOCK_FOLDED : O.BLOCK_LITERAL, o = e.source ? Jn(e.source) : [];
+  const r = i.mode === ">" ? O.BLOCK_FOLDED : O.BLOCK_LITERAL, o = e.source ? Wn(e.source) : [];
   let a = o.length;
   for (let h = o.length - 1; h >= 0; --h) {
     const p = o[h][1];
@@ -2897,7 +2900,7 @@ function Hn(s, e, t) {
   const y = n + i.length + e.source.length;
   return { value: f, type: r, comment: i.comment, range: [n, y, y] };
 }
-function Yn({ offset: s, props: e }, t, n) {
+function Jn({ offset: s, props: e }, t, n) {
   if (e[0].type !== "block-scalar-header")
     return n(e[0], "IMPOSSIBLE", "Block scalar header not found"), null;
   const { source: i } = e[0], r = i[0];
@@ -2939,25 +2942,25 @@ function Yn({ offset: s, props: e }, t, n) {
   }
   return { mode: r, indent: o, chomp: a, comment: u, length: f };
 }
-function Jn(s) {
+function Wn(s) {
   const e = s.split(/\n( *)/), t = e[0], n = t.match(/^( *)/), r = [n?.[1] ? [n[1], t.slice(n[1].length)] : ["", t]];
   for (let o = 1; o < e.length; o += 2)
     r.push([e[o], e[o + 1]]);
   return r;
 }
-function Wn(s, e, t) {
+function zn(s, e, t) {
   const { offset: n, type: i, source: r, end: o } = s;
   let a, c;
   const l = (d, g, y) => t(n + d, g, y);
   switch (i) {
     case "scalar":
-      a = O.PLAIN, c = zn(r, l);
+      a = O.PLAIN, c = Xn(r, l);
       break;
     case "single-quoted-scalar":
-      a = O.QUOTE_SINGLE, c = Xn(r, l);
+      a = O.QUOTE_SINGLE, c = Zn(r, l);
       break;
     case "double-quoted-scalar":
-      a = O.QUOTE_DOUBLE, c = Zn(r, l);
+      a = O.QUOTE_DOUBLE, c = ei(r, l);
       break;
     /* istanbul ignore next should not happen */
     default:
@@ -2976,7 +2979,7 @@ function Wn(s, e, t) {
     range: [n, u, f.offset]
   };
 }
-function zn(s, e) {
+function Xn(s, e) {
   let t = "";
   switch (s[0]) {
     /* istanbul ignore next should not happen */
@@ -3002,7 +3005,7 @@ function zn(s, e) {
   }
   return t && e(0, "BAD_SCALAR_START", `Plain value cannot start with ${t}`), Rs(s);
 }
-function Xn(s, e) {
+function Zn(s, e) {
   return (s[s.length - 1] !== "'" || s.length === 1) && e(s.length, "MISSING_CHAR", "Missing closing 'quote"), Rs(s.slice(1, -1)).replace(/''/g, "'");
 }
 function Rs(s) {
@@ -3026,7 +3029,7 @@ function Rs(s) {
   const c = /[ \t]*(.*)/sy;
   return c.lastIndex = a, t = c.exec(s), r + o + (t?.[1] ?? "");
 }
-function Zn(s, e) {
+function ei(s, e) {
   let t = "";
   for (let n = 1; n < s.length - 1; ++n) {
     const i = s[n];
@@ -3034,11 +3037,11 @@ function Zn(s, e) {
 `))
       if (i === `
 `) {
-        const { fold: r, offset: o } = ei(s, n);
+        const { fold: r, offset: o } = ti(s, n);
         t += r, n = o;
       } else if (i === "\\") {
         let r = s[++n];
-        const o = ti[r];
+        const o = si[r];
         if (o)
           t += o;
         else if (r === `
@@ -3051,7 +3054,7 @@ function Zn(s, e) {
             r = s[++n + 1];
         else if (r === "x" || r === "u" || r === "U") {
           const a = r === "x" ? 2 : r === "u" ? 4 : 8;
-          t += si(s, n + 1, a, e), n += a;
+          t += ni(s, n + 1, a, e), n += a;
         } else {
           const a = s.substr(n - 1, 2);
           e(n - 1, "BAD_DQ_ESCAPE", `Invalid escape sequence ${a}`), t += a;
@@ -3069,7 +3072,7 @@ function Zn(s, e) {
   }
   return (s[s.length - 1] !== '"' || s.length === 1) && e(s.length, "MISSING_CHAR", 'Missing closing "quote'), t;
 }
-function ei(s, e) {
+function ti(s, e) {
   let t = "", n = s[e + 1];
   for (; (n === " " || n === "	" || n === `
 ` || n === "\r") && !(n === "\r" && s[e + 2] !== `
@@ -3079,7 +3082,7 @@ function ei(s, e) {
 `), e += 1, n = s[e + 1];
   return t || (t = " "), { fold: t, offset: e };
 }
-const ti = {
+const si = {
   0: "\0",
   // null character
   a: "\x07",
@@ -3113,7 +3116,7 @@ const ti = {
   "\\": "\\",
   "	": "	"
 };
-function si(s, e, t, n) {
+function ni(s, e, t, n) {
   const i = s.substr(e, t), o = i.length === t && /^[0-9a-fA-F]+$/.test(i) ? parseInt(i, 16) : NaN;
   try {
     return String.fromCodePoint(o);
@@ -3123,9 +3126,9 @@ function si(s, e, t, n) {
   }
 }
 function Us(s, e, t, n) {
-  const { value: i, type: r, comment: o, range: a } = e.type === "block-scalar" ? Hn(s, e, n) : Wn(e, s.options.strict, n), c = t ? s.directives.tagName(t.source, (f) => n(t, "TAG_RESOLVE_FAILED", f)) : null;
+  const { value: i, type: r, comment: o, range: a } = e.type === "block-scalar" ? Yn(s, e, n) : zn(e, s.options.strict, n), c = t ? s.directives.tagName(t.source, (f) => n(t, "TAG_RESOLVE_FAILED", f)) : null;
   let l;
-  s.options.stringKeys && s.atKey ? l = s.schema[Y] : c ? l = ni(s.schema, i, c, t, n) : e.type === "scalar" ? l = ii(s, i, e, n) : l = s.schema[Y];
+  s.options.stringKeys && s.atKey ? l = s.schema[Y] : c ? l = ii(s.schema, i, c, t, n) : e.type === "scalar" ? l = ri(s, i, e, n) : l = s.schema[Y];
   let u;
   try {
     const f = l.resolve(i, (d) => n(t ?? e, "TAG_RESOLVE_FAILED", d), s.options);
@@ -3136,7 +3139,7 @@ function Us(s, e, t, n) {
   }
   return u.range = a, u.source = i, r && (u.type = r), c && (u.tag = c), l.format && (u.format = l.format), o && (u.comment = o), u;
 }
-function ni(s, e, t, n, i) {
+function ii(s, e, t, n, i) {
   if (t === "!")
     return s[Y];
   const r = [];
@@ -3152,7 +3155,7 @@ function ni(s, e, t, n, i) {
   const o = s.knownTags[t];
   return o && !o.collection ? (s.tags.push(Object.assign({}, o, { default: !1, test: void 0 })), o) : (i(n, "TAG_RESOLVE_FAILED", `Unresolved tag: ${t}`, t !== "tag:yaml.org,2002:str"), s[Y]);
 }
-function ii({ atKey: s, directives: e, schema: t }, n, i, r) {
+function ri({ atKey: s, directives: e, schema: t }, n, i, r) {
   const o = t.tags.find((a) => (a.default === !0 || s && a.default === "key") && a.test?.test(n)) || t[Y];
   if (t.compat) {
     const a = t.compat.find((c) => c.default && c.test?.test(n)) ?? t[Y];
@@ -3163,7 +3166,7 @@ function ii({ atKey: s, directives: e, schema: t }, n, i, r) {
   }
   return o;
 }
-function ri(s, e, t) {
+function oi(s, e, t) {
   if (e) {
     t ?? (t = e.length);
     for (let n = t - 1; n >= 0; --n) {
@@ -3182,13 +3185,13 @@ function ri(s, e, t) {
   }
   return s;
 }
-const oi = { composeNode: Vs, composeEmptyNode: Vt };
+const ai = { composeNode: Vs, composeEmptyNode: Ut };
 function Vs(s, e, t, n) {
   const i = s.atKey, { spaceBefore: r, comment: o, anchor: a, tag: c } = t;
   let l, u = !0;
   switch (e.type) {
     case "alias":
-      l = ai(s, e, n), (a || c) && n(e, "ALIAS_PROPS", "An alias node must not specify any properties");
+      l = li(s, e, n), (a || c) && n(e, "ALIAS_PROPS", "An alias node must not specify any properties");
       break;
     case "scalar":
     case "single-quoted-scalar":
@@ -3200,7 +3203,7 @@ function Vs(s, e, t, n) {
     case "block-seq":
     case "flow-collection":
       try {
-        l = Gn(oi, s, e, t, n), a && (l.anchor = a.source.substring(1));
+        l = Hn(ai, s, e, t, n), a && (l.anchor = a.source.substring(1));
       } catch (f) {
         const d = f instanceof Error ? f.message : String(f);
         n(e, "RESOURCE_EXHAUSTION", d);
@@ -3211,24 +3214,24 @@ function Vs(s, e, t, n) {
       n(e, "UNEXPECTED_TOKEN", f), u = !1;
     }
   }
-  return l ?? (l = Vt(s, e.offset, void 0, null, t, n)), a && l.anchor === "" && n(a, "BAD_ALIAS", "Anchor cannot be an empty string"), i && s.options.stringKeys && (!T(l) || typeof l.value != "string" || l.tag && l.tag !== "tag:yaml.org,2002:str") && n(c ?? e, "NON_STRING_KEY", "With stringKeys, all keys must be strings"), r && (l.spaceBefore = !0), o && (e.type === "scalar" && e.source === "" ? l.comment = o : l.commentBefore = o), s.options.keepSourceTokens && u && (l.srcToken = e), l;
+  return l ?? (l = Ut(s, e.offset, void 0, null, t, n)), a && l.anchor === "" && n(a, "BAD_ALIAS", "Anchor cannot be an empty string"), i && s.options.stringKeys && (!T(l) || typeof l.value != "string" || l.tag && l.tag !== "tag:yaml.org,2002:str") && n(c ?? e, "NON_STRING_KEY", "With stringKeys, all keys must be strings"), r && (l.spaceBefore = !0), o && (e.type === "scalar" && e.source === "" ? l.comment = o : l.commentBefore = o), s.options.keepSourceTokens && u && (l.srcToken = e), l;
 }
-function Vt(s, e, t, n, { spaceBefore: i, comment: r, anchor: o, tag: a, end: c }, l) {
+function Ut(s, e, t, n, { spaceBefore: i, comment: r, anchor: o, tag: a, end: c }, l) {
   const u = {
     type: "scalar",
-    offset: ri(e, t, n),
+    offset: oi(e, t, n),
     indent: -1,
     source: ""
   }, f = Us(s, u, a, l);
   return o && (f.anchor = o.source.substring(1), f.anchor === "" && l(o, "BAD_ALIAS", "Anchor cannot be an empty string")), i && (f.spaceBefore = !0), r && (f.comment = r, f.range[2] = c), f;
 }
-function ai({ options: s }, { offset: e, source: t, end: n }, i) {
-  const r = new Ct(t.substring(1));
+function li({ options: s }, { offset: e, source: t, end: n }, i) {
+  const r = new Mt(t.substring(1));
   r.source === "" && i(e, "BAD_ALIAS", "Alias cannot be an empty string"), r.source.endsWith(":") && i(e + t.length - 1, "BAD_ALIAS", "Alias ending in : is ambiguous", !0);
   const o = e + t.length, a = Ke(n, o, s.strict, i);
   return r.range = [e, o, a.offset], a.comment && (r.comment = a.comment), r;
 }
-function li(s, e, { offset: t, start: n, value: i, end: r }, o) {
+function ci(s, e, { offset: t, start: n, value: i, end: r }, o) {
   const a = Object.assign({ _directives: e }, s), c = new ct(void 0, a), l = {
     atKey: !1,
     atRoot: !0,
@@ -3243,7 +3246,7 @@ function li(s, e, { offset: t, start: n, value: i, end: r }, o) {
     parentIndent: 0,
     startOnNewline: !0
   });
-  u.found && (c.directives.docStart = !0, i && (i.type === "block-map" || i.type === "block-seq") && !u.hasNewline && o(u.end, "MISSING_CHAR", "Block collection cannot start on same line with directives-end marker")), c.contents = i ? Vs(l, i, u, o) : Vt(l, u.end, n, null, u, o);
+  u.found && (c.directives.docStart = !0, i && (i.type === "block-map" || i.type === "block-seq") && !u.hasNewline && o(u.end, "MISSING_CHAR", "Block collection cannot start on same line with directives-end marker")), c.contents = i ? Vs(l, i, u, o) : Ut(l, u.end, n, null, u, o);
   const f = c.contents.range[2], d = Ke(r, f, !1, o);
   return d.comment && (c.comment = d.comment), c.range = [t, f, d.offset], c;
 }
@@ -3255,7 +3258,7 @@ function ve(s) {
   const { offset: e, source: t } = s;
   return [e, e + (typeof t == "string" ? t.length : 1)];
 }
-function es(s) {
+function Zt(s) {
   let e = "", t = !1, n = !1;
   for (let i = 0; i < s.length; ++i) {
     const r = s[i];
@@ -3275,15 +3278,15 @@ function es(s) {
   }
   return { comment: e, afterEmptyLine: n };
 }
-class ci {
+class fi {
   constructor(e = {}) {
     this.doc = null, this.atDirectives = !1, this.prelude = [], this.errors = [], this.warnings = [], this.onError = (t, n, i, r) => {
       const o = ve(t);
-      r ? this.warnings.push(new Rn(o, n, i)) : this.errors.push(new Ie(o, n, i));
+      r ? this.warnings.push(new Un(o, n, i)) : this.errors.push(new Ie(o, n, i));
     }, this.directives = new P({ version: e.version || "1.2" }), this.options = e;
   }
   decorate(e, t) {
-    const { comment: n, afterEmptyLine: i } = es(this.prelude);
+    const { comment: n, afterEmptyLine: i } = Zt(this.prelude);
     if (n) {
       const r = e.contents;
       if (t)
@@ -3319,7 +3322,7 @@ ${o}` : n;
    */
   streamInfo() {
     return {
-      comment: es(this.prelude).comment,
+      comment: Zt(this.prelude).comment,
       directives: this.directives,
       errors: this.errors,
       warnings: this.warnings
@@ -3346,7 +3349,7 @@ ${o}` : n;
         }), this.prelude.push(e.source), this.atDirectives = !0;
         break;
       case "document": {
-        const t = li(this.options, this.directives, e, this.onError);
+        const t = ci(this.options, this.directives, e, this.onError);
         this.atDirectives && !t.directives.docStart && this.onError(e, "MISSING_CHAR", "Missing directives-end/doc-start indicator line"), this.decorate(t, !1), this.doc && (yield this.doc), this.doc = t, this.atDirectives = !1;
         break;
       }
@@ -3397,8 +3400,8 @@ ${t.comment}` : t.comment;
     }
   }
 }
-const Qs = "\uFEFF", Gs = "", Hs = "", vt = "";
-function fi(s) {
+const Qs = "\uFEFF", Gs = "", Hs = "", Lt = "";
+function ui(s) {
   switch (s) {
     case Qs:
       return "byte-order-mark";
@@ -3406,7 +3409,7 @@ function fi(s) {
       return "doc-mode";
     case Hs:
       return "flow-error-end";
-    case vt:
+    case Lt:
       return "scalar";
     case "---":
       return "doc-start";
@@ -3472,9 +3475,9 @@ function V(s) {
       return !1;
   }
 }
-const ts = new Set("0123456789ABCDEFabcdef"), ui = new Set("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-#;/?:@&=+$_.!~*'()"), Ue = new Set(",[]{}"), hi = new Set(` ,[]{}
-\r	`), wt = (s) => !s || hi.has(s);
-class di {
+const es = new Set("0123456789ABCDEFabcdef"), hi = new Set("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-#;/?:@&=+$_.!~*'()"), Ue = new Set(",[]{}"), di = new Set(` ,[]{}
+\r	`), wt = (s) => !s || di.has(s);
+class pi {
   constructor() {
     this.atEnd = !1, this.blockScalarIndent = -1, this.blockScalarKeep = !1, this.buffer = "", this.flowKey = !1, this.flowLevel = 0, this.indentNext = 0, this.indentValue = 0, this.lineEndPos = null, this.next = null, this.pos = 0;
   }
@@ -3794,7 +3797,7 @@ class di {
         else
           break;
       } while (!0);
-    return yield vt, yield* this.pushToIndex(e + 1, !0), yield* this.parseLineStart();
+    return yield Lt, yield* this.pushToIndex(e + 1, !0), yield* this.parseLineStart();
   }
   *parsePlainScalar() {
     const e = this.flowLevel > 0;
@@ -3823,7 +3826,7 @@ class di {
           break;
         t = n;
       }
-    return !i && !this.atEnd ? this.setNext("plain-scalar") : (yield vt, yield* this.pushToIndex(t + 1, !0), e ? "flow" : "doc");
+    return !i && !this.atEnd ? this.setNext("plain-scalar") : (yield Lt, yield* this.pushToIndex(t + 1, !0), e ? "flow" : "doc");
   }
   *pushCount(e) {
     return e > 0 ? (yield this.buffer.substr(this.pos, e), this.pos += e, e) : 0;
@@ -3867,9 +3870,9 @@ class di {
     } else {
       let e = this.pos + 1, t = this.buffer[e];
       for (; t; )
-        if (ui.has(t))
+        if (hi.has(t))
           t = this.buffer[++e];
-        else if (t === "%" && ts.has(this.buffer[e + 1]) && ts.has(this.buffer[e + 2]))
+        else if (t === "%" && es.has(this.buffer[e + 1]) && es.has(this.buffer[e + 2]))
           t = this.buffer[e += 3];
         else
           break;
@@ -3897,7 +3900,7 @@ class di {
     return yield* this.pushToIndex(t, !1);
   }
 }
-class pi {
+class mi {
   constructor() {
     this.lineStarts = [], this.addNewLine = (e) => this.lineStarts.push(e), this.linePos = (e) => {
       let t = 0, n = this.lineStarts.length;
@@ -3920,7 +3923,7 @@ function Z(s, e) {
       return !0;
   return !1;
 }
-function ss(s) {
+function ts(s) {
   for (let e = 0; e < s.length; ++e)
     switch (s[e].type) {
       case "space":
@@ -3983,18 +3986,18 @@ function Xe(s, e) {
     for (let t = 0; t < e.length; ++t)
       s.push(e[t]);
 }
-function ns(s) {
+function ss(s) {
   if (s.start.type === "flow-seq-start")
     for (const e of s.items)
       e.sep && !e.value && !Z(e.start, "explicit-key-ind") && !Z(e.sep, "map-value-ind") && (e.key && (e.value = e.key), delete e.key, Ys(e.value) ? e.value.end ? Xe(e.value.end, e.sep) : e.value.end = e.sep : Xe(e.start, e.sep), delete e.sep);
 }
-class mi {
+class gi {
   /**
    * @param onNewLine - If defined, called separately with the start position of
    *   each new line (in `parse()`, including the start of input).
    */
   constructor(e) {
-    this.atNewLine = !0, this.atScalar = !1, this.indent = 0, this.offset = 0, this.onKeyLine = !1, this.stack = [], this.source = "", this.type = "", this.lexer = new di(), this.onNewLine = e;
+    this.atNewLine = !0, this.atScalar = !1, this.indent = 0, this.offset = 0, this.onKeyLine = !1, this.stack = [], this.source = "", this.type = "", this.lexer = new pi(), this.onNewLine = e;
   }
   /**
    * Parse `source` as a YAML stream.
@@ -4018,7 +4021,7 @@ class mi {
       this.atScalar = !1, yield* this.step(), this.offset += e.length;
       return;
     }
-    const t = fi(e);
+    const t = ui(e);
     if (t)
       if (t === "scalar")
         this.atNewLine = !1, this.atScalar = !0, this.type = "scalar";
@@ -4107,7 +4110,7 @@ class mi {
       yield t;
     else {
       const n = this.peek(1);
-      switch (t.type === "block-scalar" ? t.indent = "indent" in n ? n.indent : 0 : t.type === "flow-collection" && n.type === "document" && (t.indent = 0), t.type === "flow-collection" && ns(t), n.type) {
+      switch (t.type === "block-scalar" ? t.indent = "indent" in n ? n.indent : 0 : t.type === "flow-collection" && n.type === "document" && (t.indent = 0), t.type === "flow-collection" && ss(t), n.type) {
         case "document":
           n.value = t;
           break;
@@ -4143,7 +4146,7 @@ class mi {
       }
       if ((n.type === "document" || n.type === "block-map" || n.type === "block-seq") && (t.type === "block-map" || t.type === "block-seq")) {
         const i = t.items[t.items.length - 1];
-        i && !i.sep && !i.value && i.start.length > 0 && ss(i.start) === -1 && (t.indent === 0 || i.start.every((r) => r.type !== "comment" || r.indent < t.indent)) && (n.type === "document" ? n.end = i.start : n.items.push({ start: i.start }), t.items.splice(-1, 1));
+        i && !i.sep && !i.value && i.start.length > 0 && ts(i.start) === -1 && (t.indent === 0 || i.start.every((r) => r.type !== "comment" || r.indent < t.indent)) && (n.type === "document" ? n.end = i.start : n.items.push({ start: i.start }), t.items.splice(-1, 1));
       }
     }
   }
@@ -4181,7 +4184,7 @@ class mi {
       return yield* this.lineEnd(e);
     switch (this.type) {
       case "doc-start": {
-        ss(e.start) !== -1 ? (yield* this.pop(), yield* this.step()) : e.start.push(this.sourceToken);
+        ts(e.start) !== -1 ? (yield* this.pop(), yield* this.step()) : e.start.push(this.sourceToken);
         return;
       }
       case "anchor":
@@ -4460,7 +4463,7 @@ class mi {
         yield* this.pop(), yield* this.step();
       else if (this.type === "map-value-ind" && n.type !== "flow-collection") {
         const i = Ve(n), r = he(i);
-        ns(e);
+        ss(e);
         const o = e.end.splice(1, e.end.length);
         o.push(this.sourceToken);
         const a = {
@@ -4567,12 +4570,12 @@ class mi {
     }
   }
 }
-function gi(s) {
+function yi(s) {
   const e = s.prettyErrors !== !1;
-  return { lineCounter: s.lineCounter || e && new pi() || null, prettyErrors: e };
+  return { lineCounter: s.lineCounter || e && new mi() || null, prettyErrors: e };
 }
-function yi(s, e = {}) {
-  const { lineCounter: t, prettyErrors: n } = gi(e), i = new mi(t?.addNewLine), r = new ci(e);
+function wi(s, e = {}) {
+  const { lineCounter: t, prettyErrors: n } = yi(e), i = new gi(t?.addNewLine), r = new fi(e);
   let o = null;
   for (const a of r.compose(i.parse(s), !0, s.length))
     if (!o)
@@ -4581,7 +4584,7 @@ function yi(s, e = {}) {
       o.errors.push(new Ie(a.range.slice(0, 2), "MULTIPLE_DOCS", "Source contains multiple documents; please use YAML.parseAllDocuments()"));
       break;
     }
-  return n && t && (o.errors.forEach(Xt(s, t)), o.warnings.forEach(Xt(s, t))), o;
+  return n && t && (o.errors.forEach(zt(s, t)), o.warnings.forEach(zt(s, t))), o;
 }
 const F = {
   comic: {
@@ -4643,7 +4646,7 @@ const F = {
     fontVersion: "글꼴버전",
     panelFormat: "컷비율"
   }
-}, At = {
+}, vt = {
   asset: {
     client: "클라이언트",
     server: "서버",
@@ -4664,7 +4667,7 @@ const F = {
   mode: { full: "전체", before: "이전" },
   panelFormat: { compact: "기본", phone: "모바일" },
   diagramType: { mermaid: "머메이드" }
-}, wi = {
+}, bi = {
   cast: { asset: "asset" },
   appearance: { hairStyle: "hairStyle", outfit: "outfit" },
   actor: { expression: "expression", gesture: "gesture", holding: "prop" },
@@ -4690,9 +4693,9 @@ function ee(s, e, t, n) {
         `${n}: '${i[c]}'와 '${c}'은 같은 항목입니다. 하나만 작성하세요.`
       );
     let u = a;
-    const f = wi[e], d = f && Object.hasOwn(f, c) ? f[c] : void 0;
+    const f = bi[e], d = f && Object.hasOwn(f, c) ? f[c] : void 0;
     if (d && typeof a == "string") {
-      const g = At[d], y = Object.keys(g).find(
+      const g = vt[d], y = Object.keys(g).find(
         (h) => a === h || a === g[h]
       );
       y && (u = y);
@@ -4733,8 +4736,8 @@ function ee(s, e, t, n) {
   }
   return r;
 }
-const bi = (s) => ee(s, "comic", !1, "만화");
-function $i(s) {
+const $i = (s) => ee(s, "comic", !1, "만화");
+function ki(s) {
   const e = ee(s, "options", !1, "표시 설정");
   if (!Ye(e)) throw new Error("표시 설정: 객체가 필요합니다.");
   for (const t of Object.keys(e))
@@ -4756,14 +4759,14 @@ function z(s, e, t = 1e4) {
     );
   return s;
 }
-function Qt(s, e, t) {
+function Vt(s, e, t) {
   for (const n of Object.keys(s))
     if (!Object.hasOwn(e, n))
       throw new Error(`${t}: 알 수 없는 항목 '${n}'.`);
 }
-function is(s, e) {
+function ns(s, e) {
   const t = _e(s, e);
-  Qt(t, F.persona, e);
+  Vt(t, F.persona, e);
   const n = {};
   if (t.role !== void 0 && (n.role = z(t.role, `${e}.직무`, 100)), t.personality !== void 0 && (n.personality = z(t.personality, `${e}.성격`, 300)), t.speechStyle !== void 0 && (n.speechStyle = z(t.speechStyle, `${e}.말투`, 300)), !Object.keys(n).length)
     throw new Error(`${e}: 직무·성격·말투 중 하나 이상 작성하세요.`);
@@ -4776,7 +4779,7 @@ function bt(s, e, t) {
     throw new Error(`${t}: #RGB 또는 #RRGGBB 색상을 작성하세요.`);
   return n;
 }
-function rs(s, e, t, n) {
+function is(s, e, t, n) {
   if (s === void 0) return t;
   const i = z(s, n);
   if (!Object.hasOwn(e, i))
@@ -4785,9 +4788,9 @@ function rs(s, e, t, n) {
     );
   return i;
 }
-function ki(s, e) {
+function Si(s, e) {
   const t = s === void 0 ? {} : _e(s, e);
-  if (Qt(t, F.appearance, e), t.glasses !== void 0 && typeof t.glasses != "boolean")
+  if (Vt(t, F.appearance, e), t.glasses !== void 0 && typeof t.glasses != "boolean")
     throw new Error(`${e}.안경: true 또는 false가 필요합니다.`);
   return {
     skinColor: bt(
@@ -4795,9 +4798,9 @@ function ki(s, e) {
       oe.skinColor,
       `${e}.피부색`
     ),
-    hairStyle: rs(
+    hairStyle: is(
       t.hairStyle,
-      At.hairStyle,
+      vt.hairStyle,
       oe.hairStyle,
       `${e}.머리모양`
     ),
@@ -4806,9 +4809,9 @@ function ki(s, e) {
       oe.hairColor,
       `${e}.머리색`
     ),
-    outfit: rs(
+    outfit: is(
       t.outfit,
-      At.outfit,
+      vt.outfit,
       oe.outfit,
       `${e}.옷`
     ),
@@ -4820,19 +4823,19 @@ function ki(s, e) {
     glasses: t.glasses === void 0 ? oe.glasses : t.glasses
   };
 }
-function Si(s, e) {
+function Ei(s, e) {
   const t = /* @__PURE__ */ Object.create(null);
   if (e !== void 0)
     for (const [i, r] of Object.entries(
       _e(e, "페르소나")
     ))
-      z(i, "페르소나 식별자"), t[i] = is(r, `페르소나.${i}`);
+      z(i, "페르소나 식별자"), t[i] = ns(r, `페르소나.${i}`);
   const n = /* @__PURE__ */ Object.create(null);
   for (const [i, r] of Object.entries(_e(s, "등장인물"))) {
     const o = `등장인물.${i}`, a = _e(r, o);
-    Qt(a, F.cast, o);
+    Vt(a, F.cast, o);
     const c = z(a.asset, `${o}.그림`);
-    if (!Object.hasOwn(fs, c))
+    if (!Object.hasOwn(cs, c))
       throw new Error(`${o}: 없는 에셋 '${c}'.`);
     let l;
     if (a.persona !== void 0)
@@ -4841,13 +4844,13 @@ function Si(s, e) {
         if (!Object.hasOwn(t, u))
           throw new Error(`${o}.페르소나: 없는 페르소나 '${u}'.`);
         l = { ...t[u] };
-      } else l = is(a.persona, `${o}.페르소나`);
+      } else l = ns(a.persona, `${o}.페르소나`);
     if (c !== "human" && a.appearance !== void 0)
       throw new Error(`${o}.외형: 사람 그림에서만 사용할 수 있습니다.`);
     n[i] = {
       asset: c,
       label: a.label === void 0 ? i : z(a.label, `${o}.이름표`),
-      ...c === "human" ? { appearance: ki(a.appearance, `${o}.외형`) } : {},
+      ...c === "human" ? { appearance: Si(a.appearance, `${o}.외형`) } : {},
       ...l ? { persona: l } : {}
     };
   }
@@ -4883,14 +4886,14 @@ function re(s, e, t, n) {
     return s;
   }
 }
-function Ei(s) {
+function Ni(s) {
   if (s.length > 1e5)
     throw new Error("코드가 너무 깁니다. 100KB 이내로 작성하세요.");
-  const e = yi(s, { uniqueKeys: !0 });
+  const e = wi(s, { uniqueKeys: !0 });
   if (e.errors.length) throw new Error(e.errors[0].message);
-  const t = ne(bi(e.toJS({ maxAliasCount: 20 })), "만화");
+  const t = ne($i(e.toJS({ maxAliasCount: 20 })), "만화");
   ie(t, Object.keys(F.comic), "만화");
-  const { cast: n, personas: i } = Si(t.cast, t.personas);
+  const { cast: n, personas: i } = Ei(t.cast, t.personas);
   let r;
   const o = de(t.panels, "컷").map((a, c) => {
     const l = `컷 ${c + 1}`, u = { ...ne(a, l) };
@@ -4934,10 +4937,10 @@ function Ei(s) {
       const w = x(p.id, `${l}.인물.식별자`), S = p.expression === void 0 ? "neutral" : x(p.expression, `${l}.${w}.표정`);
       if (!Object.hasOwn(n, w))
         throw new Error(`${l}: 없는 캐릭터 '${w}'.`);
-      if (!Object.hasOwn(us, S))
+      if (!Object.hasOwn(fs, S))
         throw new Error(`${l}.${w}: 없는 표정 '${S}'.`);
       const k = p.gesture === void 0 ? void 0 : x(p.gesture, `${l}.${w}.손모양`), m = p.holding === void 0 ? void 0 : x(p.holding, `${l}.${w}.든소품`);
-      if (k && !Object.hasOwn(kt, k))
+      if (k && !Object.hasOwn(us, k))
         throw new Error(`${l}.${w}: 없는 손 제스처 '${k}'.`);
       if (m && !Object.hasOwn(Je, m))
         throw new Error(`${l}.${w}: 없는 소품 '${m}'.`);
@@ -5079,7 +5082,7 @@ function Js(s, e, t, n, i = "compact", r) {
       `<g data-dialogue="${K(m.from)}" data-to="${K(m.to ?? "")}"><path d="${Le}" fill="#fffaf0" stroke="#303341" stroke-width="2" stroke-linejoin="round"/><text x="${$ + 18}" y="${A + 18 + m.fontSize}" font-size="${m.fontSize}">${b.map((H, _) => `<tspan x="${$ + 18}" dy="${_ ? E : 0}">${K(H)}</tspan>`).join("")}</text></g>`
     ), w += L + 32;
   }), s.actors.forEach((m, b) => {
-    const E = e[m.id], N = Gt(E), $ = E.asset === "human", L = $ ? N.color : "white", A = new Set(
+    const E = e[m.id], N = Qt(E), $ = E.asset === "human", L = $ ? N.color : "white", A = new Set(
       s.transfer.flatMap((_) => {
         const se = _.from === m.id ? _.to : _.to === m.id ? _.from : void 0;
         if (!se) return [];
@@ -5098,16 +5101,16 @@ function Js(s, e, t, n, i = "compact", r) {
     );
     if (G.length > 2)
       throw new Error(`캐릭터 '${m.id}'의 이름표가 너무 깁니다.`);
-    const Le = m.gesture ? `<g data-gesture="${m.gesture}">${m.gesture === "point" && N.pointGesture ? N.pointGesture : $ ? kt[m.gesture].replace('fill="white"', `fill="${L}"`) : kt[m.gesture]}</g>` : "", H = m.holding ? `<g data-holding="${m.holding}"><circle data-hand="holding" cx="58" cy="20" r="11" fill="${L}"/><g data-prop="${m.holding}" transform="translate(73 6)">${Je[m.holding]}</g></g>` : "";
+    const Le = m.gesture ? `<g data-gesture="${m.gesture}">${m.gesture === "point" && N.pointGesture ? N.pointGesture : $ ? us[m.gesture].replace('fill="white"', `fill="${L}"`) : an[m.gesture]}</g>` : "", H = m.holding ? `<g data-holding="${m.holding}"><circle data-hand="holding" cx="58" cy="20" r="11" fill="${L}"/><g data-prop="${m.holding}" transform="translate(73 6)">${Je[m.holding]}</g></g>` : "";
     p.push(
-      `<g data-character="${K(m.id)}" transform="translate(${y[b]} ${h[b]}) scale(${g[b]})" stroke="#303341" stroke-width="2.8" stroke-linecap="round"><ellipse cy="69" rx="51" ry="7" fill="#e8edf3" stroke="none"/>${N.body}<g transform="translate(${J} ${N.faceY})" fill="#303341">${us[m.expression]}</g>${j}${Le}${H}<text y="94" text-anchor="middle" stroke="none" fill="#303341" font-size="16">${G.map((_, se) => `<tspan x="0" dy="${se ? 18 : 0}">${K(_)}</tspan>`).join("")}</text></g>`
+      `<g data-character="${K(m.id)}" transform="translate(${y[b]} ${h[b]}) scale(${g[b]})" stroke="#303341" stroke-width="2.8" stroke-linecap="round"><ellipse cy="69" rx="51" ry="7" fill="#e8edf3" stroke="none"/>${N.body}<g transform="translate(${J} ${N.faceY})" fill="#303341">${fs[m.expression]}</g>${j}${Le}${H}<text y="94" text-anchor="middle" stroke="none" fill="#303341" font-size="16">${G.map((_, se) => `<tspan x="0" dy="${se ? 18 : 0}">${K(_)}</tspan>`).join("")}</text></g>`
     );
   }), s.transfer.forEach((m, b) => {
     const E = s.actors.findIndex(
       (_) => _.id === m.from
     ), N = s.actors.findIndex((_) => _.id === m.to), $ = y[E], L = y[N], A = Math.sign(L - $), j = $ + 62 * g[E] * A, v = L - 62 * g[N] * A, B = 20 + (b - (s.transfer.length - 1) / 2) * 12, J = h[E] + B * g[E], G = h[N] + B * g[N], Le = Math.atan2(G - J, v - j) * 180 / Math.PI, H = (_) => {
       const se = e[s.actors[_].id];
-      return se.asset === "human" ? Gt(se).color : "white";
+      return se.asset === "human" ? Qt(se).color : "white";
     };
     p.push(
       `<g data-transfer="${K(m.from)}" data-to="${K(m.to)}" stroke="#586c8c" stroke-width="2.5"><path d="M${j} ${J}L${v} ${G}" fill="none"/><circle data-hand="transfer" cx="${j}" cy="${J}" r="${9 * g[E]}" fill="${H(E)}"/><circle data-hand="receive" cx="${v}" cy="${G}" r="${9 * g[N]}" fill="${H(N)}"/><path transform="translate(${v} ${G}) rotate(${Le})" d="M-12 -5L-4 0L-12 5" fill="none"/><g data-prop="${m.prop}" transform="translate(${(j + v) / 2} ${(J + G) / 2 - 16})">${Je[m.prop]}</g></g>`
@@ -5137,8 +5140,8 @@ function Js(s, e, t, n, i = "compact", r) {
     height: k
   } : { markup: p.join(""), height: l };
 }
-const Ni = "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.mermaid.js", Tt = 2e4, Oi = "http://www.w3.org/2000/svg", Li = Math.random().toString(36).slice(2);
-let vi = 0, os = Promise.resolve();
+const Oi = "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.mermaid.js", At = 2e4, Li = "http://www.w3.org/2000/svg", vi = Math.random().toString(36).slice(2);
+let Ai = 0, rs = Promise.resolve();
 const ft = [
   "fill",
   "fill-opacity",
@@ -5173,7 +5176,7 @@ const ft = [
   "mask",
   "filter",
   "paint-order"
-], Ai = new Set(ft), Ti = /* @__PURE__ */ new Set([
+], Ti = new Set(ft), Ii = /* @__PURE__ */ new Set([
   "svg",
   "g",
   "defs",
@@ -5211,7 +5214,7 @@ const ft = [
   "femergenode",
   "feflood",
   "fecomposite"
-]), Ii = /* @__PURE__ */ new Set([
+]), Mi = /* @__PURE__ */ new Set([
   "id",
   "class",
   "style",
@@ -5284,9 +5287,9 @@ const ft = [
   "tablevalues",
   ...ft
 ]);
-function Mi(s) {
-  if (!s.trim() || s.length > Tt)
-    throw new Error(`Mermaid 원문은 1~${Tt}자여야 합니다.`);
+function Ci(s) {
+  if (!s.trim() || s.length > At)
+    throw new Error(`Mermaid 원문은 1~${At}자여야 합니다.`);
   const e = document.createElement("textarea");
   e.innerHTML = s.replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const t = e.value;
@@ -5309,19 +5312,19 @@ function Mi(s) {
       "Mermaid 노드 메타데이터(@{}), 이미지·링크·CSS 선언과 외부 리소스는 지원하지 않습니다."
     );
 }
-function Ci(s) {
+function _i(s) {
   if (typeof s != "string" || !s.trim() || s.length > 300 || /[^\p{L}\p{N}\s,'"_\-]/u.test(s))
     throw new Error("다이어그램에 사용할 올바른 글꼴 이름이 필요합니다.");
   return s;
 }
-async function _i(s) {
+async function ji(s) {
   const e = document.createElement("iframe");
   e.title = "Mermaid 렌더링", e.tabIndex = -1, e.setAttribute("aria-hidden", "true"), e.style.cssText = "all:initial!important;display:block!important;width:20000px!important;height:20000px!important;border:0!important;", s.append(e);
   const t = e.contentDocument, n = e.contentWindow;
   if (!t?.body || !n)
     throw e.remove(), new Error("Mermaid 격리 문서를 만들지 못했습니다.");
   const i = t.createElement("script");
-  i.type = "module", i.src = Ni;
+  i.type = "module", i.src = Oi;
   try {
     return { api: await new Promise((o, a) => {
       const c = window.setTimeout(() => {
@@ -5372,7 +5375,7 @@ function zs(s, e) {
   }
   return s.getPropertyValue("display") === "none" && (t.display = "none"), t.cssText;
 }
-function ji(s) {
+function Bi(s) {
   const e = [];
   let t = 0, n = 0, i = "";
   for (let r = 0; r < s.length; r++) {
@@ -5381,13 +5384,13 @@ function ji(s) {
   }
   return e.push(s.slice(t).trim()), e;
 }
-function Bi(s, e, t) {
+function xi(s, e, t) {
   const n = new CSSStyleSheet();
   n.replaceSync(s);
   const i = [], r = `#${e}`;
   for (const o of n.cssRules) {
     if (!(o instanceof CSSStyleRule)) continue;
-    if (!ji(o.selectorText).every(
+    if (!Bi(o.selectorText).every(
       (l) => l === r || l.startsWith(r + " ") || l.startsWith(r + ">") || l.startsWith(r + ":")
     )) throw new Error("Mermaid SVG에 범위 밖 스타일이 있습니다.");
     const c = zs(o.style, t);
@@ -5396,7 +5399,7 @@ function Bi(s, e, t) {
   return i.join(`
 `);
 }
-function xi(s) {
+function Pi(s) {
   if (s.length > 2e6)
     throw new Error("Mermaid SVG가 너무 큽니다. 다이어그램을 나누어 주세요.");
   const e = Ws(s), t = [e, ...e.querySelectorAll("*")];
@@ -5413,24 +5416,24 @@ function xi(s) {
       }
   for (const r of t) {
     const o = r.localName.toLowerCase();
-    if (r.namespaceURI !== Oi || !Ti.has(o) && o !== "style") {
+    if (r.namespaceURI !== Li || !Ii.has(o) && o !== "style") {
       o === "a" ? r.replaceWith(...r.childNodes) : r.remove();
       continue;
     }
     if (o === "style") {
-      r.textContent = Bi(r.textContent ?? "", i, n);
+      r.textContent = xi(r.textContent ?? "", i, n);
       continue;
     }
     for (const a of [...r.attributes]) {
       const c = a.name.toLowerCase(), l = a.value;
-      if (!Ii.has(c) && !c.startsWith("aria-") && !c.startsWith("data-"))
+      if (!Mi.has(c) && !c.startsWith("aria-") && !c.startsWith("data-"))
         r.removeAttributeNode(a);
       else if (c === "href" || c === "xlink:href")
         (!l.startsWith("#") || !n.has(l.slice(1))) && r.removeAttributeNode(a);
       else if (c === "style") {
         const u = document.createElement("span").style;
         u.cssText = l, r.setAttribute("style", zs(u, n));
-      } else if (Ai.has(c)) {
+      } else if (Ti.has(c)) {
         const u = Ze(l, n);
         u === void 0 ? r.removeAttributeNode(a) : r.setAttribute(a.name, u);
       }
@@ -5438,7 +5441,7 @@ function xi(s) {
   }
   return e;
 }
-function Pi(s) {
+function Di(s) {
   if (s.length > 3e6)
     throw new Error("Mermaid SVG가 너무 큽니다. 다이어그램을 나누어 주세요.");
   const e = s.match(
@@ -5452,7 +5455,7 @@ function Pi(s) {
   if (!r) throw new Error("Mermaid 격리 문서에서 SVG를 읽지 못했습니다.");
   return r.outerHTML;
 }
-function Di(s) {
+function Ki(s) {
   const e = (s.getAttribute("viewBox") ?? "").trim().split(/[\s,]+/).map(Number), t = e.length === 4 ? e[2] : Number.parseFloat(s.getAttribute("width") ?? ""), n = e.length === 4 ? e[3] : Number.parseFloat(s.getAttribute("height") ?? "");
   if (!Number.isFinite(t) || !Number.isFinite(n) || t <= 0 || n <= 0 || t > 2e4 || n > 2e4 || t * n > 16e7)
     throw new Error(
@@ -5460,17 +5463,17 @@ function Di(s) {
     );
   return (e.length !== 4 || e.some((i) => !Number.isFinite(i))) && s.setAttribute("viewBox", `0 0 ${t} ${n}`), s.setAttribute("width", String(t)), s.setAttribute("height", String(n)), s.setAttribute("preserveAspectRatio", "xMidYMid meet"), { width: t, height: n };
 }
-async function Ki(s, e) {
+async function Fi(s, e) {
   if (typeof document > "u" || !document.body)
     throw new Error("Mermaid 렌더링에는 브라우저 문서가 필요합니다.");
-  Mi(s), e = Ci(e);
-  const t = os.then(async () => {
+  Ci(s), e = _i(e);
+  const t = rs.then(async () => {
     await Promise.all([
       document.fonts.load(`18px ${e}`, s),
       document.fonts.load(`bold 18px ${e}`, s),
       document.fonts.load(`italic 18px ${e}`, s)
     ]), await document.fonts.ready;
-    const n = `comic-gen-mermaid-${Li}-${++vi}`, i = document.createElement("div");
+    const n = `comic-gen-mermaid-${vi}-${++Ai}`, i = document.createElement("div");
     i.dataset.comicDiagramTemporary = "", i.style.cssText = "all:initial!important;display:block!important;position:fixed!important;left:-100000px!important;top:0!important;width:20000px!important;pointer-events:none!important;opacity:0!important;";
     const r = [...document.fonts].filter(
       (l) => l.status === "loaded"
@@ -5485,7 +5488,7 @@ async function Ki(s, e) {
     });
     document.body.append(i);
     try {
-      o = await _i(i);
+      o = await ji(i);
       for (const k of r) o.document.fonts.add(k);
       a = o.document.createElement("div"), a.style.cssText = "width:20000px;", o.document.body.append(a), c.observe(a, { childList: !0, subtree: !0 });
       const l = o.api;
@@ -5493,7 +5496,7 @@ async function Ki(s, e) {
         startOnLoad: !1,
         securityLevel: "sandbox",
         suppressErrorRendering: !0,
-        maxTextSize: Tt,
+        maxTextSize: At,
         maxEdges: 500,
         htmlLabels: !1,
         fontFamily: e,
@@ -5524,7 +5527,7 @@ async function Ki(s, e) {
       });
       const u = await l.render(n, s, a);
       c.disconnect();
-      const f = xi(Pi(u.svg)), d = Di(f), g = i.attachShadow({ mode: "closed" });
+      const f = Pi(Di(u.svg)), d = Ki(f), g = i.attachShadow({ mode: "closed" });
       g.append(document.importNode(f, !0));
       const y = g.firstElementChild, h = [y, ...y.querySelectorAll("*")], p = new Set(
         h.map((k) => k.id).filter(Boolean)
@@ -5554,10 +5557,10 @@ async function Ki(s, e) {
       c.disconnect(), o?.document.getElementById(n)?.remove(), o?.document.getElementById(`d${n}`)?.remove(), o?.document.getElementById(`i${n}`)?.remove(), o?.dispose(), i.remove();
     }
   });
-  return os = t.catch(() => {
+  return rs = t.catch(() => {
   }), t;
 }
-function Fi(s, e) {
+function qi(s, e) {
   if (!/^[A-Za-z][A-Za-z0-9_-]{0,120}$/.test(e))
     throw new Error("다이어그램 SVG 식별자 접두사가 올바르지 않습니다.");
   const t = Ws(s.svg), n = [t, ...t.querySelectorAll("*")], i = /* @__PURE__ */ new Map();
@@ -5595,13 +5598,13 @@ function Fi(s, e) {
   }
   return new XMLSerializer().serializeToString(t);
 }
-let Xs = 0, qi = 0;
+let Xs = 0, Ri = 0;
 document.fonts.addEventListener("loadingdone", (s) => {
   s.fontfaces.length && Xs++;
 });
 function Zs(s, e, t) {
-  e = $i(e);
-  const n = Ei(s), i = e.width ?? 720, r = e.panelFormat ?? t;
+  e = ki(e);
+  const n = Ni(s), i = e.width ?? 720, r = e.panelFormat ?? t;
   if (r !== "compact" && r !== "phone")
     throw new Error("컷비율은 기본 또는 모바일이어야 합니다.");
   if (!Number.isFinite(i) || i < 480 || i > 2400)
@@ -5641,10 +5644,10 @@ function tn(s) {
   };
 }
 function sn(s, e, t) {
-  const { comic: n, width: i, font: r } = s, o = [], a = [], c = `cg-${Date.now().toString(36)}-${++qi}-${Math.random().toString(36).slice(2, 9)}`, l = (f, d, g) => `<svg xmlns="http://www.w3.org/2000/svg" width="${i}" height="${d}" viewBox="0 0 ${i} ${d}" role="img" aria-label="${K(g)}"><title>${K(g)}</title><rect width="100%" height="100%" fill="#f5f7fb"/><g font-family="${K(r)}" fill="#303341"><text x="24" y="42" font-size="24" font-weight="700">${K(g)}</text>${f}</g></svg>`;
+  const { comic: n, width: i, font: r } = s, o = [], a = [], c = `cg-${Date.now().toString(36)}-${++Ri}-${Math.random().toString(36).slice(2, 9)}`, l = (f, d, g) => `<svg xmlns="http://www.w3.org/2000/svg" width="${i}" height="${d}" viewBox="0 0 ${i} ${d}" role="img" aria-label="${K(g)}"><title>${K(g)}</title><rect width="100%" height="100%" fill="#f5f7fb"/><g font-family="${K(r)}" fill="#303341"><text x="24" y="42" font-size="24" font-weight="700">${K(g)}</text>${f}</g></svg>`;
   let u = 68;
   for (const [f, d] of e.entries()) {
-    const { markup: g, height: y, hit: h } = d, p = (w) => n.panels[f].diagram ? Fi(
+    const { markup: g, height: y, hit: h } = d, p = (w) => n.panels[f].diagram ? qi(
       {
         svg: `<svg xmlns="http://www.w3.org/2000/svg" width="${i}" height="${y}" viewBox="0 0 ${i} ${y}" style="width:${i}px!important;height:${y}px!important;max-width:none!important;max-height:none!important">${g}</svg>`
       },
@@ -5678,7 +5681,7 @@ function sn(s, e, t) {
     }
   };
 }
-function as(s, e, t, n = "compact") {
+function os(s, e, t, n = "compact") {
   try {
     const i = Zs(s, e, n), r = i.comic.panels.findIndex(
       (a) => a.diagram
@@ -5702,7 +5705,7 @@ function as(s, e, t, n = "compact") {
     return tn(i);
   }
 }
-async function ls(s, e, t, n = "compact") {
+async function as(s, e, t, n = "compact") {
   try {
     const i = Zs(s, e, n);
     i.comic.panels.some((o) => o.diagram) && await document.fonts.ready;
@@ -5716,7 +5719,7 @@ async function ls(s, e, t, n = "compact") {
       let u;
       if (a.diagram)
         try {
-          u = await Ki(a.diagram.source, i.font);
+          u = await Fi(a.diagram.source, i.font);
         } catch (d) {
           throw new Error(
             `컷 ${o + 1}.다이어그램: ${d instanceof Error ? d.message : "Mermaid 렌더링 실패"}`
@@ -5737,22 +5740,22 @@ async function ls(s, e, t, n = "compact") {
     return tn(i);
   }
 }
-function Ri(s = 2e6) {
-  const e = new an(s);
+function Ui(s = 2e6) {
+  const e = new ln(s);
   return {
-    render: (t, n = {}) => as(t, n, e),
-    renderPanels: (t, n = {}) => as(t, n, e, "phone"),
-    renderAsync: (t, n = {}) => ls(t, n, e),
-    renderPanelsAsync: (t, n = {}) => ls(t, n, e, "phone"),
+    render: (t, n = {}) => os(t, n, e),
+    renderPanels: (t, n = {}) => os(t, n, e, "phone"),
+    renderAsync: (t, n = {}) => as(t, n, e),
+    renderPanelsAsync: (t, n = {}) => as(t, n, e, "phone"),
     clearCache: () => e.clear()
   };
 }
-const ut = Ri(), Ui = ut.render, Vi = ut.renderPanels, Qi = ut.renderAsync, Gi = ut.renderPanelsAsync;
-function Hi(s, e) {
+const ut = Ui(), Vi = ut.render, Qi = ut.renderPanels, Gi = ut.renderAsync, Hi = ut.renderPanelsAsync;
+function Yi(s, e) {
   const t = URL.createObjectURL(s), n = document.createElement("a");
   n.href = t, n.download = e, n.click(), setTimeout(() => URL.revokeObjectURL(t), 1e3);
 }
-async function Yi(s, e = 1) {
+async function Ji(s, e = 1) {
   if (!s.svg || !Number.isFinite(e) || e < 0.5 || e > 4)
     throw new Error("올바른 만화와 0.5~4 배율이 필요합니다.");
   const t = Math.round(s.width * e), n = Math.round(s.height * e);
@@ -5781,18 +5784,18 @@ async function Yi(s, e = 1) {
 }
 export {
   on as assetVersion,
-  Ri as createRenderer,
-  Hi as downloadBlob,
-  Yi as exportPng,
-  Ui as renderComic,
-  Qi as renderComicAsync,
-  Vi as renderPanels,
-  Gi as renderPanelsAsync,
-  Ri as 렌더러만들기,
-  Ui as 만화그리기,
-  Qi as 만화그리기비동기,
-  At as 문법값,
+  Ui as createRenderer,
+  Yi as downloadBlob,
+  Ji as exportPng,
+  Vi as renderComic,
+  Gi as renderComicAsync,
+  Qi as renderPanels,
+  Hi as renderPanelsAsync,
+  Ui as 렌더러만들기,
+  Vi as 만화그리기,
+  Gi as 만화그리기비동기,
+  vt as 문법값,
   F as 문법항목,
-  Vi as 컷그리기,
-  Gi as 컷그리기비동기
+  Qi as 컷그리기,
+  Hi as 컷그리기비동기
 };

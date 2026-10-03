@@ -1,4 +1,4 @@
-/*! Comic Gen browser SDK v0.7.2
+/*! Comic Gen browser SDK v0.7.3
 */
 function W(e, r = 0) {
   return [...e.querySelectorAll("g[data-panel]")].map((c, l) => {

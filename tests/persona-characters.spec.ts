@@ -128,12 +128,12 @@ function meeting(title = "세 사람의 가입 기능 회의") {
   };
 }
 const source = (value: unknown) => JSON.stringify(value);
-// SHA-256 of the exact UTF-8 SVG captured from the fixed public v0.5.0 SDK.
+// SHA-256 captured from the fixed public v0.5.0 SDK, without redesigned gestures.
 // Keeping the source and digests here makes this regression independent of the CDN and scratch files.
 const legacyBaseline = {
   version: "v0.5.0",
   source:
-    '{"title":"Compatibility","cast":{"a":{"asset":"client","label":"A"},"b":{"asset":"server","label":"B"},"c":{"asset":"database","label":"C"}},"panels":[{"actors":[{"id":"a","expression":"happy","gesture":"wave"},{"id":"b","expression":"confused","holding":"data"},"c"],"dialogue":[{"from":"a","to":"b","text":"Hello!"},{"from":"b","to":"c","text":"Look at the data."}],"transfer":[{"from":"b","to":"c","prop":"data"}]},{"mode":"before","actors":[{"id":"a","expression":"sad","gesture":null},{"id":"b","expression":"angry","holding":null},{"id":"c","expression":"happy"}],"dialogue":[{"from":"c","to":"a","text":"Ready."}]}]}',
+    '{"title":"Compatibility","cast":{"a":{"asset":"client","label":"A"},"b":{"asset":"server","label":"B"},"c":{"asset":"database","label":"C"}},"panels":[{"actors":[{"id":"a","expression":"happy"},{"id":"b","expression":"confused","holding":"data"},"c"],"dialogue":[{"from":"a","to":"b","text":"Hello!"},{"from":"b","to":"c","text":"Look at the data."}],"transfer":[{"from":"b","to":"c","prop":"data"}]},{"mode":"before","actors":[{"id":"a","expression":"sad","gesture":null},{"id":"b","expression":"angry","holding":null},{"id":"c","expression":"happy"}],"dialogue":[{"from":"c","to":"a","text":"Ready."}]}]}',
   cases: [
     {
       options: {
@@ -141,11 +141,11 @@ const legacyBaseline = {
         panelFormat: "compact",
       },
       svgHash:
-        "ffdbac22d0024b4a854548cbed579d5e0ec8d9cdaad3c05d196e33926970a2f5",
+        "e4156960d9c59fdaf165f7c13d8cd17b90cf80e3df6325e9070104bb8acb002c",
       panels: [
         {
           svgHash:
-            "4d1c3f63375747c6ac1e514250fa6b81a43af5a174512fbb2ff8a8d878fc57bb",
+            "39e739f53d6193ec0bc38fc770abcdc5770d7d18a736203386594750bd28b532",
           width: 480,
           height: 540,
         },
@@ -163,11 +163,11 @@ const legacyBaseline = {
         panelFormat: "phone",
       },
       svgHash:
-        "2f5075c46904a57c6d3dbce41d26fac608e158ef3cd7aa402b66524b4642ad16",
+        "16ae2d02f40c54e4950d243e834e50bc9330fb015d4fd4a36dbce1485647431c",
       panels: [
         {
           svgHash:
-            "00a384f5bdaee599d58a563152a4f86a95fc0b565aa8265e5b70ccee7c58d809",
+            "0a4a1030b9e365d182f24910de288850f6c80cebe4df3196e03c3aae61cb9c5b",
           width: 480,
           height: 1080,
         },
@@ -185,11 +185,11 @@ const legacyBaseline = {
         panelFormat: "compact",
       },
       svgHash:
-        "8d362715d69b95287968566e3f7c7a12070607fdc8ac5896a033f21203317515",
+        "4381e7d3bf749091868d6310f25ed7de05a125f92be07b08ccc61eb18cc3e8e6",
       panels: [
         {
           svgHash:
-            "b09c333d341313842a46498b89cd14b015e7e661b0d8bffe4a7083a4827fbe5e",
+            "d9fbbad129d815cb4a9ebdf467b795a44973e9d31df8d5f82eb5754edd546c73",
           width: 720,
           height: 540,
         },
@@ -207,11 +207,11 @@ const legacyBaseline = {
         panelFormat: "phone",
       },
       svgHash:
-        "42bdebe054c26ab446f352a9e919011e78e5a2b1f7fff1e90f8811606f3561e0",
+        "6ffd0059fe8380c8b3c2cf0d8c326265fb76a8dd5437eab81c5090cae1d5b0a7",
       panels: [
         {
           svgHash:
-            "e824d3fd374daaa2120f7482920d014443a35c824b86c2c094daa3ff6b544775",
+            "a33beb914599521ebaa1d7cc96e3ceff7a76473f069472289439aabae0739b8c",
           width: 720,
           height: 1080,
         },
@@ -229,11 +229,11 @@ const legacyBaseline = {
         panelFormat: "compact",
       },
       svgHash:
-        "3d22c24e24b22ce7215036b0128ae4a15066ef8c264773f5c8a1624b586f67e6",
+        "ff9f676de28cccff8c76616e0210beae816edbd745b3b385ebc06094454abed9",
       panels: [
         {
           svgHash:
-            "ade371b7e68aaa674304342437ba91ed91d9cf9c33f8ca4f99bb3cb5a0b80ee6",
+            "a1e9c68f98b62d20fc4df6185de81bb73f166d1b91c205b9a64a658b0d422af1",
           width: 960,
           height: 540,
         },
@@ -251,11 +251,11 @@ const legacyBaseline = {
         panelFormat: "phone",
       },
       svgHash:
-        "643ad8763d9855deefe161f8f8065b1526174820ea8436eb9ed7bc9381cb57a3",
+        "6cd947b708ad031cafd4ab7af5d2a4b8e719c0254915c435d39cebff9bead5fe",
       panels: [
         {
           svgHash:
-            "75637d6cee23d425f421ccae5dc7d64da4816493c34c987f5f2be64eb8f62217",
+            "155c0597c24e8bb66c72725c17a36ccf3267afad1cd64be6748f49e01c102b2e",
           width: 960,
           height: 1080,
         },
@@ -639,7 +639,7 @@ test("persona-only edits preserve SVG and cache, while appearance edits refresh 
   expect(result.changedPanels).toEqual([true, false, true]);
 });
 
-test("legacy icon comics retain the released SDK's exact SVG bytes", async ({
+test("icon bodies, expressions and props retain the released SDK's exact SVG bytes", async ({
   page,
 }) => {
   await openDocument(page);

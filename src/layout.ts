@@ -2,6 +2,7 @@ import {
   getCharacterAsset,
   expressions,
   gestures,
+  iconGestures,
   props,
   escapeXml,
 } from "./assets";
@@ -163,7 +164,7 @@ export function renderPanel(
     if (labelLines.length > 2)
       throw new Error(`캐릭터 '${actor.id}'의 이름표가 너무 깁니다.`);
     const gesture = actor.gesture
-      ? `<g data-gesture="${actor.gesture}">${actor.gesture === "point" && asset.pointGesture ? asset.pointGesture : human ? gestures[actor.gesture].replace('fill="white"', `fill="${skin}"`) : gestures[actor.gesture]}</g>`
+      ? `<g data-gesture="${actor.gesture}">${actor.gesture === "point" && asset.pointGesture ? asset.pointGesture : human ? gestures[actor.gesture].replace('fill="white"', `fill="${skin}"`) : iconGestures[actor.gesture]}</g>`
       : "";
     const holding = actor.holding
       ? `<g data-holding="${actor.holding}"><circle data-hand="holding" cx="58" cy="20" r="11" fill="${skin}"/><g data-prop="${actor.holding}" transform="translate(73 6)">${props[actor.holding]}</g></g>`

@@ -40,7 +40,7 @@ export declare const renderPanelsAsync: (source: string, options?: RenderOptions
 export declare function downloadBlob(blob: Blob, filename: string): void;
 export declare function exportPng(result: RenderResult, scale?: number): Promise<Blob>;
 
-export declare const assetVersion = "3";
+export declare const assetVersion = "4";
 /** The authored Korean surface normalizes into the existing resolved English model. */
 declare const syntaxFields: {
     readonly comic: {

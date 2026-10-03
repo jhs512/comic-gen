@@ -8,7 +8,7 @@ export interface CharacterAsset {
   restingHands?: { left: string; right: string };
   pointGesture?: string;
 }
-export const assetVersion = "3";
+export const assetVersion = "4";
 export const characters: Record<string, CharacterAsset> = {
   client: {
     color: "#9fcdfa",
@@ -49,6 +49,12 @@ export const gestures: Record<string, string> = {
   wave: '<g data-hand="wave"><circle cx="-65" cy="-22" r="12" fill="white"/><path d="M-77 -42l-4 -8m15 2v-10m13 17 5 -7" fill="none"/></g>',
   point:
     '<g data-hand="point"><circle cx="-65" cy="0" r="11" fill="white"/><path d="M-77 0h-13" fill="none"/></g>',
+};
+/** Filled cartoon hands for icons; human gestures retain their own appearance. */
+export const iconGestures: Record<string, string> = {
+  wave: '<g data-hand="wave" stroke-linejoin="round"><path d="M-66 -9Q-78 -9 -81 -20L-87 -26Q-91 -30 -88 -33Q-85 -36 -81 -32V-44Q-81 -48 -77.5 -48Q-74 -48 -74 -44V-31Q-74 -29 -68 -31V-50Q-68 -54 -64.5 -54Q-61 -54 -61 -50V-31Q-61 -29 -55 -31V-44Q-55 -48 -51.5 -48Q-48 -48 -48 -44V-22Q-48 -11 -59 -9Z" fill="white"/><path d="M-84 -48l-4 -5m23 -5v-6m16 11 4 -5" fill="none"/></g>',
+  point:
+    '<g data-hand="point" stroke-linejoin="round"><path d="M-72 -4H-85a4 4 0 0 0 0 8H-74l3 5q3 4 9 2l5 -3q4 -2 3 -7l-1 -6q-1 -5 -6 -6h-4q-5 -1 -7 3Z" fill="white"/><path d="M-68 -7q3 5 8 4" fill="none" stroke-width="2"/></g>',
 };
 export const props: Record<string, string> = {
   request:
