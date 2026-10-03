@@ -1,4 +1,4 @@
-/*! Comic Gen browser SDK v0.7.1
+/*! Comic Gen browser SDK v0.7.2
 Bundled yaml license:
 Copyright Eemeli Aro <eemeli@gmail.com>
 
@@ -45,18 +45,19 @@ function cs(s = oe) {
   };
   if (!Object.hasOwn(r, s.hairStyle) || !Object.hasOwn(o, s.outfit))
     throw new Error("지원하는 머리 모양과 옷을 선택하세요.");
-  const a = (f, d) => d ? `<g data-human-part="${f}">${d}</g>` : "", c = s.glasses ? '<g data-human-part="glasses" fill="none" stroke-width="2.2"><circle cx="-17" cy="-20" r="11"/><circle cx="17" cy="-20" r="11"/><path d="M-6 -20Q0 -24 6 -20M-28 -22L-34 -25M28 -22L34 -25"/></g>' : "", l = `<g data-human="true" data-hair-style="${s.hairStyle}" data-outfit="${s.outfit}">${a("hair-back", i[s.hairStyle])}${a("outfit", o[s.outfit])}${a("neck", `<path d="M-10 11V24Q0 33 10 24V11Z" fill="${e}"/>`)}${a("ears", `<ellipse cx="-36" cy="-17" rx="7" ry="9" fill="${e}"/><ellipse cx="36" cy="-17" rx="7" ry="9" fill="${e}"/><path d="M-37 -21Q-41 -17 -37 -13M37 -21Q41 -17 37 -13" fill="none" stroke-width="1.8"/>`)}${a("face", `<path d="M-34 -25Q-36 -54 0 -55Q36 -54 34 -25L32 -5Q29 18 0 21Q-29 18 -32 -5Z" fill="${e}"/><g stroke="none" fill="#df8e8b" fill-opacity=".28"><ellipse cx="-24" cy="-8" rx="5" ry="3"/><ellipse cx="24" cy="-8" rx="5" ry="3"/></g>`)}${a("hair-front", r[s.hairStyle])}${a("nose", '<path d="M0 -13V-7H3" fill="none" stroke-width="1.8"/>')}${c}</g>`, u = `<path d="M-49 43Q-54 46 -51 51L-48 55Q-44 59 -40 55L-36 50Q-34 46 -38 43L-40 42Z" fill="${e}"/><path d="M-46 48L-43 51M-42 46L-39 49" fill="none" stroke-width="1.5"/>`;
+  const a = (d, g) => g ? `<g data-human-part="${d}">${g}</g>` : "", c = s.glasses ? '<g data-human-part="glasses" fill="none" stroke-width="2.2"><circle cx="-17" cy="-20" r="11"/><circle cx="17" cy="-20" r="11"/><path d="M-6 -20Q0 -24 6 -20M-28 -22L-34 -25M28 -22L34 -25"/></g>' : "", l = `<g data-human="true" data-hair-style="${s.hairStyle}" data-outfit="${s.outfit}">${a("hair-back", i[s.hairStyle])}${a("outfit", o[s.outfit])}${a("neck", `<path d="M-10 11V24Q0 33 10 24V11Z" fill="${e}"/>`)}${a("ears", `<ellipse cx="-36" cy="-17" rx="7" ry="9" fill="${e}"/><ellipse cx="36" cy="-17" rx="7" ry="9" fill="${e}"/><path d="M-37 -21Q-41 -17 -37 -13M37 -21Q41 -17 37 -13" fill="none" stroke-width="1.8"/>`)}${a("face", `<path d="M-34 -25Q-36 -54 0 -55Q36 -54 34 -25L32 -5Q29 18 0 21Q-29 18 -32 -5Z" fill="${e}"/><g stroke="none" fill="#df8e8b" fill-opacity=".28"><ellipse cx="-24" cy="-8" rx="5" ry="3"/><ellipse cx="24" cy="-8" rx="5" ry="3"/></g>`)}${a("hair-front", r[s.hairStyle])}${a("nose", '<path d="M0 -13V-7H3" fill="none" stroke-width="1.8"/>')}${c}</g>`, u = `<path d="M-49 43Q-54 46 -51 51L-48 55Q-44 59 -40 55L-36 50Q-34 46 -38 43L-40 42Z" fill="${e}"/><path d="M-46 48L-43 51M-42 46L-39 49" fill="none" stroke-width="1.5"/>`, f = `<g data-human-part="arm-left" fill="none" stroke-linecap="round"><path d="M-36 34L-63 25" stroke-width="15"/><path d="M-36 34L-63 25" stroke="${n}" stroke-width="9.4"/></g><g data-hand="point"><path d="M-70 20H-86a3 3 0 0 0 0 6H-70Z" fill="${e}" stroke-width="2.2"/><circle cx="-67" cy="24" r="9.5" fill="${e}"/><path d="M-64 19Q-61 24 -64 29" fill="none" stroke-width="1.8"/></g>`;
   return {
     body: l,
     faceY: -16,
     color: e,
+    pointGesture: f,
     restingHands: {
       left: `<g data-human-part="resting-hand-left">${u}</g>`,
       right: `<g data-human-part="resting-hand-right" transform="scale(-1 1)">${u}</g>`
     }
   };
 }
-const on = "2", fs = {
+const on = "3", fs = {
   client: {
     color: "#9fcdfa",
     faceY: 0,
@@ -134,7 +135,7 @@ class an {
     this.entries.clear(), this.size = 0;
   }
 }
-const It = /* @__PURE__ */ Symbol.for("yaml.alias"), St = /* @__PURE__ */ Symbol.for("yaml.document"), te = /* @__PURE__ */ Symbol.for("yaml.map"), hs = /* @__PURE__ */ Symbol.for("yaml.pair"), Y = /* @__PURE__ */ Symbol.for("yaml.scalar"), ke = /* @__PURE__ */ Symbol.for("yaml.seq"), U = /* @__PURE__ */ Symbol.for("yaml.node.type"), Se = (s) => !!s && typeof s == "object" && s[U] === It, et = (s) => !!s && typeof s == "object" && s[U] === St, Pe = (s) => !!s && typeof s == "object" && s[U] === te, C = (s) => !!s && typeof s == "object" && s[U] === hs, T = (s) => !!s && typeof s == "object" && s[U] === Y, xe = (s) => !!s && typeof s == "object" && s[U] === ke;
+const It = /* @__PURE__ */ Symbol.for("yaml.alias"), St = /* @__PURE__ */ Symbol.for("yaml.document"), te = /* @__PURE__ */ Symbol.for("yaml.map"), hs = /* @__PURE__ */ Symbol.for("yaml.pair"), Y = /* @__PURE__ */ Symbol.for("yaml.scalar"), ke = /* @__PURE__ */ Symbol.for("yaml.seq"), U = /* @__PURE__ */ Symbol.for("yaml.node.type"), Se = (s) => !!s && typeof s == "object" && s[U] === It, et = (s) => !!s && typeof s == "object" && s[U] === St, xe = (s) => !!s && typeof s == "object" && s[U] === te, C = (s) => !!s && typeof s == "object" && s[U] === hs, T = (s) => !!s && typeof s == "object" && s[U] === Y, Pe = (s) => !!s && typeof s == "object" && s[U] === ke;
 function I(s) {
   if (s && typeof s == "object")
     switch (s[U]) {
@@ -212,9 +213,9 @@ function cn(s) {
 function fn(s, e, t, n) {
   if (typeof t == "function")
     return t(s, e, n);
-  if (Pe(e))
-    return t.Map?.(s, e, n);
   if (xe(e))
+    return t.Map?.(s, e, n);
+  if (Pe(e))
     return t.Seq?.(s, e, n);
   if (C(e))
     return t.Pair?.(s, e, n);
@@ -244,12 +245,12 @@ const hn = {
   "{": "%7B",
   "}": "%7D"
 }, dn = (s) => s.replace(/[!,[\]{}]/g, (e) => hn[e]);
-class x {
+class P {
   constructor(e, t) {
-    this.docStart = null, this.docEnd = !1, this.yaml = Object.assign({}, x.defaultYaml, e), this.tags = Object.assign({}, x.defaultTags, t);
+    this.docStart = null, this.docEnd = !1, this.yaml = Object.assign({}, P.defaultYaml, e), this.tags = Object.assign({}, P.defaultTags, t);
   }
   clone() {
-    const e = new x(this.yaml, this.tags);
+    const e = new P(this.yaml, this.tags);
     return e.docStart = this.docStart, e;
   }
   /**
@@ -257,16 +258,16 @@ class x {
    * update the stream state according to the current version's spec.
    */
   atDocument() {
-    const e = new x(this.yaml, this.tags);
+    const e = new P(this.yaml, this.tags);
     switch (this.yaml.version) {
       case "1.1":
         this.atNextDocument = !0;
         break;
       case "1.2":
         this.atNextDocument = !1, this.yaml = {
-          explicit: x.defaultYaml.explicit,
+          explicit: P.defaultYaml.explicit,
           version: "1.2"
-        }, this.tags = Object.assign({}, x.defaultTags);
+        }, this.tags = Object.assign({}, P.defaultTags);
         break;
     }
     return e;
@@ -276,7 +277,7 @@ class x {
    * @returns `true` on success
    */
   add(e, t) {
-    this.atNextDocument && (this.yaml = { explicit: x.defaultYaml.explicit, version: "1.1" }, this.tags = Object.assign({}, x.defaultTags), this.atNextDocument = !1);
+    this.atNextDocument && (this.yaml = { explicit: P.defaultYaml.explicit, version: "1.1" }, this.tags = Object.assign({}, P.defaultTags), this.atNextDocument = !1);
     const n = e.trim().split(/[ \t]+/), i = n.shift();
     switch (i) {
       case "%TAG": {
@@ -352,8 +353,8 @@ class x {
 `);
   }
 }
-x.defaultYaml = { explicit: !1, version: "1.2" };
-x.defaultTags = { "!!": "tag:yaml.org,2002:" };
+P.defaultYaml = { explicit: !1, version: "1.2" };
+P.defaultTags = { "!!": "tag:yaml.org,2002:" };
 function ps(s) {
   if (/[\x00-\x19\s,[\]{}]/.test(s)) {
     const t = `Anchor must not contain whitespace or control characters: ${JSON.stringify(s)}`;
@@ -1147,7 +1148,7 @@ function Sn({ key: s, value: e }, t, n, i) {
   y && (d = null), g ? (d && (p += le(p, t.indent, l(d))), p = `? ${p}
 ${a}:`) : (p = `${p}:`, d && (p += le(p, t.indent, l(d))));
   let w, S, k;
-  M(e) ? (w = !!e.spaceBefore, S = e.commentBefore, k = e.comment) : (w = !1, S = null, k = null, e && typeof e == "object" && (e = o.createNode(e))), t.implicitKey = !1, !g && !d && T(e) && (t.indentAtStart = p.length + 1), h = !1, !u && c.length >= 2 && !t.inFlow && !g && xe(e) && !e.flow && !e.tag && !e.anchor && (t.indent = t.indent.substring(2));
+  M(e) ? (w = !!e.spaceBefore, S = e.commentBefore, k = e.comment) : (w = !1, S = null, k = null, e && typeof e == "object" && (e = o.createNode(e))), t.implicitKey = !1, !g && !d && T(e) && (t.indentAtStart = p.length + 1), h = !1, !u && c.length >= 2 && !t.inFlow && !g && Pe(e) && !e.flow && !e.tag && !e.anchor && (t.indent = t.indent.substring(2));
   let m = !1;
   const b = be(e, t, () => m = !0, () => h = !0);
   let E = " ";
@@ -1194,7 +1195,7 @@ const Fe = "<<", X = {
 }, Nn = (s, e) => (X.identify(e) || T(e) && (!e.type || e.type === O.PLAIN) && X.identify(e.value)) && s?.doc.schema.tags.some((t) => t.tag === X.tag && t.default);
 function ks(s, e, t) {
   const n = Ss(s, t);
-  if (xe(n))
+  if (Pe(n))
     for (const i of n.items)
       dt(s, e, i);
   else if (Array.isArray(n))
@@ -1205,7 +1206,7 @@ function ks(s, e, t) {
 }
 function dt(s, e, t) {
   const n = Ss(s, t);
-  if (!Pe(n))
+  if (!xe(n))
     throw new Error("Merge sources must be maps or map aliases");
   const i = n.toJSON(null, s, Map);
   for (const [r, o] of i)
@@ -1468,7 +1469,7 @@ const Ne = {
   nodeClass: q,
   tag: "tag:yaml.org,2002:map",
   resolve(s, e) {
-    return Pe(s) || e("Expected a mapping for this tag"), s;
+    return xe(s) || e("Expected a mapping for this tag"), s;
   },
   createNode: (s, e, t) => q.from(s, e, t)
 };
@@ -1567,7 +1568,7 @@ const Oe = {
   nodeClass: fe,
   tag: "tag:yaml.org,2002:seq",
   resolve(s, e) {
-    return xe(s) || e("Expected a sequence for this tag"), s;
+    return Pe(s) || e("Expected a sequence for this tag"), s;
   },
   createNode: (s, e, t) => fe.from(s, e, t)
 }, it = {
@@ -1645,7 +1646,7 @@ const Os = {
     return t !== -1 && s[s.length - 1] === "0" && (e.minFractionDigits = s.length - t - 1), e;
   },
   stringify: Q
-}, ot = (s) => typeof s == "bigint" || Number.isInteger(s), Pt = (s, e, t, { intAsBigInt: n }) => n ? BigInt(s) : parseInt(s.substring(e), t);
+}, ot = (s) => typeof s == "bigint" || Number.isInteger(s), xt = (s, e, t, { intAsBigInt: n }) => n ? BigInt(s) : parseInt(s.substring(e), t);
 function As(s, e, t) {
   const { value: n } = s;
   return ot(n) && n >= 0 ? t + n.toString(e) : Q(s);
@@ -1656,14 +1657,14 @@ const Ts = {
   tag: "tag:yaml.org,2002:int",
   format: "OCT",
   test: /^0o[0-7]+$/,
-  resolve: (s, e, t) => Pt(s, 2, 8, t),
+  resolve: (s, e, t) => xt(s, 2, 8, t),
   stringify: (s) => As(s, 8, "0o")
 }, Is = {
   identify: ot,
   default: !0,
   tag: "tag:yaml.org,2002:int",
   test: /^[-+]?[0-9]+$/,
-  resolve: (s, e, t) => Pt(s, 0, 10, t),
+  resolve: (s, e, t) => xt(s, 0, 10, t),
   stringify: Q
 }, Ms = {
   identify: (s) => ot(s) && s >= 0,
@@ -1671,7 +1672,7 @@ const Ts = {
   tag: "tag:yaml.org,2002:int",
   format: "HEX",
   test: /^0x[0-9a-fA-F]+$/,
-  resolve: (s, e, t) => Pt(s, 2, 16, t),
+  resolve: (s, e, t) => xt(s, 2, 16, t),
   stringify: (s) => As(s, 16, "0x")
 }, An = [
   Ne,
@@ -1737,7 +1738,7 @@ const Re = ({ value: s }) => JSON.stringify(s), Tn = [
   resolve(s, e) {
     return e(`Unresolved plain scalar ${JSON.stringify(s)}`), s;
   }
-}, Mn = [Ne, Oe].concat(Tn, In), xt = {
+}, Mn = [Ne, Oe].concat(Tn, In), Pt = {
   identify: (s) => s instanceof Uint8Array,
   // Buffer inherits from Uint8Array
   default: !1,
@@ -1782,11 +1783,11 @@ const Re = ({ value: s }) => JSON.stringify(s), Tn = [
   }
 };
 function Cs(s, e) {
-  if (xe(s))
+  if (Pe(s))
     for (let t = 0; t < s.items.length; ++t) {
       let n = s.items[t];
       if (!C(n)) {
-        if (Pe(n)) {
+        if (xe(n)) {
           n.items.length > 1 && e("Each pair must have its own sequence indicator");
           const i = n.items[0] || new D(new O(null));
           if (n.commentBefore && (i.key.commentBefore = i.key.commentBefore ? `${n.commentBefore}
@@ -1878,7 +1879,7 @@ const Kt = {
   createNode: (s, e, t) => ye.from(s, e, t)
 };
 function js({ value: s, source: e }, t) {
-  return e && (s ? Bs : Ps).test.test(e) ? e : s ? t.options.trueStr : t.options.falseStr;
+  return e && (s ? Bs : xs).test.test(e) ? e : s ? t.options.trueStr : t.options.falseStr;
 }
 const Bs = {
   identify: (s) => s === !0,
@@ -1887,7 +1888,7 @@ const Bs = {
   test: /^(?:Y|y|[Yy]es|YES|[Tt]rue|TRUE|[Oo]n|ON)$/,
   resolve: () => new O(!0),
   stringify: js
-}, Ps = {
+}, xs = {
   identify: (s) => s === !1,
   default: !0,
   tag: "tag:yaml.org,2002:bool",
@@ -1963,7 +1964,7 @@ const Bn = {
   test: /^[-+]?0b[0-1_]+$/,
   resolve: (s, e, t) => at(s, 2, 2, t),
   stringify: (s) => Ft(s, 2, "0b")
-}, Pn = {
+}, xn = {
   identify: De,
   default: !0,
   tag: "tag:yaml.org,2002:int",
@@ -1971,7 +1972,7 @@ const Bn = {
   test: /^[-+]?0[0-7_]+$/,
   resolve: (s, e, t) => at(s, 1, 8, t),
   stringify: (s) => Ft(s, 8, "0")
-}, xn = {
+}, Pn = {
   identify: De,
   default: !0,
   tag: "tag:yaml.org,2002:int",
@@ -2036,7 +2037,7 @@ const qt = {
   tag: "tag:yaml.org,2002:set",
   createNode: (s, e, t) => we.from(s, e, t),
   resolve(s, e) {
-    if (Pe(s)) {
+    if (xe(s)) {
       if (s.hasAllNullValues(!0))
         return Object.assign(new we(), s);
       e("Set items must all have null values");
@@ -2049,7 +2050,7 @@ function Rt(s, e) {
   const t = s[0], n = t === "-" || t === "+" ? s.substring(1) : s, i = (o) => e ? BigInt(o) : Number(o), r = n.replace(/_/g, "").split(":").reduce((o, a) => o * i(60) + i(a), i(0));
   return t === "-" ? i(-1) * r : r;
 }
-function xs(s) {
+function Ps(s) {
   let { value: e } = s, t = (o) => o;
   if (typeof e == "bigint")
     t = (o) => BigInt(o);
@@ -2067,7 +2068,7 @@ const Ds = {
   format: "TIME",
   test: /^[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+$/,
   resolve: (s, e, { intAsBigInt: t }) => Rt(s, t),
-  stringify: xs
+  stringify: Ps
 }, Ks = {
   identify: (s) => typeof s == "number",
   default: !0,
@@ -2075,7 +2076,7 @@ const Ds = {
   format: "TIME",
   test: /^[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+\.[0-9_]*$/,
   resolve: (s) => Rt(s, !1),
-  stringify: xs
+  stringify: Ps
 }, lt = {
   identify: (s) => s instanceof Date,
   default: !0,
@@ -2104,15 +2105,15 @@ const Ds = {
   it,
   rt,
   Bs,
-  Ps,
+  xs,
   Bn,
-  Pn,
   xn,
+  Pn,
   Dn,
   Cn,
   _n,
   jn,
-  xt,
+  Pt,
   X,
   Kt,
   Dt,
@@ -2127,7 +2128,7 @@ const Ds = {
   ["yaml11", Jt],
   ["yaml-1.1", Jt]
 ]), zt = {
-  binary: xt,
+  binary: Pt,
   bool: Bt,
   float: vs,
   floatExp: Ls,
@@ -2146,7 +2147,7 @@ const Ds = {
   set: qt,
   timestamp: lt
 }, Kn = {
-  "tag:yaml.org,2002:binary": xt,
+  "tag:yaml.org,2002:binary": Pt,
   "tag:yaml.org,2002:merge": X,
   "tag:yaml.org,2002:omap": Kt,
   "tag:yaml.org,2002:pairs": Dt,
@@ -2248,7 +2249,7 @@ class ct {
     }, n);
     this.options = r;
     let { version: o } = r;
-    n?._directives ? (this.directives = n._directives.atDocument(), this.directives.yaml.explicit && (o = this.directives.yaml.version)) : this.directives = new x({ version: o }), this.setSchema(o, n), this.contents = e === void 0 ? null : this.createNode(e, i, n);
+    n?._directives ? (this.directives = n._directives.atDocument(), this.directives.yaml.explicit && (o = this.directives.yaml.version)) : this.directives = new P({ version: o }), this.setSchema(o, n), this.contents = e === void 0 ? null : this.createNode(e, i, n);
   }
   /**
    * Create a deep copy of this Document and its contents.
@@ -2385,11 +2386,11 @@ class ct {
     let n;
     switch (e) {
       case "1.1":
-        this.directives ? this.directives.yaml.version = "1.1" : this.directives = new x({ version: "1.1" }), n = { resolveKnownTags: !1, schema: "yaml-1.1" };
+        this.directives ? this.directives.yaml.version = "1.1" : this.directives = new P({ version: "1.1" }), n = { resolveKnownTags: !1, schema: "yaml-1.1" };
         break;
       case "1.2":
       case "next":
-        this.directives ? this.directives.yaml.version = e : this.directives = new x({ version: e }), n = { resolveKnownTags: !0, schema: "core" };
+        this.directives ? this.directives.yaml.version = e : this.directives = new P({ version: e }), n = { resolveKnownTags: !0, schema: "core" };
         break;
       case null:
         this.directives && delete this.directives, n = null;
@@ -3279,7 +3280,7 @@ class ci {
     this.doc = null, this.atDirectives = !1, this.prelude = [], this.errors = [], this.warnings = [], this.onError = (t, n, i, r) => {
       const o = ve(t);
       r ? this.warnings.push(new Rn(o, n, i)) : this.errors.push(new Ie(o, n, i));
-    }, this.directives = new x({ version: e.version || "1.2" }), this.options = e;
+    }, this.directives = new P({ version: e.version || "1.2" }), this.options = e;
   }
   decorate(e, t) {
     const { comment: n, afterEmptyLine: i } = es(this.prelude);
@@ -4857,7 +4858,7 @@ function ne(s, e) {
     throw new Error(`${e}: 객체가 필요합니다.`);
   return s;
 }
-function P(s, e, t = 1e4) {
+function x(s, e, t = 1e4) {
   if (typeof s != "string" || !s.trim())
     throw new Error(`${e}: 비어 있지 않은 문자열이 필요합니다.`);
   if (s.length > t)
@@ -4901,7 +4902,7 @@ function Ei(s) {
       const h = r.actors.map(
         (m) => ({ ...m })
       ), p = de(u.removeActors ?? [], `${l}.제외인물`).map(
-        (m) => P(m, `${l}.제외인물`)
+        (m) => x(m, `${l}.제외인물`)
       );
       for (const m of p)
         if (!h.some((b) => b.id === m))
@@ -4912,7 +4913,7 @@ function Ei(s) {
       for (const m of S) {
         const b = typeof m == "string" ? { id: m } : ne(m, `${l}.인물`);
         ie(b, Object.keys(F.actor), `${l}.인물`);
-        const E = P(b.id, `${l}.인물.식별자`);
+        const E = x(b.id, `${l}.인물.식별자`);
         if (k.has(E))
           throw new Error(`${l}: 캐릭터 식별자가 중복됩니다.`);
         k.add(E);
@@ -4930,12 +4931,12 @@ function Ei(s) {
     const f = de(u.actors, `${l}.인물`).map((h) => {
       const p = typeof h == "string" ? { id: h } : ne(h, `${l}.인물`);
       ie(p, Object.keys(F.actor), `${l}.인물`);
-      const w = P(p.id, `${l}.인물.식별자`), S = p.expression === void 0 ? "neutral" : P(p.expression, `${l}.${w}.표정`);
+      const w = x(p.id, `${l}.인물.식별자`), S = p.expression === void 0 ? "neutral" : x(p.expression, `${l}.${w}.표정`);
       if (!Object.hasOwn(n, w))
         throw new Error(`${l}: 없는 캐릭터 '${w}'.`);
       if (!Object.hasOwn(us, S))
         throw new Error(`${l}.${w}: 없는 표정 '${S}'.`);
-      const k = p.gesture === void 0 ? void 0 : P(p.gesture, `${l}.${w}.손모양`), m = p.holding === void 0 ? void 0 : P(p.holding, `${l}.${w}.든소품`);
+      const k = p.gesture === void 0 ? void 0 : x(p.gesture, `${l}.${w}.손모양`), m = p.holding === void 0 ? void 0 : x(p.holding, `${l}.${w}.든소품`);
       if (k && !Object.hasOwn(kt, k))
         throw new Error(`${l}.${w}: 없는 손 제스처 '${k}'.`);
       if (m && !Object.hasOwn(Je, m))
@@ -4958,7 +4959,7 @@ function Ei(s) {
       (h) => {
         const p = ne(h, `${l}.대사`);
         ie(p, Object.keys(F.dialogue), `${l}.대사`);
-        const w = P(p.from, `${l}.대사.화자`), S = p.to === void 0 ? void 0 : P(p.to, `${l}.대사.상대`);
+        const w = x(p.from, `${l}.대사.화자`), S = p.to === void 0 ? void 0 : x(p.to, `${l}.대사.상대`);
         if (!f.some((k) => k.id === w))
           throw new Error(`${l}: 화자 '${w}'가 컷에 없습니다.`);
         if (S && !f.some((k) => k.id === S))
@@ -4966,7 +4967,7 @@ function Ei(s) {
         return {
           from: w,
           to: S,
-          text: P(p.text, `${l}.대사.내용`),
+          text: x(p.text, `${l}.대사.내용`),
           x: re(p.x, 0, 1, `${l}.대사.가로위치`),
           y: re(p.y, 0, 1, `${l}.대사.세로위치`),
           fontSize: re(p.fontSize, 12, 32, `${l}.대사.글자크기`) ?? 18
@@ -4979,7 +4980,7 @@ function Ei(s) {
       (h) => {
         const p = ne(h, `${l}.전달`);
         ie(p, Object.keys(F.transfer), `${l}.전달`);
-        const w = P(p.from, `${l}.전달.주는인물`), S = P(p.to, `${l}.전달.받는인물`), k = P(p.prop, `${l}.전달.소품`);
+        const w = x(p.from, `${l}.전달.주는인물`), S = x(p.to, `${l}.전달.받는인물`), k = x(p.prop, `${l}.전달.소품`);
         if (!f.some((m) => m.id === w))
           throw new Error(`${l}: 전달 주체 '${w}'가 컷에 없습니다.`);
         if (!f.some((m) => m.id === S))
@@ -5000,8 +5001,8 @@ function Ei(s) {
         throw new Error(`${h}.종류: 머메이드여야 합니다.`);
       y = {
         type: "mermaid",
-        source: P(p.source, `${h}.원문`, 2e4),
-        title: p.title === void 0 ? "다이어그램" : P(p.title, `${h}.제목`, 100),
+        source: x(p.source, `${h}.원문`, 2e4),
+        title: p.title === void 0 ? "다이어그램" : x(p.title, `${h}.제목`, 100),
         height: re(p.height, 160, 1200, `${h}.높이`)
       };
     }
@@ -5010,7 +5011,7 @@ function Ei(s) {
   if (o.length < 1 || o.length > 30)
     throw new Error("컷은 1~30개여야 합니다.");
   return {
-    title: t.title === void 0 ? "Comic Gen" : P(t.title, "제목"),
+    title: t.title === void 0 ? "Comic Gen" : x(t.title, "제목"),
     cast: n,
     panels: o,
     ...i ? { personas: i } : {}
@@ -5097,7 +5098,7 @@ function Js(s, e, t, n, i = "compact", r) {
     );
     if (G.length > 2)
       throw new Error(`캐릭터 '${m.id}'의 이름표가 너무 깁니다.`);
-    const Le = m.gesture ? `<g data-gesture="${m.gesture}">${$ ? kt[m.gesture].replace('fill="white"', `fill="${L}"`) : kt[m.gesture]}</g>` : "", H = m.holding ? `<g data-holding="${m.holding}"><circle data-hand="holding" cx="58" cy="20" r="11" fill="${L}"/><g data-prop="${m.holding}" transform="translate(73 6)">${Je[m.holding]}</g></g>` : "";
+    const Le = m.gesture ? `<g data-gesture="${m.gesture}">${m.gesture === "point" && N.pointGesture ? N.pointGesture : $ ? kt[m.gesture].replace('fill="white"', `fill="${L}"`) : kt[m.gesture]}</g>` : "", H = m.holding ? `<g data-holding="${m.holding}"><circle data-hand="holding" cx="58" cy="20" r="11" fill="${L}"/><g data-prop="${m.holding}" transform="translate(73 6)">${Je[m.holding]}</g></g>` : "";
     p.push(
       `<g data-character="${K(m.id)}" transform="translate(${y[b]} ${h[b]}) scale(${g[b]})" stroke="#303341" stroke-width="2.8" stroke-linecap="round"><ellipse cy="69" rx="51" ry="7" fill="#e8edf3" stroke="none"/>${N.body}<g transform="translate(${J} ${N.faceY})" fill="#303341">${us[m.expression]}</g>${j}${Le}${H}<text y="94" text-anchor="middle" stroke="none" fill="#303341" font-size="16">${G.map((_, se) => `<tspan x="0" dy="${se ? 18 : 0}">${K(_)}</tspan>`).join("")}</text></g>`
     );
@@ -5395,7 +5396,7 @@ function Bi(s, e, t) {
   return i.join(`
 `);
 }
-function Pi(s) {
+function xi(s) {
   if (s.length > 2e6)
     throw new Error("Mermaid SVG가 너무 큽니다. 다이어그램을 나누어 주세요.");
   const e = Ws(s), t = [e, ...e.querySelectorAll("*")];
@@ -5437,7 +5438,7 @@ function Pi(s) {
   }
   return e;
 }
-function xi(s) {
+function Pi(s) {
   if (s.length > 3e6)
     throw new Error("Mermaid SVG가 너무 큽니다. 다이어그램을 나누어 주세요.");
   const e = s.match(
@@ -5523,7 +5524,7 @@ async function Ki(s, e) {
       });
       const u = await l.render(n, s, a);
       c.disconnect();
-      const f = Pi(xi(u.svg)), d = Di(f), g = i.attachShadow({ mode: "closed" });
+      const f = xi(Pi(u.svg)), d = Di(f), g = i.attachShadow({ mode: "closed" });
       g.append(document.importNode(f, !0));
       const y = g.firstElementChild, h = [y, ...y.querySelectorAll("*")], p = new Set(
         h.map((k) => k.id).filter(Boolean)

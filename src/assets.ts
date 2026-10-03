@@ -6,8 +6,9 @@ export interface CharacterAsset {
   faceY: number;
   color: string;
   restingHands?: { left: string; right: string };
+  pointGesture?: string;
 }
-export const assetVersion = "2";
+export const assetVersion = "3";
 export const characters: Record<string, CharacterAsset> = {
   client: {
     color: "#9fcdfa",

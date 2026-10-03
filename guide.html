@@ -8,7 +8,7 @@
   <body>
     <div id="navigation"></div>
     <main class="document guide">
-      <span class="eyebrow">작성 문법 · v0.6.0</span>
+      <span class="eyebrow">작성 문법 · v0.7.2</span>
       <h1>첫 대사부터,<br />나만의 설명까지.</h1>
       <p>
         Comic Gen은 준비된 SVG 에셋을 YAML로 조합하는 브라우저 렌더러입니다.
@@ -254,6 +254,10 @@
         <a class="text-link" href="./llm-guide.md">LLM 작성 가이드 →</a>
       </p>
       <h2 id="actions">3. 표정·손·소품과 전달</h2>
+      <p>
+        v0.7.2부터 사람의 가리키는손은 옷색 팔·손바닥·손가락을 연결해 그립니다.
+        왼쪽을 가리키는 의미와 도형 캐릭터의 기존 손 표현은 유지합니다.
+      </p>
       <pre><code>인물:
   - { 식별자: web, 표정: 기쁨, 손모양: 인사손, 든소품: 요청 }
   - { 식별자: db, 표정: 어리둥절 }
@@ -419,11 +423,11 @@
       <h2 id="sdk">5. 브라우저 SDK와 SVG·PNG 저장</h2>
       <p>
         최신 주소는 main 브랜치를 따르며 CDN 캐시로 반영이 지연될 수 있습니다.
-        한글 문법은 v0.3.0부터 지원합니다. 재현 가능한 문서에는 v0.6.0 고정
+        한글 문법은 v0.3.0부터 지원합니다. 재현 가능한 문서에는 v0.7.2 고정
         SDK를 사용하세요. v0.2.1 고정 SDK는 영어 문법 전용입니다.
       </p>
       <pre><code>import { 컷그리기비동기, exportPng, downloadBlob }
-  from 'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.render.js';
+  from 'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.2/cdn/comic-gen.render.js';
 await document.fonts.ready;
 const result = await 컷그리기비동기(source, {너비: 720, 컷비율: '모바일'});
 if (result.diagnostics.length) {
@@ -475,9 +479,9 @@ if (result.diagnostics.length) {
         </table>
       </div>
       <pre><code>import { renderPanelsAsync } from
-  'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.render.js';
+  'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.2/cdn/comic-gen.render.js';
 import { mountComicCard } from
-  'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.viewer.js';
+  'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.2/cdn/comic-gen.viewer.js';
 const result = await renderPanelsAsync(source, {panelFormat: 'compact'});
 if (result.diagnostics.length) throw new Error(result.diagnostics.join('\n'));
 const cleanup = mountComicCard(document.querySelector('#comic-card'), result);
@@ -517,7 +521,7 @@ const cleanup = mountComicCard(document.querySelector('#comic-card'), result);
 &lt;/code&gt;&lt;/pre&gt;
 &lt;script type="module"&gt;
   import { 코드블록그리기비동기 } from
-    'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.js';
+    'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.2/cdn/comic-gen.js';
   await document.fonts.ready;
   await 코드블록그리기비동기();
 &lt;/script&gt;</code></pre>

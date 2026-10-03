@@ -53,10 +53,14 @@ export function renderHuman(
     : "";
   const body = `<g data-human="true" data-hair-style="${appearance.hairStyle}" data-outfit="${appearance.outfit}">${part("hair-back", backs[appearance.hairStyle])}${part("outfit", outfits[appearance.outfit])}${part("neck", `<path d="M-10 11V24Q0 33 10 24V11Z" fill="${skin}"/>`)}${part("ears", `<ellipse cx="-36" cy="-17" rx="7" ry="9" fill="${skin}"/><ellipse cx="36" cy="-17" rx="7" ry="9" fill="${skin}"/><path d="M-37 -21Q-41 -17 -37 -13M37 -21Q41 -17 37 -13" fill="none" stroke-width="1.8"/>`)}${part("face", `<path d="M-34 -25Q-36 -54 0 -55Q36 -54 34 -25L32 -5Q29 18 0 21Q-29 18 -32 -5Z" fill="${skin}"/><g stroke="none" fill="#df8e8b" fill-opacity=".28"><ellipse cx="-24" cy="-8" rx="5" ry="3"/><ellipse cx="24" cy="-8" rx="5" ry="3"/></g>`)}${part("hair-front", fronts[appearance.hairStyle])}${part("nose", '<path d="M0 -13V-7H3" fill="none" stroke-width="1.8"/>')}${glasses}</g>`;
   const palm = `<path d="M-49 43Q-54 46 -51 51L-48 55Q-44 59 -40 55L-36 50Q-34 46 -38 43L-40 42Z" fill="${skin}"/><path d="M-46 48L-43 51M-42 46L-39 49" fill="none" stroke-width="1.5"/>`;
+  // Reuse the attached sleeve and finger from the existing human-pose work.
+  // The shorter fingertip stays inside the renderer's shared 92px radius.
+  const pointGesture = `<g data-human-part="arm-left" fill="none" stroke-linecap="round"><path d="M-36 34L-63 25" stroke-width="15"/><path d="M-36 34L-63 25" stroke="${clothing}" stroke-width="9.4"/></g><g data-hand="point"><path d="M-70 20H-86a3 3 0 0 0 0 6H-70Z" fill="${skin}" stroke-width="2.2"/><circle cx="-67" cy="24" r="9.5" fill="${skin}"/><path d="M-64 19Q-61 24 -64 29" fill="none" stroke-width="1.8"/></g>`;
   return {
     body,
     faceY: -16,
     color: skin,
+    pointGesture,
     restingHands: {
       left: `<g data-human-part="resting-hand-left">${palm}</g>`,
       right: `<g data-human-part="resting-hand-right" transform="scale(-1 1)">${palm}</g>`,

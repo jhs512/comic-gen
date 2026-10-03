@@ -1,4 +1,4 @@
-/*! Comic Gen browser SDK v0.7.1
+/*! Comic Gen browser SDK v0.7.2
 Bundled yaml license:
 Copyright Eemeli Aro <eemeli@gmail.com>
 
@@ -45,18 +45,19 @@ function Cn(n = pe) {
   };
   if (!Object.hasOwn(r, n.hairStyle) || !Object.hasOwn(o, n.outfit))
     throw new Error("지원하는 머리 모양과 옷을 선택하세요.");
-  const a = (u, d) => d ? `<g data-human-part="${u}">${d}</g>` : "", l = n.glasses ? '<g data-human-part="glasses" fill="none" stroke-width="2.2"><circle cx="-17" cy="-20" r="11"/><circle cx="17" cy="-20" r="11"/><path d="M-6 -20Q0 -24 6 -20M-28 -22L-34 -25M28 -22L34 -25"/></g>' : "", c = `<g data-human="true" data-hair-style="${n.hairStyle}" data-outfit="${n.outfit}">${a("hair-back", i[n.hairStyle])}${a("outfit", o[n.outfit])}${a("neck", `<path d="M-10 11V24Q0 33 10 24V11Z" fill="${e}"/>`)}${a("ears", `<ellipse cx="-36" cy="-17" rx="7" ry="9" fill="${e}"/><ellipse cx="36" cy="-17" rx="7" ry="9" fill="${e}"/><path d="M-37 -21Q-41 -17 -37 -13M37 -21Q41 -17 37 -13" fill="none" stroke-width="1.8"/>`)}${a("face", `<path d="M-34 -25Q-36 -54 0 -55Q36 -54 34 -25L32 -5Q29 18 0 21Q-29 18 -32 -5Z" fill="${e}"/><g stroke="none" fill="#df8e8b" fill-opacity=".28"><ellipse cx="-24" cy="-8" rx="5" ry="3"/><ellipse cx="24" cy="-8" rx="5" ry="3"/></g>`)}${a("hair-front", r[n.hairStyle])}${a("nose", '<path d="M0 -13V-7H3" fill="none" stroke-width="1.8"/>')}${l}</g>`, f = `<path d="M-49 43Q-54 46 -51 51L-48 55Q-44 59 -40 55L-36 50Q-34 46 -38 43L-40 42Z" fill="${e}"/><path d="M-46 48L-43 51M-42 46L-39 49" fill="none" stroke-width="1.5"/>`;
+  const a = (d, m) => m ? `<g data-human-part="${d}">${m}</g>` : "", l = n.glasses ? '<g data-human-part="glasses" fill="none" stroke-width="2.2"><circle cx="-17" cy="-20" r="11"/><circle cx="17" cy="-20" r="11"/><path d="M-6 -20Q0 -24 6 -20M-28 -22L-34 -25M28 -22L34 -25"/></g>' : "", c = `<g data-human="true" data-hair-style="${n.hairStyle}" data-outfit="${n.outfit}">${a("hair-back", i[n.hairStyle])}${a("outfit", o[n.outfit])}${a("neck", `<path d="M-10 11V24Q0 33 10 24V11Z" fill="${e}"/>`)}${a("ears", `<ellipse cx="-36" cy="-17" rx="7" ry="9" fill="${e}"/><ellipse cx="36" cy="-17" rx="7" ry="9" fill="${e}"/><path d="M-37 -21Q-41 -17 -37 -13M37 -21Q41 -17 37 -13" fill="none" stroke-width="1.8"/>`)}${a("face", `<path d="M-34 -25Q-36 -54 0 -55Q36 -54 34 -25L32 -5Q29 18 0 21Q-29 18 -32 -5Z" fill="${e}"/><g stroke="none" fill="#df8e8b" fill-opacity=".28"><ellipse cx="-24" cy="-8" rx="5" ry="3"/><ellipse cx="24" cy="-8" rx="5" ry="3"/></g>`)}${a("hair-front", r[n.hairStyle])}${a("nose", '<path d="M0 -13V-7H3" fill="none" stroke-width="1.8"/>')}${l}</g>`, f = `<path d="M-49 43Q-54 46 -51 51L-48 55Q-44 59 -40 55L-36 50Q-34 46 -38 43L-40 42Z" fill="${e}"/><path d="M-46 48L-43 51M-42 46L-39 49" fill="none" stroke-width="1.5"/>`, u = `<g data-human-part="arm-left" fill="none" stroke-linecap="round"><path d="M-36 34L-63 25" stroke-width="15"/><path d="M-36 34L-63 25" stroke="${s}" stroke-width="9.4"/></g><g data-hand="point"><path d="M-70 20H-86a3 3 0 0 0 0 6H-70Z" fill="${e}" stroke-width="2.2"/><circle cx="-67" cy="24" r="9.5" fill="${e}"/><path d="M-64 19Q-61 24 -64 29" fill="none" stroke-width="1.8"/></g>`;
   return {
     body: c,
     faceY: -16,
     color: e,
+    pointGesture: u,
     restingHands: {
       left: `<g data-human-part="resting-hand-left">${f}</g>`,
       right: `<g data-human-part="resting-hand-right" transform="scale(-1 1)">${f}</g>`
     }
   };
 }
-const Ds = "2", In = {
+const Ds = "3", In = {
   client: {
     color: "#9fcdfa",
     faceY: 0,
@@ -134,7 +135,7 @@ class Fs {
     this.entries.clear(), this.size = 0;
   }
 }
-const Qt = /* @__PURE__ */ Symbol.for("yaml.alias"), _t = /* @__PURE__ */ Symbol.for("yaml.document"), ce = /* @__PURE__ */ Symbol.for("yaml.map"), _n = /* @__PURE__ */ Symbol.for("yaml.pair"), te = /* @__PURE__ */ Symbol.for("yaml.scalar"), Me = /* @__PURE__ */ Symbol.for("yaml.seq"), X = /* @__PURE__ */ Symbol.for("yaml.node.type"), Ce = (n) => !!n && typeof n == "object" && n[X] === Qt, ut = (n) => !!n && typeof n == "object" && n[X] === _t, Ge = (n) => !!n && typeof n == "object" && n[X] === ce, U = (n) => !!n && typeof n == "object" && n[X] === _n, K = (n) => !!n && typeof n == "object" && n[X] === te, He = (n) => !!n && typeof n == "object" && n[X] === Me;
+const Gt = /* @__PURE__ */ Symbol.for("yaml.alias"), _t = /* @__PURE__ */ Symbol.for("yaml.document"), ce = /* @__PURE__ */ Symbol.for("yaml.map"), _n = /* @__PURE__ */ Symbol.for("yaml.pair"), te = /* @__PURE__ */ Symbol.for("yaml.scalar"), Me = /* @__PURE__ */ Symbol.for("yaml.seq"), X = /* @__PURE__ */ Symbol.for("yaml.node.type"), Ce = (n) => !!n && typeof n == "object" && n[X] === Gt, ut = (n) => !!n && typeof n == "object" && n[X] === _t, ze = (n) => !!n && typeof n == "object" && n[X] === ce, U = (n) => !!n && typeof n == "object" && n[X] === _n, K = (n) => !!n && typeof n == "object" && n[X] === te, He = (n) => !!n && typeof n == "object" && n[X] === Me;
 function q(n) {
   if (n && typeof n == "object")
     switch (n[X]) {
@@ -147,7 +148,7 @@ function q(n) {
 function R(n) {
   if (n && typeof n == "object")
     switch (n[X]) {
-      case Qt:
+      case Gt:
       case ce:
       case te:
       case Me:
@@ -212,7 +213,7 @@ function qs(n) {
 function Rs(n, e, t, s) {
   if (typeof t == "function")
     return t(n, e, s);
-  if (Ge(e))
+  if (ze(e))
     return t.Map?.(n, e, s);
   if (He(e))
     return t.Seq?.(n, e, s);
@@ -243,13 +244,13 @@ const Vs = {
   "]": "%5D",
   "{": "%7B",
   "}": "%7D"
-}, Qs = (n) => n.replace(/[!,[\]{}]/g, (e) => Vs[e]);
-class z {
+}, Gs = (n) => n.replace(/[!,[\]{}]/g, (e) => Vs[e]);
+class Q {
   constructor(e, t) {
-    this.docStart = null, this.docEnd = !1, this.yaml = Object.assign({}, z.defaultYaml, e), this.tags = Object.assign({}, z.defaultTags, t);
+    this.docStart = null, this.docEnd = !1, this.yaml = Object.assign({}, Q.defaultYaml, e), this.tags = Object.assign({}, Q.defaultTags, t);
   }
   clone() {
-    const e = new z(this.yaml, this.tags);
+    const e = new Q(this.yaml, this.tags);
     return e.docStart = this.docStart, e;
   }
   /**
@@ -257,16 +258,16 @@ class z {
    * update the stream state according to the current version's spec.
    */
   atDocument() {
-    const e = new z(this.yaml, this.tags);
+    const e = new Q(this.yaml, this.tags);
     switch (this.yaml.version) {
       case "1.1":
         this.atNextDocument = !0;
         break;
       case "1.2":
         this.atNextDocument = !1, this.yaml = {
-          explicit: z.defaultYaml.explicit,
+          explicit: Q.defaultYaml.explicit,
           version: "1.2"
-        }, this.tags = Object.assign({}, z.defaultTags);
+        }, this.tags = Object.assign({}, Q.defaultTags);
         break;
     }
     return e;
@@ -276,7 +277,7 @@ class z {
    * @returns `true` on success
    */
   add(e, t) {
-    this.atNextDocument && (this.yaml = { explicit: z.defaultYaml.explicit, version: "1.1" }, this.tags = Object.assign({}, z.defaultTags), this.atNextDocument = !1);
+    this.atNextDocument && (this.yaml = { explicit: Q.defaultYaml.explicit, version: "1.1" }, this.tags = Object.assign({}, Q.defaultTags), this.atNextDocument = !1);
     const s = e.trim().split(/[ \t]+/), i = s.shift();
     switch (i) {
       case "%TAG": {
@@ -333,7 +334,7 @@ class z {
   tagString(e) {
     for (const [t, s] of Object.entries(this.tags))
       if (e.startsWith(s))
-        return t + Qs(e.substring(s.length));
+        return t + Gs(e.substring(s.length));
     return e[0] === "!" ? e : `!<${e}>`;
   }
   toString(e) {
@@ -352,8 +353,8 @@ class z {
 `);
   }
 }
-z.defaultYaml = { explicit: !1, version: "1.2" };
-z.defaultTags = { "!!": "tag:yaml.org,2002:" };
+Q.defaultYaml = { explicit: !1, version: "1.2" };
+Q.defaultTags = { "!!": "tag:yaml.org,2002:" };
 function Pn(n) {
   if (/[\x00-\x19\s,[\]{}]/.test(n)) {
     const t = `Anchor must not contain whitespace or control characters: ${JSON.stringify(n)}`;
@@ -376,7 +377,7 @@ function Fn(n, e) {
       return s;
   }
 }
-function zs(n, e) {
+function Qs(n, e) {
   const t = [], s = /* @__PURE__ */ new Map();
   let i = null;
   return {
@@ -443,7 +444,7 @@ function J(n, e, t) {
   }
   return typeof n == "bigint" && !t?.keep ? Number(n) : n;
 }
-class zt {
+class Qt {
   constructor(e) {
     Object.defineProperty(this, X, { value: e });
   }
@@ -470,9 +471,9 @@ class zt {
     return typeof r == "function" ? Le(r, { "": a }, "", a) : a;
   }
 }
-class Gt extends zt {
+class zt extends Qt {
   constructor(e) {
-    super(Qt), this.source = e, Object.defineProperty(this, "tag", {
+    super(Gt), this.source = e, Object.defineProperty(this, "tag", {
       set() {
         throw new Error("Alias nodes cannot have tags");
       }
@@ -552,7 +553,7 @@ function nt(n, e, t) {
   return 1;
 }
 const Kn = (n) => !n || typeof n != "function" && typeof n != "object";
-class O extends zt {
+class O extends Qt {
   constructor(e) {
     super(te), this.value = e;
   }
@@ -568,7 +569,7 @@ O.BLOCK_LITERAL = "BLOCK_LITERAL";
 O.PLAIN = "PLAIN";
 O.QUOTE_DOUBLE = "QUOTE_DOUBLE";
 O.QUOTE_SINGLE = "QUOTE_SINGLE";
-const Gs = "tag:yaml.org,2002:";
+const zs = "tag:yaml.org,2002:";
 function Hs(n, e, t) {
   if (e) {
     const s = t.filter((r) => r.tag === e), i = s.find((r) => !r.format) ?? s[0];
@@ -590,10 +591,10 @@ function Ue(n, e, t) {
   let l;
   if (s && n && typeof n == "object") {
     if (l = a.get(n), l)
-      return l.anchor ?? (l.anchor = i(n)), new Gt(l.anchor);
+      return l.anchor ?? (l.anchor = i(n)), new zt(l.anchor);
     l = { anchor: null, node: null }, a.set(n, l);
   }
-  e?.startsWith("!!") && (e = Gs + e.slice(2));
+  e?.startsWith("!!") && (e = zs + e.slice(2));
   let c = Hs(n, e, o.tags);
   if (!c) {
     if (n && typeof n.toJSON == "function" && (n = n.toJSON()), !n || typeof n != "object") {
@@ -627,7 +628,7 @@ function at(n, e, t) {
   });
 }
 const De = (n) => n == null || typeof n == "object" && !!n[Symbol.iterator]().next().done;
-class qn extends zt {
+class qn extends Qt {
   constructor(e, t) {
     super(e), Object.defineProperty(this, "schema", {
       value: t,
@@ -1193,7 +1194,7 @@ const Je = "<<", ie = {
   stringify: () => Je
 }, ni = (n, e) => (ie.identify(e) || K(e) && (!e.type || e.type === O.PLAIN) && ie.identify(e.value)) && n?.doc.schema.tags.some((t) => t.tag === ie.tag && t.default);
 function Vn(n, e, t) {
-  const s = Qn(n, t);
+  const s = Gn(n, t);
   if (He(s))
     for (const i of s.items)
       Lt(n, e, i);
@@ -1204,8 +1205,8 @@ function Vn(n, e, t) {
     Lt(n, e, s);
 }
 function Lt(n, e, t) {
-  const s = Qn(n, t);
-  if (!Ge(s))
+  const s = Gn(n, t);
+  if (!ze(s))
     throw new Error("Merge sources must be maps or map aliases");
   const i = s.toJSON(null, n, Map);
   for (const [r, o] of i)
@@ -1217,10 +1218,10 @@ function Lt(n, e, t) {
     });
   return e;
 }
-function Qn(n, e) {
+function Gn(n, e) {
   return n && Ce(e) ? e.resolve(n.doc, n) : e;
 }
-function zn(n, e, { key: t, value: s }) {
+function Qn(n, e, { key: t, value: s }) {
   if (R(t) && t.addToJSMap)
     t.addToJSMap(n, e, s);
   else if (ni(n, t))
@@ -1265,25 +1266,25 @@ function si(n, e, t) {
 }
 function Yt(n, e, t) {
   const s = Ue(n, void 0, t), i = Ue(e, void 0, t);
-  return new G(s, i);
+  return new z(s, i);
 }
-class G {
+class z {
   constructor(e, t = null) {
     Object.defineProperty(this, X, { value: _n }), this.key = e, this.value = t;
   }
   clone(e) {
     let { key: t, value: s } = this;
-    return R(t) && (t = t.clone(e)), R(s) && (s = s.clone(e)), new G(t, s);
+    return R(t) && (t = t.clone(e)), R(s) && (s = s.clone(e)), new z(t, s);
   }
   toJSON(e, t) {
     const s = t?.mapAsMap ? /* @__PURE__ */ new Map() : {};
-    return zn(t, s, this);
+    return Qn(t, s, this);
   }
   toString(e, t, s) {
     return e?.doc ? ei(this, e, t, s) : JSON.stringify(this);
   }
 }
-function Gn(n, e, t) {
+function zn(n, e, t) {
   return (e.inFlow ?? n.flow ? ri : ii)(n, e, t);
 }
 function ii({ comment: n, items: e }, t, { blockItemPrefix: s, flowChars: i, itemIndent: r, onChompKeep: o, onComment: a }) {
@@ -1409,7 +1410,7 @@ class W extends qn {
    */
   add(e, t) {
     let s;
-    U(e) ? s = e : !e || typeof e != "object" || !("key" in e) ? s = new G(e, e?.value) : s = new G(e.key, e.value);
+    U(e) ? s = e : !e || typeof e != "object" || !("key" in e) ? s = new z(e, e?.value) : s = new z(e.key, e.value);
     const i = ye(this.items, s.key), r = this.schema?.sortMapEntries;
     if (i) {
       if (!t)
@@ -1433,7 +1434,7 @@ class W extends qn {
     return !!ye(this.items, e);
   }
   set(e, t) {
-    this.add(new G(e, t), !0);
+    this.add(new z(e, t), !0);
   }
   /**
    * @param ctx - Conversion context, originally set in Document#toJS()
@@ -1444,7 +1445,7 @@ class W extends qn {
     const i = s ? new s() : t?.mapAsMap ? /* @__PURE__ */ new Map() : {};
     t?.onCreate && t.onCreate(i);
     for (const r of this.items)
-      zn(t, i, r);
+      Qn(t, i, r);
     return i;
   }
   toString(e, t, s) {
@@ -1453,7 +1454,7 @@ class W extends qn {
     for (const i of this.items)
       if (!U(i))
         throw new Error(`Map items must all be pairs; found ${JSON.stringify(i)} instead`);
-    return !e.allNullValues && this.hasAllNullValues(!1) && (e = Object.assign({}, e, { allNullValues: !0 })), Gn(this, e, {
+    return !e.allNullValues && this.hasAllNullValues(!1) && (e = Object.assign({}, e, { allNullValues: !0 })), zn(this, e, {
       blockItemPrefix: "",
       flowChars: { start: "{", end: "}" },
       itemIndent: e.indent || "",
@@ -1468,7 +1469,7 @@ const Be = {
   nodeClass: W,
   tag: "tag:yaml.org,2002:map",
   resolve(n, e) {
-    return Ge(n) || e("Expected a mapping for this tag"), n;
+    return ze(n) || e("Expected a mapping for this tag"), n;
   },
   createNode: (n, e, t) => W.from(n, e, t)
 };
@@ -1534,7 +1535,7 @@ class we extends qn {
     return s;
   }
   toString(e, t, s) {
-    return e ? Gn(this, e, {
+    return e ? zn(this, e, {
       blockItemPrefix: "- ",
       flowChars: { start: "[", end: "]" },
       itemIndent: (e.indent || "") + "  ",
@@ -1786,9 +1787,9 @@ function ts(n, e) {
     for (let t = 0; t < n.items.length; ++t) {
       let s = n.items[t];
       if (!U(s)) {
-        if (Ge(s)) {
+        if (ze(s)) {
           s.items.length > 1 && e("Each pair must have its own sequence indicator");
-          const i = s.items[0] || new G(new O(null));
+          const i = s.items[0] || new z(new O(null));
           if (s.commentBefore && (i.key.commentBefore = i.key.commentBefore ? `${s.commentBefore}
 ${i.key.commentBefore}` : s.commentBefore), s.comment) {
             const r = i.value ?? i.key;
@@ -1797,7 +1798,7 @@ ${r.comment}` : s.comment;
           }
           s = i;
         }
-        n.items[t] = U(s) ? s : new G(s);
+        n.items[t] = U(s) ? s : new z(s);
       }
     }
   else
@@ -1993,7 +1994,7 @@ class Oe extends W {
   }
   add(e) {
     let t;
-    U(e) ? t = e : e && typeof e == "object" && "key" in e && "value" in e && e.value === null ? t = new G(e.key, null) : t = new G(e, null), ye(this.items, t.key) || this.items.push(t);
+    U(e) ? t = e : e && typeof e == "object" && "key" in e && "value" in e && e.value === null ? t = new z(e.key, null) : t = new z(e, null), ye(this.items, t.key) || this.items.push(t);
   }
   /**
    * If `keepPair` is `true`, returns the Pair matching `key`.
@@ -2007,7 +2008,7 @@ class Oe extends W {
     if (typeof t != "boolean")
       throw new Error(`Expected boolean value for set(key, value) in a YAML set, not ${typeof t}`);
     const s = ye(this.items, e);
-    s && !t ? this.items.splice(this.items.indexOf(s), 1) : !s && t && this.items.push(new G(e));
+    s && !t ? this.items.splice(this.items.indexOf(s), 1) : !s && t && this.items.push(new z(e));
   }
   toJSON(e, t) {
     return super.toJSON(e, t, Set);
@@ -2036,7 +2037,7 @@ const nn = {
   tag: "tag:yaml.org,2002:set",
   createNode: (n, e, t) => Oe.from(n, e, t),
   resolve(n, e) {
-    if (Ge(n)) {
+    if (ze(n)) {
       if (n.hasAllNullValues(!0))
         return Object.assign(new Oe(), n);
       e("Set items must all have null values");
@@ -2248,7 +2249,7 @@ class kt {
     }, s);
     this.options = r;
     let { version: o } = r;
-    s?._directives ? (this.directives = s._directives.atDocument(), this.directives.yaml.explicit && (o = this.directives.yaml.version)) : this.directives = new z({ version: o }), this.setSchema(o, s), this.contents = e === void 0 ? null : this.createNode(e, i, s);
+    s?._directives ? (this.directives = s._directives.atDocument(), this.directives.yaml.explicit && (o = this.directives.yaml.version)) : this.directives = new Q({ version: o }), this.setSchema(o, s), this.contents = e === void 0 ? null : this.createNode(e, i, s);
   }
   /**
    * Create a deep copy of this Document and its contents.
@@ -2284,7 +2285,7 @@ class kt {
       e.anchor = // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       !t || s.has(t) ? Fn(t || "a", s) : t;
     }
-    return new Gt(e.anchor);
+    return new zt(e.anchor);
   }
   createNode(e, t, s) {
     let i;
@@ -2294,7 +2295,7 @@ class kt {
       const g = (S) => typeof S == "number" || S instanceof String || S instanceof Number, w = t.filter(g).map(String);
       w.length > 0 && (t = t.concat(w)), i = t;
     } else s === void 0 && t && (s = t, t = void 0);
-    const { aliasDuplicateObjects: r, anchorPrefix: o, flow: a, keepUndefined: l, onTagObj: c, tag: f } = s ?? {}, { onAnchor: u, setAnchors: d, sourceObjects: m } = zs(
+    const { aliasDuplicateObjects: r, anchorPrefix: o, flow: a, keepUndefined: l, onTagObj: c, tag: f } = s ?? {}, { onAnchor: u, setAnchors: d, sourceObjects: m } = Qs(
       this,
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       o || "a"
@@ -2315,7 +2316,7 @@ class kt {
    */
   createPair(e, t, s = {}) {
     const i = this.createNode(e, null, s), r = this.createNode(t, null, s);
-    return new G(i, r);
+    return new z(i, r);
   }
   /**
    * Removes a value from the document.
@@ -2385,11 +2386,11 @@ class kt {
     let s;
     switch (e) {
       case "1.1":
-        this.directives ? this.directives.yaml.version = "1.1" : this.directives = new z({ version: "1.1" }), s = { resolveKnownTags: !1, schema: "yaml-1.1" };
+        this.directives ? this.directives.yaml.version = "1.1" : this.directives = new Q({ version: "1.1" }), s = { resolveKnownTags: !1, schema: "yaml-1.1" };
         break;
       case "1.2":
       case "next":
-        this.directives ? this.directives.yaml.version = e : this.directives = new z({ version: e }), s = { resolveKnownTags: !0, schema: "core" };
+        this.directives ? this.directives.yaml.version = e : this.directives = new Q({ version: e }), s = { resolveKnownTags: !0, schema: "core" };
         break;
       case null:
         this.directives && delete this.directives, s = null;
@@ -2623,12 +2624,12 @@ function $i({ composeNode: n, composeEmptyNode: e }, t, s, i, r) {
       g && (y?.type === "block-map" && !k.hasNewline && i(l, "BLOCK_AS_IMPLICIT_KEY", "Nested mappings are not allowed in compact mappings"), t.options.strict && h.start < k.found.offset - 1024 && i(S.range, "KEY_OVER_1024_CHARS", "The : indicator must be at most 1024 chars after the start of an implicit block mapping key"));
       const p = y ? n(t, y, k, i) : e(t, l, m, null, k, i);
       t.schema.compat && Ft(s.indent, y, i), l = p.range[2];
-      const b = new G(S, p);
+      const b = new z(S, p);
       t.options.keepSourceTokens && (b.srcToken = f), a.items.push(b);
     } else {
       g && i(S.range, "MISSING_CHAR", "Implicit map keys need to be followed by map values"), k.comment && (S.comment ? S.comment += `
 ` + k.comment : S.comment = k.comment);
-      const p = new G(S);
+      const p = new z(S);
       t.options.keepSourceTokens && (p.srcToken = f), a.items.push(p);
     }
   }
@@ -2770,7 +2771,7 @@ function vi({ composeNode: n, composeEmptyNode: e }, t, s, i, r) {
       const C = b ? n(t, b, N, i) : N.found ? e(t, N.end, p, null, N, i) : null;
       C ? Ot(b) && i(C.range, "BLOCK_IN_FLOW", Nt) : N.comment && ($.comment ? $.comment += `
 ` + N.comment : $.comment = N.comment);
-      const P = new G($, C);
+      const P = new z($, C);
       if (t.options.keepSourceTokens && (P.srcToken = w), o) {
         const A = c;
         fs(t, A.items, $) && i(x, "DUPLICATE_KEY", "Map keys must be unique"), A.items.push(P);
@@ -3222,7 +3223,7 @@ function on(n, e, t, s, { spaceBefore: i, comment: r, anchor: o, tag: a, end: l 
   return o && (u.anchor = o.source.substring(1), u.anchor === "" && c(o, "BAD_ALIAS", "Anchor cannot be an empty string")), i && (u.spaceBefore = !0), r && (u.comment = r, u.range[2] = l), u;
 }
 function Fi({ options: n }, { offset: e, source: t, end: s }, i) {
-  const r = new Gt(t.substring(1));
+  const r = new zt(t.substring(1));
   r.source === "" && i(e, "BAD_ALIAS", "Alias cannot be an empty string"), r.source.endsWith(":") && i(e + t.length - 1, "BAD_ALIAS", "Alias ending in : is ambiguous", !0);
   const o = e + t.length, a = We(s, o, n.strict, i);
   return r.range = [e, o, a.offset], a.comment && (r.comment = a.comment), r;
@@ -3279,7 +3280,7 @@ class qi {
     this.doc = null, this.atDirectives = !1, this.prelude = [], this.errors = [], this.warnings = [], this.onError = (t, s, i, r) => {
       const o = je(t);
       r ? this.warnings.push(new ki(o, s, i)) : this.errors.push(new Fe(o, s, i));
-    }, this.directives = new z({ version: e.version || "1.2" }), this.options = e;
+    }, this.directives = new Q({ version: e.version || "1.2" }), this.options = e;
   }
   decorate(e, t) {
     const { comment: s, afterEmptyLine: i } = wn(this.prelude);
@@ -3473,7 +3474,7 @@ function Z(n) {
 }
 const bn = new Set("0123456789ABCDEFabcdef"), Ui = new Set("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-#;/?:@&=+$_.!~*'()"), et = new Set(",[]{}"), Vi = new Set(` ,[]{}
 \r	`), Tt = (n) => !n || Vi.has(n);
-class Qi {
+class Gi {
   constructor() {
     this.atEnd = !1, this.blockScalarIndent = -1, this.blockScalarKeep = !1, this.buffer = "", this.flowKey = !1, this.flowLevel = 0, this.indentNext = 0, this.indentValue = 0, this.lineEndPos = null, this.next = null, this.pos = 0;
   }
@@ -3896,7 +3897,7 @@ class Qi {
     return yield* this.pushToIndex(t, !1);
   }
 }
-class zi {
+class Qi {
   constructor() {
     this.lineStarts = [], this.addNewLine = (e) => this.lineStarts.push(e), this.linePos = (e) => {
       let t = 0, s = this.lineStarts.length;
@@ -3987,13 +3988,13 @@ function $n(n) {
     for (const e of n.items)
       e.sep && !e.value && !oe(e.start, "explicit-key-ind") && !oe(e.sep, "map-value-ind") && (e.key && (e.value = e.key), delete e.key, ys(e.value) ? e.value.end ? lt(e.value.end, e.sep) : e.value.end = e.sep : lt(e.start, e.sep), delete e.sep);
 }
-class Gi {
+class zi {
   /**
    * @param onNewLine - If defined, called separately with the start position of
    *   each new line (in `parse()`, including the start of input).
    */
   constructor(e) {
-    this.atNewLine = !0, this.atScalar = !1, this.indent = 0, this.offset = 0, this.onKeyLine = !1, this.stack = [], this.source = "", this.type = "", this.lexer = new Qi(), this.onNewLine = e;
+    this.atNewLine = !0, this.atScalar = !1, this.indent = 0, this.offset = 0, this.onKeyLine = !1, this.stack = [], this.source = "", this.type = "", this.lexer = new Gi(), this.onNewLine = e;
   }
   /**
    * Parse `source` as a YAML stream.
@@ -4568,10 +4569,10 @@ class Gi {
 }
 function Hi(n) {
   const e = n.prettyErrors !== !1;
-  return { lineCounter: n.lineCounter || e && new zi() || null, prettyErrors: e };
+  return { lineCounter: n.lineCounter || e && new Qi() || null, prettyErrors: e };
 }
 function Yi(n, e = {}) {
-  const { lineCounter: t, prettyErrors: s } = Hi(e), i = new Gi(t?.addNewLine), r = new qi(e);
+  const { lineCounter: t, prettyErrors: s } = Hi(e), i = new zi(t?.addNewLine), r = new qi(e);
   let o = null;
   for (const a of r.compose(i.parse(n), !0, n.length))
     if (!o)
@@ -4857,7 +4858,7 @@ function ue(n, e) {
     throw new Error(`${e}: 객체가 필요합니다.`);
   return n;
 }
-function Q(n, e, t = 1e4) {
+function G(n, e, t = 1e4) {
   if (typeof n != "string" || !n.trim())
     throw new Error(`${e}: 비어 있지 않은 문자열이 필요합니다.`);
   if (n.length > t)
@@ -4901,7 +4902,7 @@ function tr(n) {
       const h = r.actors.map(
         (p) => ({ ...p })
       ), g = ve(f.removeActors ?? [], `${c}.제외인물`).map(
-        (p) => Q(p, `${c}.제외인물`)
+        (p) => G(p, `${c}.제외인물`)
       );
       for (const p of g)
         if (!h.some((b) => b.id === p))
@@ -4912,7 +4913,7 @@ function tr(n) {
       for (const p of S) {
         const b = typeof p == "string" ? { id: p } : ue(p, `${c}.인물`);
         he(b, Object.keys(Y.actor), `${c}.인물`);
-        const v = Q(b.id, `${c}.인물.식별자`);
+        const v = G(b.id, `${c}.인물.식별자`);
         if (k.has(v))
           throw new Error(`${c}: 캐릭터 식별자가 중복됩니다.`);
         k.add(v);
@@ -4930,12 +4931,12 @@ function tr(n) {
     const u = ve(f.actors, `${c}.인물`).map((h) => {
       const g = typeof h == "string" ? { id: h } : ue(h, `${c}.인물`);
       he(g, Object.keys(Y.actor), `${c}.인물`);
-      const w = Q(g.id, `${c}.인물.식별자`), S = g.expression === void 0 ? "neutral" : Q(g.expression, `${c}.${w}.표정`);
+      const w = G(g.id, `${c}.인물.식별자`), S = g.expression === void 0 ? "neutral" : G(g.expression, `${c}.${w}.표정`);
       if (!Object.hasOwn(s, w))
         throw new Error(`${c}: 없는 캐릭터 '${w}'.`);
       if (!Object.hasOwn(Bn, S))
         throw new Error(`${c}.${w}: 없는 표정 '${S}'.`);
-      const k = g.gesture === void 0 ? void 0 : Q(g.gesture, `${c}.${w}.손모양`), p = g.holding === void 0 ? void 0 : Q(g.holding, `${c}.${w}.든소품`);
+      const k = g.gesture === void 0 ? void 0 : G(g.gesture, `${c}.${w}.손모양`), p = g.holding === void 0 ? void 0 : G(g.holding, `${c}.${w}.든소품`);
       if (k && !Object.hasOwn(Bt, k))
         throw new Error(`${c}.${w}: 없는 손 제스처 '${k}'.`);
       if (p && !Object.hasOwn(ot, p))
@@ -4958,7 +4959,7 @@ function tr(n) {
       (h) => {
         const g = ue(h, `${c}.대사`);
         he(g, Object.keys(Y.dialogue), `${c}.대사`);
-        const w = Q(g.from, `${c}.대사.화자`), S = g.to === void 0 ? void 0 : Q(g.to, `${c}.대사.상대`);
+        const w = G(g.from, `${c}.대사.화자`), S = g.to === void 0 ? void 0 : G(g.to, `${c}.대사.상대`);
         if (!u.some((k) => k.id === w))
           throw new Error(`${c}: 화자 '${w}'가 컷에 없습니다.`);
         if (S && !u.some((k) => k.id === S))
@@ -4966,7 +4967,7 @@ function tr(n) {
         return {
           from: w,
           to: S,
-          text: Q(g.text, `${c}.대사.내용`),
+          text: G(g.text, `${c}.대사.내용`),
           x: de(g.x, 0, 1, `${c}.대사.가로위치`),
           y: de(g.y, 0, 1, `${c}.대사.세로위치`),
           fontSize: de(g.fontSize, 12, 32, `${c}.대사.글자크기`) ?? 18
@@ -4979,7 +4980,7 @@ function tr(n) {
       (h) => {
         const g = ue(h, `${c}.전달`);
         he(g, Object.keys(Y.transfer), `${c}.전달`);
-        const w = Q(g.from, `${c}.전달.주는인물`), S = Q(g.to, `${c}.전달.받는인물`), k = Q(g.prop, `${c}.전달.소품`);
+        const w = G(g.from, `${c}.전달.주는인물`), S = G(g.to, `${c}.전달.받는인물`), k = G(g.prop, `${c}.전달.소품`);
         if (!u.some((p) => p.id === w))
           throw new Error(`${c}: 전달 주체 '${w}'가 컷에 없습니다.`);
         if (!u.some((p) => p.id === S))
@@ -5000,8 +5001,8 @@ function tr(n) {
         throw new Error(`${h}.종류: 머메이드여야 합니다.`);
       y = {
         type: "mermaid",
-        source: Q(g.source, `${h}.원문`, 2e4),
-        title: g.title === void 0 ? "다이어그램" : Q(g.title, `${h}.제목`, 100),
+        source: G(g.source, `${h}.원문`, 2e4),
+        title: g.title === void 0 ? "다이어그램" : G(g.title, `${h}.제목`, 100),
         height: de(g.height, 160, 1200, `${h}.높이`)
       };
     }
@@ -5010,7 +5011,7 @@ function tr(n) {
   if (o.length < 1 || o.length > 30)
     throw new Error("컷은 1~30개여야 합니다.");
   return {
-    title: t.title === void 0 ? "Comic Gen" : Q(t.title, "제목"),
+    title: t.title === void 0 ? "Comic Gen" : G(t.title, "제목"),
     cast: s,
     panels: o,
     ...i ? { personas: i } : {}
@@ -5097,7 +5098,7 @@ function ws(n, e, t, s, i = "compact", r) {
     );
     if (T.length > 2)
       throw new Error(`캐릭터 '${p.id}'의 이름표가 너무 깁니다.`);
-    const j = p.gesture ? `<g data-gesture="${p.gesture}">${$ ? Bt[p.gesture].replace('fill="white"', `fill="${N}"`) : Bt[p.gesture]}</g>` : "", B = p.holding ? `<g data-holding="${p.holding}"><circle data-hand="holding" cx="58" cy="20" r="11" fill="${N}"/><g data-prop="${p.holding}" transform="translate(73 6)">${ot[p.holding]}</g></g>` : "";
+    const j = p.gesture ? `<g data-gesture="${p.gesture}">${p.gesture === "point" && x.pointGesture ? x.pointGesture : $ ? Bt[p.gesture].replace('fill="white"', `fill="${N}"`) : Bt[p.gesture]}</g>` : "", B = p.holding ? `<g data-holding="${p.holding}"><circle data-hand="holding" cx="58" cy="20" r="11" fill="${N}"/><g data-prop="${p.holding}" transform="translate(73 6)">${ot[p.holding]}</g></g>` : "";
     g.push(
       `<g data-character="${H(p.id)}" transform="translate(${y[b]} ${h[b]}) scale(${m[b]})" stroke="#303341" stroke-width="2.8" stroke-linecap="round"><ellipse cy="69" rx="51" ry="7" fill="#e8edf3" stroke="none"/>${x.body}<g transform="translate(${E} ${x.faceY})" fill="#303341">${Bn[p.expression]}</g>${P}${j}${B}<text y="94" text-anchor="middle" stroke="none" fill="#303341" font-size="16">${T.map((M, F) => `<tspan x="0" dy="${F ? 18 : 0}">${H(M)}</tspan>`).join("")}</text></g>`
     );
@@ -6375,10 +6376,10 @@ function Cr(n, e, t = {}) {
     y || (y = !0, o.removeEventListener("click", m), r.destroy(), c.revoke(), o.remove(), i());
   };
 }
-const Mn = /* @__PURE__ */ new WeakMap(), Ms = xs(), Ut = /* @__PURE__ */ new WeakMap(), Qe = Ts();
-let ze;
+const Mn = /* @__PURE__ */ new WeakMap(), Ms = xs(), Ut = /* @__PURE__ */ new WeakMap(), Ge = Ts();
+let Qe;
 function Cs(n) {
-  n.result?.svg && (ze = n, Qe.open(n.result, { trigger: n.button }));
+  n.result?.svg && (Qe = n, Ge.open(n.result, { trigger: n.button }));
 }
 function Is(n) {
   if (!document.getElementById("comic-gen-embed-styles")) {
@@ -6415,9 +6416,9 @@ function _s(n, e) {
     n.title.textContent = t.documentElement.getAttribute("aria-label"), n.caption.textContent = `${e.panels.length}컷 · 만화 읽기 ↗`, n.button.setAttribute(
       "aria-label",
       `${n.title.textContent} · 만화 읽기`
-    ), n.thumbnail.innerHTML = e.panels[0].svg, n.figure.replaceChildren(n.button), ze === n && Qe.isOpen && Cs(n);
+    ), n.thumbnail.innerHTML = e.panels[0].svg, n.figure.replaceChildren(n.button), Qe === n && Ge.isOpen && Cs(n);
   } else {
-    ze === n && Qe.close();
+    Qe === n && Ge.close();
     const t = document.createElement("p");
     t.setAttribute("role", "alert"), t.textContent = e.diagnostics.join(`
 `), n.figure.replaceChildren(t);
@@ -6445,9 +6446,9 @@ async function Br(n = document, e = {}) {
       const a = await Ms.renderAsync(s, e);
       if (Ut.get(t) !== i) return a;
       if (r && !t.isConnected)
-        return o.figure.remove(), ze === o && Qe.close(), a;
+        return o.figure.remove(), Qe === o && Ge.close(), a;
       if (Vt(t) !== s) {
-        o.figure.removeAttribute("aria-busy"), o.result = void 0, ze === o && Qe.close();
+        o.figure.removeAttribute("aria-busy"), o.result = void 0, Qe === o && Ge.close();
         const l = document.createElement("p");
         return l.setAttribute("role", "status"), l.textContent = "코드가 바뀌었어요. 다시 그리기를 호출하세요.", o.figure.replaceChildren(l), a;
       }
