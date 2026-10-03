@@ -375,6 +375,9 @@ test("transfer endpoints touch the characters' existing palms after placement an
             name: scenario.name,
             relations: relations.length,
             expectedRelations: scenario.panels[0].transfer.length,
+            expectedProps:
+              scenario.panels[0].transfer.length +
+              scenario.panels[0].actors.filter((actor) => actor.holding).length,
             endpoints,
             hands,
             bounds,
@@ -412,9 +415,7 @@ test("transfer endpoints touch the characters' existing palms after placement an
     }
     for (const contained of result.bounds)
       expect(contained, context).toBe(true);
-    expect(result.boundedProps.length, context).toBeGreaterThanOrEqual(
-      result.expectedRelations,
-    );
+    expect(result.boundedProps, context).toHaveLength(result.expectedProps);
     for (const contained of result.boundedProps)
       expect(contained, context).toBe(true);
   }
@@ -509,6 +510,11 @@ test("the published auth story keeps held and transferred key outlines separate 
   expect(result.transferCount, context).toBe(1);
   expect(result.heldBox, context).not.toBeNull();
   expect(result.transferBox, context).not.toBeNull();
+  for (const box of [result.heldBox!, result.transferBox!]) {
+    expect(Object.values(box).every(Number.isFinite), context).toBe(true);
+    expect(box.right, context).toBeGreaterThan(box.left);
+    expect(box.bottom, context).toBeGreaterThan(box.top);
+  }
   expect(result.overlap!.x > 0 && result.overlap!.y > 0, context).toBe(false);
 });
 
@@ -527,8 +533,8 @@ test("the published three-person diagram story's transferred data stays complete
     if (!fixture) throw new Error("Missing published persona-diagram fixture");
     const results = [];
     for (const width of [480, 720]) {
-      // Render the complete source so the second cut retains before inheritance
-      // and the real Mermaid board rather than becoming a different fixture.
+      // Render the complete source, including the first cut's Mermaid board,
+      // to preserve the second cut's before inheritance from the published story.
       const output = await sdk.renderPanelsAsync(fixture.source, {
         width,
         panelFormat: "compact",
