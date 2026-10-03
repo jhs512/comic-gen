@@ -161,6 +161,8 @@ test("transfer endpoints touch the characters' existing palms after placement an
               { from: "a", to: "b", prop: "request" },
               { from: "b", to: "c", prop: "request" },
               { from: "c", to: "a", prop: "key" },
+              { from: "a", to: "b", prop: "key" },
+              { from: "b", to: "c", prop: "data" },
             ],
           },
         ],
@@ -303,6 +305,54 @@ test("transfer endpoints touch the characters' existing palms after placement an
             };
           });
           const panel = output.panels[0];
+          const frame = document.querySelector<SVGGraphicsElement>(
+            "g[data-panel] > rect",
+          )!;
+          const frameBox = frame.getBBox(),
+            frameMatrix = DOMMatrix.fromMatrix(frame.getCTM()!);
+          const frameStart = frameMatrix.transformPoint(
+            new DOMPoint(frameBox.x, frameBox.y),
+          );
+          const frameEnd = frameMatrix.transformPoint(
+            new DOMPoint(
+              frameBox.x + frameBox.width,
+              frameBox.y + frameBox.height,
+            ),
+          );
+          // These fixtures have translated/uniformly scaled props. Include each
+          // leaf's own stroke, including the 2.2px prop stroke, in frame containment.
+          const boundedProps = [
+            ...document.querySelectorAll<SVGGraphicsElement>("[data-prop]"),
+          ].map((prop) =>
+            [
+              ...prop.querySelectorAll<SVGGeometryElement>(
+                "path,circle,ellipse,rect",
+              ),
+            ].every((shape) => {
+              const box = shape.getBBox(),
+                matrix = DOMMatrix.fromMatrix(shape.getCTM()!);
+              const stroke =
+                getComputedStyle(shape).stroke === "none"
+                  ? 0
+                  : (parseFloat(getComputedStyle(shape).strokeWidth) / 2) *
+                    Math.max(
+                      Math.hypot(matrix.a, matrix.b),
+                      Math.hypot(matrix.c, matrix.d),
+                    );
+              return [
+                [box.x, box.y],
+                [box.x + box.width, box.y + box.height],
+              ].every(([x, y]) => {
+                const point = matrix.transformPoint(new DOMPoint(x, y));
+                return (
+                  point.x - stroke >= frameStart.x &&
+                  point.x + stroke <= frameEnd.x &&
+                  point.y - stroke >= frameStart.y &&
+                  point.y + stroke <= frameEnd.y
+                );
+              });
+            }),
+          );
           const bounds = actors.map((actor) => {
             const box = actor.getBBox(),
               matrix = DOMMatrix.fromMatrix(actor.getCTM()!);
@@ -328,6 +378,7 @@ test("transfer endpoints touch the characters' existing palms after placement an
             endpoints,
             hands,
             bounds,
+            boundedProps,
             externalHands: relations.reduce(
               (sum, node) => sum + node.querySelectorAll("[data-hand]").length,
               0,
@@ -361,5 +412,215 @@ test("transfer endpoints touch the characters' existing palms after placement an
     }
     for (const contained of result.bounds)
       expect(contained, context).toBe(true);
+    expect(result.boundedProps.length, context).toBeGreaterThanOrEqual(
+      result.expectedRelations,
+    );
+    for (const contained of result.boundedProps)
+      expect(contained, context).toBe(true);
+  }
+});
+
+test("the published auth story keeps held and transferred key outlines separate at 480px", async ({
+  page,
+}) => {
+  await openDocument(page);
+  const result = await page.evaluate(async () => {
+    const rendererModule = "/cdn/comic-gen.render.js",
+      examplesModule = "/src/examples.ts";
+    const sdk = await import(rendererModule),
+      { examples } = await import(examplesModule);
+    const fixture: { source: string } | undefined = examples.find(
+      (example: { id: string }) => example.id === "auth",
+    );
+    if (!fixture) throw new Error("Missing published auth fixture");
+    const output = sdk.renderPanels(fixture.source, {
+      width: 480,
+      panelFormat: "compact",
+    });
+    if (output.diagnostics.length)
+      throw new Error(output.diagnostics.join("\n"));
+    document.querySelector("main")!.innerHTML = output.panels[0].svg;
+    const held = [
+      ...document.querySelectorAll<SVGGElement>(
+        '[data-character="visitor"] [data-holding="key"] [data-prop="key"]',
+      ),
+    ];
+    const transferred = [
+      ...document.querySelectorAll<SVGGElement>(
+        '[data-transfer="visitor"][data-to="gate"] [data-prop="key"]',
+      ),
+    ];
+    const bounds = (group: SVGGElement) => {
+      const box = {
+        left: Infinity,
+        right: -Infinity,
+        top: Infinity,
+        bottom: -Infinity,
+      };
+      // Measure this axis-aligned example's contour and each leaf's actual stroke.
+      for (const shape of group.querySelectorAll<SVGGeometryElement>(
+        "path,circle,ellipse,rect",
+      )) {
+        const matrix = DOMMatrix.fromMatrix(shape.getCTM()!);
+        const scale = Math.max(
+          Math.hypot(matrix.a, matrix.b),
+          Math.hypot(matrix.c, matrix.d),
+        );
+        const stroke =
+          getComputedStyle(shape).stroke === "none"
+            ? 0
+            : (parseFloat(getComputedStyle(shape).strokeWidth) / 2) * scale;
+        const length = shape.getTotalLength(),
+          guard = stroke + 0.125 * scale;
+        for (let distance = 0; distance <= length + 0.25; distance += 0.25) {
+          const point = matrix.transformPoint(
+            shape.getPointAtLength(Math.min(distance, length)),
+          );
+          box.left = Math.min(box.left, point.x - guard);
+          box.right = Math.max(box.right, point.x + guard);
+          box.top = Math.min(box.top, point.y - guard);
+          box.bottom = Math.max(box.bottom, point.y + guard);
+        }
+      }
+      return box;
+    };
+    const heldBox = held[0] ? bounds(held[0]) : null,
+      transferBox = transferred[0] ? bounds(transferred[0]) : null;
+    return {
+      heldCount: held.length,
+      transferCount: transferred.length,
+      heldBox,
+      transferBox,
+      overlap:
+        heldBox && transferBox
+          ? {
+              x:
+                Math.min(heldBox.right, transferBox.right) -
+                Math.max(heldBox.left, transferBox.left),
+              y:
+                Math.min(heldBox.bottom, transferBox.bottom) -
+                Math.max(heldBox.top, transferBox.top),
+            }
+          : null,
+    };
+  });
+  const context = JSON.stringify(result);
+  expect(result.heldCount, context).toBe(1);
+  expect(result.transferCount, context).toBe(1);
+  expect(result.heldBox, context).not.toBeNull();
+  expect(result.transferBox, context).not.toBeNull();
+  expect(result.overlap!.x > 0 && result.overlap!.y > 0, context).toBe(false);
+});
+
+test("the published three-person diagram story's transferred data stays completely painted in PNG", async ({
+  page,
+}) => {
+  await openDocument(page);
+  const results = await page.evaluate(async () => {
+    const rendererModule = "/cdn/comic-gen.render.js",
+      examplesModule = "/src/examples.ts";
+    const sdk = await import(rendererModule),
+      { examples } = await import(examplesModule);
+    const fixture: { source: string } | undefined = examples.find(
+      (example: { id: string }) => example.id === "persona-diagram",
+    );
+    if (!fixture) throw new Error("Missing published persona-diagram fixture");
+    const results = [];
+    for (const width of [480, 720]) {
+      // Render the complete source so the second cut retains before inheritance
+      // and the real Mermaid board rather than becoming a different fixture.
+      const output = await sdk.renderPanelsAsync(fixture.source, {
+        width,
+        panelFormat: "compact",
+      });
+      if (output.diagnostics.length)
+        throw new Error(output.diagnostics.join("\n"));
+      const panel = output.panels[1];
+      document.querySelector("main")!.innerHTML = panel.svg;
+      const root = document.querySelector<SVGSVGElement>("main > svg")!;
+      const selector = '[data-transfer="kim"][data-to="oh"] [data-prop="data"]';
+      const targets = [...root.querySelectorAll<SVGGElement>(selector)];
+      if (targets.length !== 1)
+        throw new Error(
+          `Expected one kim-to-oh data prop, received ${targets.length}`,
+        );
+      const isolated = root.cloneNode(true) as SVGSVGElement;
+      const target = isolated.querySelector(selector)!;
+      // Preserve the complete SVG viewport, ancestor transforms, inherited
+      // colors and defs; remove only the paint unrelated to the transferred data.
+      for (const node of isolated.querySelectorAll(
+        "path,rect,circle,ellipse,line,polyline,polygon,text,image,foreignObject,use",
+      ))
+        if (!target.contains(node) && !node.closest("defs")) node.remove();
+      const [actual, reference] = await Promise.all([
+        sdk.exportPng(panel),
+        sdk.exportPng({ ...panel, svg: isolated.outerHTML }),
+      ]);
+      const raster = async (blob: Blob) => {
+        const url = URL.createObjectURL(blob);
+        try {
+          const image = new Image();
+          image.src = url;
+          await image.decode();
+          const canvas = Object.assign(document.createElement("canvas"), {
+            width: image.naturalWidth,
+            height: image.naturalHeight,
+          });
+          const context = canvas.getContext("2d")!;
+          context.drawImage(image, 0, 0);
+          return {
+            width: canvas.width,
+            height: canvas.height,
+            pixels: context.getImageData(0, 0, canvas.width, canvas.height)
+              .data,
+          };
+        } finally {
+          URL.revokeObjectURL(url);
+        }
+      };
+      const [full, propOnly] = await Promise.all([
+        raster(actual),
+        raster(reference),
+      ]);
+      let opaquePixels = 0,
+        obscuredPixels = 0;
+      for (let index = 0; index < propOnly.pixels.length; index += 4) {
+        if (propOnly.pixels[index + 3] !== 255) continue;
+        opaquePixels++;
+        if (
+          full.pixels[index + 3] !== 255 ||
+          [0, 1, 2].some(
+            (channel) =>
+              Math.abs(
+                full.pixels[index + channel] - propOnly.pixels[index + channel],
+              ) > 8,
+          )
+        )
+          obscuredPixels++;
+      }
+      results.push({
+        width,
+        actors: [...root.querySelectorAll("[data-character]")].map((actor) =>
+          actor.getAttribute("data-character"),
+        ),
+        propCount: targets.length,
+        opaquePixels,
+        obscuredPixels,
+        actualSize: [full.width, full.height],
+        referenceSize: [propOnly.width, propOnly.height],
+        expectedSize: [panel.width, panel.height],
+      });
+    }
+    return results;
+  });
+  expect(results).toHaveLength(2);
+  for (const result of results) {
+    const context = JSON.stringify(result);
+    expect(result.actors, context).toEqual(["kim", "leader", "oh"]);
+    expect(result.propCount, context).toBe(1);
+    expect(result.actualSize, context).toEqual(result.expectedSize);
+    expect(result.referenceSize, context).toEqual(result.expectedSize);
+    expect(result.opaquePixels, context).toBeGreaterThan(150);
+    expect(result.obscuredPixels, context).toBe(0);
   }
 });

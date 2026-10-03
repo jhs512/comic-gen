@@ -66,8 +66,6 @@ export function renderPanel(
       (2 * radius * Math.max(...panel.actors.map((actor) => actor.scale))),
   );
   const scales = panel.actors.map((actor) => actor.scale * automaticScale);
-  const height =
-    dialogueHeight + Math.max(204, Math.ceil(196 * Math.max(...scales)));
   const centers = panel.actors.map((actor, index) =>
     clamp(
       36 + (width - 72) * (actor.x ?? (index + 0.5) / panel.actors.length),
@@ -75,6 +73,24 @@ export function renderPanel(
       width - 26 - radius * scales[index],
     ),
   );
+  const crossesActor = panel.transfer.some((relation) => {
+    const from =
+      centers[panel.actors.findIndex((actor) => actor.id === relation.from)];
+    const to =
+      centers[panel.actors.findIndex((actor) => actor.id === relation.to)];
+    return panel.actors.some(
+      (actor, index) =>
+        actor.id !== relation.from &&
+        actor.id !== relation.to &&
+        centers[index] >= Math.min(from, to) &&
+        centers[index] <= Math.max(from, to),
+    );
+  });
+  const height =
+    dialogueHeight +
+    Math.max(204, Math.ceil(196 * Math.max(...scales))) +
+    (crossesActor ? 40 : 0) +
+    Math.max(0, panel.transfer.length - 1) * 24;
   const actorYs = panel.actors.map((actor, index) =>
     clamp(
       actor.y === undefined ? height - 126 : actor.y * height,
@@ -254,9 +270,40 @@ export function renderPanel(
     const end = to + toPort.x * scales[toIndex];
     const startY = actorYs[fromIndex] + fromPort.y * scales[fromIndex];
     const endY = actorYs[toIndex] + toPort.y * scales[toIndex];
-    const angle = (Math.atan2(endY - startY, end - start) * 180) / Math.PI;
+    const propX = (start + end) / 2;
+    let propY = Math.min(startY, endY) - 54 - index * 24;
+    let path = `M${start} ${startY}L${end} ${endY}`;
+    let approachX = end - start;
+    let approachY = endY - startY;
+    const blockers = panel.actors.flatMap((actor, actorIndex) =>
+      actor.id !== relation.from &&
+      actor.id !== relation.to &&
+      centers[actorIndex] >= Math.min(start, end) &&
+      centers[actorIndex] <= Math.max(start, end)
+        ? [actorIndex]
+        : [],
+    );
+    if (blockers.length) {
+      // Route over an intervening character so both the link and its item stay
+      // visible. The extra scene space keeps this route below the dialogue.
+      const bendY = Math.min(
+        startY,
+        endY,
+        ...blockers.map(
+          (actorIndex) => actorYs[actorIndex] - 70 * scales[actorIndex] - 12,
+        ),
+      );
+      const controlY = (4 * bendY - (startY + endY) / 2) / 3;
+      const step = (end - start) / 3;
+      path = `M${start} ${startY}C${start + step} ${controlY} ${end - step} ${controlY} ${end} ${endY}`;
+      propY = Math.min(propY, bendY - 26 - index * 24);
+      approachX = step;
+      approachY = endY - controlY;
+    }
+    propY = Math.max(24, propY);
+    const angle = (Math.atan2(approachY, approachX) * 180) / Math.PI;
     links.push(
-      `<g data-transfer="${escapeXml(relation.from)}" data-to="${escapeXml(relation.to)}" stroke="#586c8c" stroke-width="2.5"><path data-transfer-link="true" d="M${start} ${startY}L${end} ${endY}" fill="none"/><path transform="translate(${end} ${endY}) rotate(${angle})" d="M-16 -5L-8 0L-16 5" fill="none"/><g data-prop="${relation.prop}" transform="translate(${(start + end) / 2} ${(startY + endY) / 2 - 16 - index * 12})">${props[relation.prop]}</g></g>`,
+      `<g data-transfer="${escapeXml(relation.from)}" data-to="${escapeXml(relation.to)}" stroke="#586c8c" stroke-width="2.5" stroke-linejoin="round"><path data-transfer-link="true" d="${path}" fill="none"/><path transform="translate(${end} ${endY}) rotate(${angle})" d="M-16 -5L-8 0L-16 5" fill="none"/><g data-prop="${relation.prop}" transform="translate(${propX} ${propY})">${props[relation.prop]}</g></g>`,
     );
   });
   markup.splice(1, 0, ...links);

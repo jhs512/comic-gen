@@ -9,7 +9,7 @@ export interface CharacterAsset {
   sleeveColor?: string;
   longSleeve?: boolean;
 }
-export const assetVersion = "7";
+export const assetVersion = "8";
 export const gestureNames: readonly string[] = ["wave", "point"];
 export const characters: Record<string, CharacterAsset> = {
   client: {
