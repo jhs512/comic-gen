@@ -1109,3 +1109,35 @@ test("card forwards viewer options while keeping its cleanup return value", asyn
   await page.evaluate(() => window.comicTest.cleanup());
   await expect(page.locator("dialog")).toHaveCount(0);
 });
+
+test("empty reading space dismissal is opt-in and does not close artwork taps or drags", async ({
+  page,
+}) => {
+  await documentForViewer(page);
+  await mount(page, source(3));
+  await page.evaluate(async () => {
+    const { createComicViewer } = await import("/sdk/comic-gen.viewer.js");
+    window.optionsViewer = createComicViewer();
+    window.optionsViewer.open(window.comicTest.result);
+  });
+  const area = await region(page).boundingBox();
+  await page.mouse.click(area.x + 4, area.y + 4);
+  await expect(dialog(page)).toBeVisible();
+  await page.evaluate(() =>
+    window.optionsViewer.open(window.comicTest.result, {
+      closeOnEmptyArea: true,
+    }),
+  );
+  await clickPanelHalf(page, 0, "right");
+  await expect(dialog(page)).toBeVisible();
+  await dialog(page).getByRole("combobox").selectOption("1.5");
+  await expect(dialog(page)).toBeVisible();
+  await page.mouse.move(area.x + 4, area.y + 4);
+  await page.mouse.down();
+  await page.mouse.move(area.x + 4, area.y + 100);
+  await page.mouse.up();
+  await expect(dialog(page)).toBeVisible();
+  await page.mouse.click(area.x + 4, area.y + 4);
+  await expect(dialog(page)).not.toBeVisible();
+  await page.evaluate(() => window.optionsViewer.destroy());
+});

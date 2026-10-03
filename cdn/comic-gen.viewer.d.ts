@@ -7,6 +7,8 @@ export interface ComicViewerState {
 export interface ComicViewerOptions {
     /** Defaults to false, preserving existing backdrop behavior. */
     closeOnBackdrop?: boolean;
+    /** Close when clicking empty reading-area space outside the artwork; defaults to false. */
+    closeOnEmptyArea?: boolean;
     /** Defaults to true. Does not affect programmatic close(). */
     closeOnEscape?: boolean;
     /** Defaults to true; independent of other dismissal options. */

@@ -14,6 +14,8 @@ export interface ComicViewerState {
 export interface ComicViewerOptions {
   /** Defaults to false, preserving existing backdrop behavior. */
   closeOnBackdrop?: boolean;
+  /** Close when clicking empty reading-area space outside the artwork; defaults to false. */
+  closeOnEmptyArea?: boolean;
   /** Defaults to true. Does not affect programmatic close(). */
   closeOnEscape?: boolean;
   /** Defaults to true; independent of other dismissal options. */
@@ -385,6 +387,7 @@ export function createComicViewer(
     validateView(options, count);
     for (const key of [
       "closeOnBackdrop",
+      "closeOnEmptyArea",
       "closeOnEscape",
       "showCloseButton",
     ] as const) {
@@ -509,6 +512,7 @@ export function createComicViewer(
     if (!dialog?.open) endSession();
   };
   let backdropDown = false;
+  let emptyDown: { x: number; y: number } | undefined;
   const isBackdrop = (event: MouseEvent) => {
     if (event.target !== dialog) return false;
     const box = dialog!.getBoundingClientRect();
@@ -519,12 +523,34 @@ export function createComicViewer(
       event.clientY > box.bottom
     );
   };
+  const isEmptyArea = (event: MouseEvent) => {
+    if (event.target !== viewport) return false;
+    const box = viewport.getBoundingClientRect();
+    return (
+      event.clientX >= box.left + viewport.clientLeft &&
+      event.clientX < box.left + viewport.clientLeft + viewport.clientWidth &&
+      event.clientY >= box.top + viewport.clientTop &&
+      event.clientY < box.top + viewport.clientTop + viewport.clientHeight
+    );
+  };
   const pointerDown = (event: PointerEvent) => {
+    emptyDown =
+      event.button === 0 && event.isPrimary && isEmptyArea(event)
+        ? { x: event.clientX, y: event.clientY }
+        : undefined;
     backdropDown = event.button === 0 && isBackdrop(event);
   };
   const backdropClick = (event: MouseEvent) => {
     const shouldClose =
-      backdropDown && isBackdrop(event) && session.closeOnBackdrop === true;
+      (backdropDown && isBackdrop(event) && session.closeOnBackdrop === true) ||
+      Boolean(
+        emptyDown &&
+        isEmptyArea(event) &&
+        session.closeOnEmptyArea === true &&
+        Math.hypot(event.clientX - emptyDown.x, event.clientY - emptyDown.y) <=
+          8,
+      );
+    emptyDown = undefined;
     backdropDown = false;
     if (shouldClose) close();
   };
@@ -621,6 +647,7 @@ export function createComicViewer(
       session = settings;
       lastState = undefined;
       backdropDown = false;
+      emptyDown = undefined;
       comic = completed;
       trigger = focus;
       title.textContent = completed.title;
