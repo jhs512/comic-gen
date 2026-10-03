@@ -2,12 +2,17 @@ import { assetVersion, escapeXml } from "./assets";
 import { PanelCache } from "./cache";
 import { readComic } from "./parse";
 import { renderPanel } from "./layout";
+import { normalizeOptions } from "./syntax";
 
 export interface RenderOptions {
+  너비?: number;
+  글꼴?: string;
+  글꼴버전?: string;
+  컷비율?: "기본" | "모바일" | "compact" | "phone";
   width?: number;
   font?: string;
   fontVersion?: string;
-  panelFormat?: "compact" | "phone";
+  panelFormat?: "compact" | "phone" | "기본" | "모바일";
 }
 export interface RenderResult {
   svg: string;
@@ -31,11 +36,13 @@ function render(
   source: string,
   options: RenderOptions,
   cache: PanelCache,
+  defaultFormat: "compact" | "phone" = "compact",
 ): PanelsResult {
   try {
+    options = normalizeOptions(options) as RenderOptions;
     const comic = readComic(source);
     const width = options.width ?? 720;
-    const format = options.panelFormat ?? "compact";
+    const format = options.panelFormat ?? defaultFormat;
     if (format !== "compact" && format !== "phone")
       throw new Error("panelFormat은 compact 또는 phone이어야 합니다.");
     if (!Number.isFinite(width) || width < 480 || width > 2400)
@@ -64,7 +71,7 @@ function render(
         fontEpoch,
         fontVersion: options.fontVersion,
         assetVersion,
-        layoutVersion: 2,
+        layoutVersion: 3,
         format,
       });
       const existing = cache.get(key);
@@ -123,14 +130,11 @@ export function createRenderer(maxCacheBytes = 2_000_000) {
     render: (source: string, options: RenderOptions = {}) =>
       render(source, options, cache),
     renderPanels: (source: string, options: RenderOptions = {}) =>
-      render(
-        source,
-        { ...options, panelFormat: options.panelFormat ?? "phone" },
-        cache,
-      ),
+      render(source, options, cache, "phone"),
     clearCache: () => cache.clear(),
   };
 }
 const defaultRenderer = createRenderer();
 export const renderComic = defaultRenderer.render;
 export const renderPanels = defaultRenderer.renderPanels;
+

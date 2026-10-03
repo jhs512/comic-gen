@@ -1,4 +1,5 @@
 import { createRenderer, type RenderOptions } from "./comic";
+import { disposeViewer, mountViewer, styles } from "./viewer";
 
 const figures = new WeakMap<HTMLElement, HTMLElement>();
 const documentRenderer = createRenderer();
@@ -8,9 +9,10 @@ export function renderCodeBlocks(
   root: ParentNode = document,
   options: RenderOptions = {},
 ) {
+  styles();
   const results = [];
   for (const block of root.querySelectorAll<HTMLElement>(
-    "pre[data-comic], pre:has(code.language-comic), pre:has(code.language-comic-gen)",
+    'pre[language="comic-gen"], pre[data-comic], pre:has(code.language-comic), pre:has(code.language-comic-gen)',
   )) {
     const source = (block.querySelector("code") ?? block).textContent ?? "";
     const result = documentRenderer.renderPanels(source, options);
@@ -21,7 +23,11 @@ export function renderCodeBlocks(
       block.after(figure);
       figures.set(block, figure);
     }
-    if (result.svg) {
+    disposeViewer(figure);
+    if (result.svg && block.hasAttribute("viewer")) {
+      mountViewer(figure, result, source);
+      block.hidden = true;
+    } else if (result.svg) {
       figure.innerHTML = result.panels.map((panel) => panel.svg).join("");
       block.hidden = true;
     } else {

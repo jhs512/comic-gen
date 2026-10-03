@@ -45,7 +45,7 @@ export function renderPanel(
   );
   const height = dialogueHeight + 254;
   const radius = Math.max(
-    ...panel.actors.map((actor) => (actor.holding || actor.gesture ? 92 : 60)),
+    ...panel.actors.map((actor) => panel.actions.some((action) => action.actor === actor.id) ? 130 : (actor.holding || actor.gesture ? 92 : 60)),
   );
   const slotWidth = (width - 72) / panel.actors.length;
   const automaticScale = Math.min(
@@ -156,6 +156,28 @@ export function renderPanel(
     markup.push(
       `<g data-transfer="${escapeXml(relation.from)}" data-to="${escapeXml(relation.to)}" stroke="#586c8c" stroke-width="2.5"><path d="M${start} ${startY}L${end} ${endY}" fill="none"/><circle data-hand="transfer" cx="${start}" cy="${startY}" r="${9 * scales[fromIndex]}" fill="white"/><circle data-hand="receive" cx="${end}" cy="${endY}" r="${9 * scales[toIndex]}" fill="white"/><path transform="translate(${end} ${endY}) rotate(${angle})" d="M-12 -5L-4 0L-12 5" fill="none"/><g data-prop="${relation.prop}" transform="translate(${(start + end) / 2} ${(startY + endY) / 2 - 16})">${props[relation.prop]}</g></g>`,
     );
+  });
+  panel.actions.forEach((action) => {
+    const index = panel.actors.findIndex((actor) => actor.id === action.actor);
+    const s = scales[index];
+    const direction = action.side === "left" ? -1 : 1;
+    const cx = centers[index], cy = actorYs[index];
+    const handX = cx + direction * 62 * s, handY = cy + 20 * s;
+    const outerX = cx + direction * 112 * s;
+    const floorY = cy + 108 * s;
+    const receive = action.type === "receive";
+    const drop = action.type === "drop";
+    const ground = drop || action.type === "throw";
+    const startX = receive ? outerX : handX;
+    const startY = receive ? cy - 48 * s : handY;
+    const endX = receive ? handX : (drop ? handX + direction * 22 * s : outerX);
+    const endY = receive ? handY : (ground ? floorY - 16 * s : cy + 8 * s);
+    const controlX = action.type === "throw" ? outerX + direction * 12 * s : (startX + endX) / 2;
+    const controlY = action.type === "throw" ? cy - 36 * s : (startY + endY) / 2;
+    const angle = Math.atan2(endY - controlY, endX - controlX) * 180 / Math.PI;
+    const propX = receive ? startX : endX;
+    const propY = receive ? startY : endY;
+    markup.push(`<g data-action="${action.type}" data-actor="${escapeXml(action.actor)}" stroke="#586c8c" stroke-width="2.5" stroke-linecap="round"><circle data-hand="action" cx="${handX}" cy="${handY}" r="${10*s}" fill="white"/><path data-trajectory="${action.type}" d="M${startX} ${startY}Q${controlX} ${controlY} ${endX} ${endY}" fill="none" stroke-dasharray="5 4"/><path transform="translate(${endX} ${endY}) rotate(${angle}) scale(${s})" d="M-12 -6L-2 0L-12 6" fill="none"/><g data-prop="${action.prop}" transform="translate(${propX} ${propY}) scale(${s})">${props[action.prop]}</g>${receive ? `<path d="M${outerX-18*s} ${startY-20*s}l${-6*s} ${-6*s}M${outerX+18*s} ${startY-20*s}l${6*s} ${-6*s}"/>` : `<path d="M${handX-direction*10*s} ${handY-17*s}l${direction*8*s} ${-5*s}M${handX-direction*14*s} ${handY+17*s}l${direction*8*s} ${5*s}"/>`}${ground ? `<path data-ground="true" d="M${endX-24*s} ${floorY}h${48*s}"/>` : ""}${action.type === "throw" ? `<path data-impact="true" d="M${endX-19*s} ${floorY-3*s}l${-8*s} ${-10*s}M${endX+19*s} ${floorY-3*s}l${8*s} ${-10*s}M${endX-9*s} ${floorY+5*s}l${-8*s} ${7*s}M${endX+9*s} ${floorY+5*s}l${8*s} ${7*s}"/>` : ""}</g>`);
   });
   if (format === "phone") {
     const phoneHeight = height * 2 + 92;

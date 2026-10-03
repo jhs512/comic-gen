@@ -33,6 +33,17 @@ function sourceFor(
 // Keep every example as ordinary authoring code, using the same public renderer as the editor.
 function getExamples(): Example[] {
   return [
+    ...(["receive", "discard", "drop", "throw"] as const).map((type): Example => ({
+      id: `prop-${type}`, title: ({receive:"어디선가 온 데이터를 받기",discard:"불필요한 데이터를 옆으로 버리기",drop:"물건을 아래로 놓기",throw:"바닥으로 힘껏 던지기"})[type],
+      category: "소품 동작", description: "궤적·손·소품 위치로 순간 동작을 표현합니다. 아래 네 컷에서는 받기 → 들기 → 버리기 → 바닥 던지기를 비교하세요.",
+      features: [type, "외부 소품", "4컷 상태와 이벤트"],
+      source: sourceFor("소품과 함께하는 네 컷", {web:{asset:"server",label:"웹 서버"}}, [
+        {actors:[{id:"web",expression:"confused"}],actions:[{actor:"web",type,prop:"data",side:"right"}],dialogue:[{from:"web",text:({receive:"밖에서 데이터가 도착했어!",discard:"필요 없는 건 옆으로!",drop:"살며시 내려놓자.",throw:"이 데이터는 바닥으로!"})[type]}]},
+        {mode:"before",actors:[{id:"web",holding:"data",expression:"happy"}],dialogue:[{from:"web",text:"지금은 데이터를 들고 있어."}]},
+        {mode:"before",actors:[{id:"web",holding:null}],actions:[{actor:"web",type:"discard",prop:"data",side:"left"}],dialogue:[{from:"web",text:"필요 없는 데이터는 버려."}]},
+        {mode:"before",actors:[{id:"web",expression:"angry"}],actions:[{actor:"web",type:"throw",prop:"data"}],dialogue:[{from:"web",text:"바닥으로 휙!"}]},
+      ]),
+    })),
     {
       id: "before",
       title: "변화만 적는 네 컷 이야기",

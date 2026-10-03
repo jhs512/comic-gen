@@ -1,4 +1,5 @@
 import { parseDocument } from "yaml";
+import { normalizeComic } from "./syntax";
 import { characters, expressions, gestures, props } from "./assets";
 import type {
   Actor,
@@ -7,6 +8,7 @@ import type {
   Panel,
   Comic,
   CastMember,
+  PropAction,
 } from "./model";
 
 function record(value: unknown, context: string): Record<string, unknown> {
@@ -55,7 +57,7 @@ export function readComic(source: string): Comic {
     throw new Error("코드가 너무 깁니다. 100KB 이내로 작성하세요.");
   const doc = parseDocument(source, { uniqueKeys: true });
   if (doc.errors.length) throw new Error(doc.errors[0].message);
-  const root = record(doc.toJS({ maxAliasCount: 20 }), "만화");
+  const root = record(normalizeComic(doc.toJS({ maxAliasCount: 20 })), "만화");
   known(root, ["title", "cast", "panels"], "만화");
   const cast: Record<string, CastMember> = Object.create(null);
   for (const [id, raw] of Object.entries(record(root.cast, "cast"))) {
@@ -78,7 +80,7 @@ export function readComic(source: string): Comic {
     const panel = { ...record(raw, ctx) };
     known(
       panel,
-      ["actors", "dialogue", "transfer", "mode", "removeActors"],
+      ["actors", "dialogue", "transfer", "actions", "mode", "removeActors"],
       ctx,
     );
     if (
@@ -232,7 +234,23 @@ export function readComic(source: string): Comic {
     );
     if (transfer.length > 6)
       throw new Error(`${ctx}: 소품 전달은 6개 이내로 작성하세요.`);
-    previous = { actors, dialogue, transfer };
+    const actions = list(panel.actions ?? [], `${ctx}.actions`).map((item): PropAction => {
+      const action = record(item, `${ctx}.actions`);
+      known(action, ["actor", "type", "prop", "side"], `${ctx}.actions`);
+      const actor = text(action.actor, `${ctx}.actions.actor`);
+      const type = text(action.type, `${ctx}.actions.type`);
+      const prop = text(action.prop, `${ctx}.actions.prop`);
+      const side = action.side ?? "right";
+      if (!actors.some((item) => item.id === actor)) throw new Error(`${ctx}: 동작 인물 '${actor}'가 컷에 없습니다.`);
+      if (!["receive", "discard", "drop", "throw"].includes(type)) throw new Error(`${ctx}: 동작은 receive, discard, drop, throw 중 하나여야 합니다.`);
+      if (!Object.hasOwn(props, prop)) throw new Error(`${ctx}: 없는 소품 '${prop}'.`);
+      if (side !== "left" && side !== "right") throw new Error(`${ctx}: side는 left 또는 right여야 합니다.`);
+      const member = actors.find((item) => item.id === actor)!;
+      if (member.holding || member.gesture || transfer.some((item) => item.from === actor || item.to === actor)) throw new Error(`${ctx}: 동작 인물은 holding, gesture, transfer와 동시에 사용할 수 없습니다. before에서는 null로 지우세요.`);
+      return {actor, type: type as PropAction["type"], prop, side};
+    });
+    if (actions.length > 3 || new Set(actions.map((item) => item.actor)).size !== actions.length) throw new Error(`${ctx}: 동작은 인물마다 하나씩, 최대 3개입니다.`);
+    previous = { actors, dialogue, transfer, actions };
     return previous;
   });
   if (panels.length < 1 || panels.length > 30)

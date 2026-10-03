@@ -28,6 +28,13 @@ export interface Panel {
   actors: Actor[];
   dialogue: Dialogue[];
   transfer: Transfer[];
+  actions: PropAction[];
+}
+export interface PropAction {
+  actor: string;
+  type: "receive" | "discard" | "drop" | "throw";
+  prop: string;
+  side: "left" | "right";
 }
 export interface Comic {
   title: string;
