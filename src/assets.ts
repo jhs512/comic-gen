@@ -11,6 +11,7 @@ export interface CharacterAsset {
 }
 export const assetVersion = "9";
 export const gestureNames: readonly string[] = ["wave", "point", "point-up"];
+export const gestureDirections: readonly string[] = ["left", "right"];
 export const characters: Record<string, CharacterAsset> = {
   client: {
     color: "#9fcdfa",

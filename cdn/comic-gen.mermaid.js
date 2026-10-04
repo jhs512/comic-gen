@@ -1,4 +1,4 @@
-/*! Comic Gen browser SDK v0.7.8
+/*! Comic Gen browser SDK v0.8.0
 */
 const i = "https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.esm.min.mjs";
 try {

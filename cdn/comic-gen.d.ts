@@ -80,6 +80,7 @@ declare const syntaxFields: {
         readonly id: "식별자";
         readonly expression: "표정";
         readonly gesture: "손모양";
+        readonly gestureDirection: "손방향";
         readonly holding: "든소품";
         readonly x: "가로위치";
         readonly y: "세로위치";
@@ -140,6 +141,10 @@ declare const syntaxValues: {
         readonly wave: "인사손";
         readonly point: "가리키는손";
         readonly "point-up": "위가리키는손";
+    };
+    readonly gestureDirection: {
+        readonly left: "왼쪽";
+        readonly right: "오른쪽";
     };
     readonly prop: {
         readonly request: "요청";

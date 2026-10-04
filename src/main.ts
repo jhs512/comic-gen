@@ -181,7 +181,7 @@ document
   });
 const details = document.querySelector("details")!;
 const extraHelp = document.createElement("p");
-extraHelp.textContent = `손모양: ${Object.values(syntaxValues.gesture).join(", ")} · 소품: ${Object.values(syntaxValues.prop).join(", ")}. 손모양은 고정된 SVG이며 애니메이션이 아닙니다. 든소품은 들고 있는 물건, 전달은 주는인물/받는인물/소품으로 표현합니다. 가로위치·세로위치는 0~1, 배율·글자크기로 크기를 조정합니다.`;
+extraHelp.textContent = `손모양: ${Object.values(syntaxValues.gesture).join(", ")} · 손방향: ${Object.values(syntaxValues.gestureDirection).join(", ")} · 소품: ${Object.values(syntaxValues.prop).join(", ")}. 손모양은 고정된 SVG이며 애니메이션이 아닙니다. 든소품은 들고 있는 물건, 전달은 주는인물/받는인물/소품으로 표현합니다. 가로위치·세로위치는 0~1, 배율·글자크기로 크기를 조정합니다.`;
 details.append(extraHelp);
 const diagramHelp = document.createElement("p");
 diagramHelp.textContent =

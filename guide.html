@@ -8,7 +8,7 @@
   <body>
     <div id="navigation"></div>
     <main class="document guide">
-      <span class="eyebrow">작성 문법 · v0.7.8</span>
+      <span class="eyebrow">작성 문법 · v0.8.0</span>
       <h1>첫 대사부터,<br />나만의 설명까지.</h1>
       <p>
         Comic Gen은 준비된 SVG 에셋을 YAML로 조합하는 브라우저 렌더러입니다.
@@ -125,6 +125,14 @@
               <td>
                 선택. 손모양: 인사손, 가리키는손, 위가리키는손. 든소품: 요청,
                 데이터, 열쇠.
+              </td>
+            </tr>
+            <tr>
+              <td>인물 설정</td>
+              <td><code>손방향</code></td>
+              <td>
+                선택(v0.8.0). 왼쪽, 오른쪽. 인사손·가리키는손의 자동 방향을 바꿀
+                때만 손모양과 함께 작성.
               </td>
             </tr>
             <tr>
@@ -264,7 +272,10 @@
         <code>손모양: 가리키는손</code>은 그 컷에서 자신이 말하는 대화 상대의
         좌우 위치를 향합니다. 상대가 없으면 왼쪽을 가리킵니다.
         <code>손모양: 위가리키는손</code>은 위쪽 칠판을 짚는 표현에 사용하세요.
-        손 모양은 SVG·PNG에 저장되는 정적인 그림입니다.
+        자동 방향이 의도와 다르면 <code>손방향: 오른쪽</code>이나
+        <code>손방향: 왼쪽</code>으로 직접 정합니다. 예를 들어 오른쪽 인물에게
+        인사하거나, 상대가 없는 쪽의 물건을 가리킬 때 씁니다. 손 모양은
+        SVG·PNG에 저장되는 정적인 그림입니다.
       </p>
       <p>
         <a class="text-link" href="./gallery.html#auth">인증 예제</a> ·
@@ -391,11 +402,11 @@
       <h2 id="sdk">5. 브라우저 SDK와 SVG·PNG 저장</h2>
       <p>
         최신 주소는 main 브랜치를 따르며 CDN 캐시로 반영이 지연될 수 있습니다.
-        한글 문법은 v0.3.0부터 지원합니다. 재현 가능한 문서에는 v0.7.8 고정
+        한글 문법은 v0.3.0부터 지원합니다. 재현 가능한 문서에는 v0.8.0 고정
         SDK를 사용하세요. v0.2.1 고정 SDK는 영어 문법 전용입니다.
       </p>
       <pre><code>import { 컷그리기비동기, exportPng, downloadBlob }
-  from 'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.8/cdn/comic-gen.render.js';
+  from 'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.8.0/cdn/comic-gen.render.js';
 await document.fonts.ready;
 const result = await 컷그리기비동기(source, {너비: 720, 컷비율: '모바일'});
 if (result.diagnostics.length) {
@@ -447,9 +458,9 @@ if (result.diagnostics.length) {
         </table>
       </div>
       <pre><code>import { renderPanelsAsync } from
-  'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.8/cdn/comic-gen.render.js';
+  'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.8.0/cdn/comic-gen.render.js';
 import { mountComicCard } from
-  'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.8/cdn/comic-gen.viewer.js';
+  'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.8.0/cdn/comic-gen.viewer.js';
 const result = await renderPanelsAsync(source, {panelFormat: 'compact'});
 if (result.diagnostics.length) throw new Error(result.diagnostics.join('\n'));
 const cleanup = mountComicCard(document.querySelector('#comic-card'), result);
@@ -489,7 +500,7 @@ const cleanup = mountComicCard(document.querySelector('#comic-card'), result);
 &lt;/code&gt;&lt;/pre&gt;
 &lt;script type="module"&gt;
   import { 코드블록그리기비동기 } from
-    'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.8/cdn/comic-gen.js';
+    'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.8.0/cdn/comic-gen.js';
   await document.fonts.ready;
   await 코드블록그리기비동기();
 &lt;/script&gt;</code></pre>

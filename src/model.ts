@@ -26,6 +26,8 @@ export interface Actor extends Placement {
   id: string;
   expression: string;
   gesture?: string;
+  /** Overrides the automatic side of a wave or point. Omitted keeps the automatic choice. */
+  gestureDirection?: "left" | "right";
   holding?: string;
   scale: number;
 }

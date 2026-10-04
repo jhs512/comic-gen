@@ -52,10 +52,11 @@ export function drawGesture(
   side: Side = "left",
 ): HandDrawing {
   if (gesture === "wave")
+    // A right wave mirrors the whole left drawing, motion lines included.
     return {
-      back: arm(style, "left", "wave"),
-      front: `<g data-gesture="wave"><g data-hand="wave" data-side="left" stroke-linejoin="round"><path data-wave-motion="true" d="M-90 -46Q-90 -59 -81 -64M-40 -41Q-36 -32 -41 -25" fill="none" stroke="#586c8c" stroke-width="2.5"/><g data-palm="wave" transform="translate(-66 -8) rotate(-8) scale(.82)"><path d="${openPalm}" fill="${style.skin}" stroke-width="2.6"/><path d="M10 -12Q5 -15 1 -9" fill="none" stroke-width="1.6"/></g></g></g>`,
-      port: { x: -66, y: -22 },
+      back: arm(style, side, "wave"),
+      front: `<g data-gesture="wave"${side === "right" ? ' transform="scale(-1 1)"' : ""}><g data-hand="wave" data-side="${side}" stroke-linejoin="round"><path data-wave-motion="true" d="M-90 -46Q-90 -59 -81 -64M-40 -41Q-36 -32 -41 -25" fill="none" stroke="#586c8c" stroke-width="2.5"/><g data-palm="wave" transform="translate(-66 -8) rotate(-8) scale(.82)"><path d="${openPalm}" fill="${style.skin}" stroke-width="2.6"/><path d="M10 -12Q5 -15 1 -9" fill="none" stroke-width="1.6"/></g></g></g>`,
+      port: { x: side === "left" ? -66 : 66, y: -22 },
     };
   if (gesture === "point-up")
     return {

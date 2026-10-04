@@ -1,6 +1,6 @@
 import { parseDocument } from "yaml";
 import { normalizeComic, syntaxFields } from "./syntax";
-import { expressions, gestureNames, props } from "./assets";
+import { expressions, gestureDirections, gestureNames, props } from "./assets";
 import { readCharacterDefinitions } from "./character-definition";
 import type { Actor, Dialogue, Transfer, Diagram, Panel, Comic } from "./model";
 
@@ -100,6 +100,9 @@ export function readComic(source: string): Comic {
         // null clears optional state; no object belonging to the previous panel is mutated.
         for (const [key, value] of Object.entries(patch))
           if (key !== "id" && value === null) delete merged[key];
+        // Clearing or replacing the gesture also drops the direction it faced.
+        if (patch.gesture !== undefined && patch.gestureDirection === undefined)
+          delete merged.gestureDirection;
         if (slot < 0) next.push(merged);
         else next[slot] = merged;
       }
@@ -133,10 +136,33 @@ export function readComic(source: string): Comic {
         throw new Error(`${ctx}.${id}: 없는 손 제스처 '${gesture}'.`);
       if (holding && !Object.hasOwn(props, holding))
         throw new Error(`${ctx}.${id}: 없는 소품 '${holding}'.`);
+      const direction =
+        actor.gestureDirection === undefined
+          ? undefined
+          : text(actor.gestureDirection, `${ctx}.${id}.손방향`);
+      if (direction !== undefined) {
+        if (direction === "up" || direction === "위")
+          throw new Error(
+            `${ctx}.${id}.손방향: 위쪽은 손모양: 위가리키는손으로 작성하세요.`,
+          );
+        if (!gestureDirections.includes(direction))
+          throw new Error(
+            `${ctx}.${id}.손방향: 왼쪽 또는 오른쪽이어야 합니다.`,
+          );
+        if (!gesture)
+          throw new Error(`${ctx}.${id}.손방향: 손모양과 함께 작성하세요.`);
+        if (gesture === "point-up")
+          throw new Error(
+            `${ctx}.${id}.손방향: 위가리키는손은 방향을 정할 수 없습니다.`,
+          );
+      }
       return {
         id,
         expression,
         gesture,
+        ...(direction
+          ? { gestureDirection: direction as Actor["gestureDirection"] }
+          : {}),
         holding,
         x: number(actor.x, 0, 1, `${ctx}.${id}.가로위치`),
         y: number(actor.y, 0, 1, `${ctx}.${id}.세로위치`),

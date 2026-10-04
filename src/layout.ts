@@ -176,12 +176,14 @@ export function renderPanel(
       (line) => line.from === actor.id && line.to,
     )?.to;
     const targetIndex = panel.actors.findIndex((item) => item.id === other);
+    // An authored 손방향 wins; otherwise a point faces its first dialogue target.
     const gestureSide =
-      actor.gesture === "point" &&
+      actor.gestureDirection ??
+      (actor.gesture === "point" &&
       targetIndex >= 0 &&
       centers[targetIndex] > centers[index]
         ? "right"
-        : "left";
+        : "left");
     const holdingSide =
       actor.gesture && gestureSide === "right" ? "left" : "right";
     const faceX =
