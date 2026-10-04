@@ -2,7 +2,7 @@
 
 Canonical URL: https://jhs512.github.io/comic-gen/llm-guide.md
 
-이 문서는 LLM이 Comic Gen YAML 만화를 작성하거나 수정할 때 읽는 참조입니다. 기준은 v0.8.4의 **한글 기본 문법**과 에셋 라이브러리입니다. 새 코드는 아래 한글 항목·값으로 작성합니다. 기존 영어 문법을 읽거나 수정할 때는 마지막의 영어 호환 표를 참고합니다. 한글 문법에는 v0.3.0 이상, 컷 안 Mermaid 다이어그램에는 v0.4.0 이상 SDK와 비동기 렌더링 연결이 필요합니다. 선택형 공용 뷰어는 v0.5.0 이상, 사람·외형·페르소나는 v0.6.0 이상에서 제공합니다.
+이 문서는 LLM이 Comic Gen YAML 만화를 작성하거나 수정할 때 읽는 참조입니다. 기준은 v0.8.5의 **한글 기본 문법**과 에셋 라이브러리입니다. 새 코드는 아래 한글 항목·값으로 작성합니다. 기존 영어 문법을 읽거나 수정할 때는 마지막의 영어 호환 표를 참고합니다. 한글 문법에는 v0.3.0 이상, 컷 안 Mermaid 다이어그램에는 v0.4.0 이상 SDK와 비동기 렌더링 연결이 필요합니다. 선택형 공용 뷰어는 v0.5.0 이상, 사람·외형·페르소나는 v0.6.0 이상에서 제공합니다.
 
 만화는 준비된 캐릭터 에셋에 이름표, 표정, 손 제스처, 소품, 대사를 조합한 정적인 그림입니다. 컷 안에 Mermaid 원문을 넣으면 별도 칠판 영역에서 다이어그램을 보여줄 수 있습니다.
 
@@ -316,7 +316,7 @@ v0.7.8에서 오른손으로 상대를 가리키는 인물이 소품도 들면 �
 
 ### 호스트에 선택형 뷰어 연결하기
 
-뷰어 설정은 YAML 항목이 아닙니다. 만화 작성 요청에는 계속 `comic-gen` 펜스 안의 YAML만 전달합니다. 호스트를 구현할 때는 [v0.8.4 렌더링 모듈](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.8.4/cdn/comic-gen.render.js)과 [뷰어 모듈](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.8.4/cdn/comic-gen.viewer.js)을 각각 선택합니다. 기존 [호환 SDK](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.8.4/cdn/comic-gen.js)의 코드 블록 삽입 API도 유지합니다. 타입 선언은 같은 파일 이름의 `.d.ts`를 제공합니다.
+뷰어 설정은 YAML 항목이 아닙니다. 만화 작성 요청에는 계속 `comic-gen` 펜스 안의 YAML만 전달합니다. 호스트를 구현할 때는 [v0.8.5 렌더링 모듈](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.8.5/cdn/comic-gen.render.js)과 [뷰어 모듈](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.8.5/cdn/comic-gen.viewer.js)을 각각 선택합니다. 기존 [호환 SDK](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.8.5/cdn/comic-gen.js)의 코드 블록 삽입 API도 유지합니다. 타입 선언은 같은 파일 이름의 `.d.ts`를 제공합니다.
 
 - `mountComicCard(container, completedResult)`는 첫 컷 미리보기 카드와 실제 컷 수를 표시하며 정리 함수를 반환합니다. 내용을 교체하거나 컴포넌트를 제거할 때 정리 함수를 호출합니다.
 - `createComicViewer()`는 `isOpen`, `open(result, {trigger?})`, `close()`, `destroy()`를 제공합니다. 자체 미리보기 버튼을 연결할 수 있습니다.

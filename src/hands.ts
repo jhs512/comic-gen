@@ -39,7 +39,7 @@ function arm(
   const human = !!style.sleeve;
   const paths = human
     ? {
-        wave: "M-50 46Q-62 42 -65 -2L-53 -3Q-52 30 -40 37Z",
+        wave: "M-50 46Q-61 42 -63 8L-52 7Q-51 30 -40 37Z",
         point: "M-47 43Q-60 39 -68 25L-62 20Q-55 31 -40 35Z",
         // A bust shows only the forearm: it rises thick and short from the
         // shoulder edge, so the raised hand stands at cheek height.
@@ -70,13 +70,13 @@ export function drawGesture(
     // Its motion lines sit outside and above the hand, clear of the head.
     const human = !!style.sleeve;
     const motion = human
-      ? "M-83 -22Q-86 -34 -78 -40M-70 -41Q-62 -46 -54 -43"
+      ? "M-82 -12Q-85 -24 -77 -30M-69 -31Q-61 -36 -53 -33"
       : "M-90 -46Q-90 -59 -81 -64M-40 -41Q-36 -32 -41 -25";
     // A right wave mirrors the whole left drawing, motion lines included.
     return {
       back: arm(style, side, "wave"),
-      front: `<g data-gesture="wave"${side === "right" ? ' transform="scale(-1 1)"' : ""}><g data-hand="wave" data-side="${side}" stroke-linejoin="round"><path data-wave-motion="true" d="${motion}" fill="none" stroke="#586c8c" stroke-width="2.5"/><g data-palm="wave" transform="${human ? "translate(-63 -2) rotate(-12) scale(.6)" : "translate(-66 -8) rotate(-8) scale(.82)"}"><path d="${openPalm}" fill="${style.skin}" stroke-width="2.6"/><path d="M10 -12Q5 -15 1 -9" fill="none" stroke-width="1.6"/></g></g></g>`,
-      port: { x: side === "left" ? -66 : 66, y: -22 },
+      front: `<g data-gesture="wave"${side === "right" ? ' transform="scale(-1 1)"' : ""}><g data-hand="wave" data-side="${side}" stroke-linejoin="round"><path data-wave-motion="true" d="${motion}" fill="none" stroke="#586c8c" stroke-width="2.5"/><g data-palm="wave" transform="${human ? "translate(-62 8) rotate(-12) scale(.6)" : "translate(-66 -8) rotate(-8) scale(.82)"}"><path d="${openPalm}" fill="${style.skin}" stroke-width="2.6"/><path d="M10 -12Q5 -15 1 -9" fill="none" stroke-width="1.6"/></g></g></g>`,
+      port: { x: side === "left" ? -66 : 66, y: human ? -12 : -22 },
     };
   }
   // People get a smaller pointing hand than the large icon bodies.

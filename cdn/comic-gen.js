@@ -1,4 +1,4 @@
-/*! Comic Gen browser SDK v0.8.4
+/*! Comic Gen browser SDK v0.8.5
 Bundled yaml license:
 Copyright Eemeli Aro <eemeli@gmail.com>
 
@@ -5046,7 +5046,7 @@ const js = "M-10 4Q-12 -3 -17 -9L-23 -22Q-26 -27 -22 -30Q-18 -33 -15 -28L-10 -21
 ), Or = "M-9 -3Q-9 -7 -5 -7H2V-21Q2 -24 5 -24Q8 -24 8 -21V-6Q10 -4 10 0V5Q10 11 3 11H-3Q-9 11 -9 5Z", Bs = "M-8 -5Q-8 -10 -2 -10H5Q10 -9 10 -4V4Q10 9 4 10H-3Q-9 9 -10 3Z";
 function Ce(n, e, t) {
   const s = !!n.sleeve, i = s ? {
-    wave: "M-50 46Q-62 42 -65 -2L-53 -3Q-52 30 -40 37Z",
+    wave: "M-50 46Q-61 42 -63 8L-52 7Q-51 30 -40 37Z",
     point: "M-47 43Q-60 39 -68 25L-62 20Q-55 31 -40 35Z",
     // A bust shows only the forearm: it rises thick and short from the
     // shoulder edge, so the raised hand stands at cheek height.
@@ -5062,11 +5062,11 @@ function Ce(n, e, t) {
 }
 function Ar(n, e, t = "left") {
   if (n === "wave") {
-    const a = !!e.sleeve, l = a ? "M-83 -22Q-86 -34 -78 -40M-70 -41Q-62 -46 -54 -43" : "M-90 -46Q-90 -59 -81 -64M-40 -41Q-36 -32 -41 -25";
+    const a = !!e.sleeve, l = a ? "M-82 -12Q-85 -24 -77 -30M-69 -31Q-61 -36 -53 -33" : "M-90 -46Q-90 -59 -81 -64M-40 -41Q-36 -32 -41 -25";
     return {
       back: Ce(e, t, "wave"),
-      front: `<g data-gesture="wave"${t === "right" ? ' transform="scale(-1 1)"' : ""}><g data-hand="wave" data-side="${t}" stroke-linejoin="round"><path data-wave-motion="true" d="${l}" fill="none" stroke="#586c8c" stroke-width="2.5"/><g data-palm="wave" transform="${a ? "translate(-63 -2) rotate(-12) scale(.6)" : "translate(-66 -8) rotate(-8) scale(.82)"}"><path d="${js}" fill="${e.skin}" stroke-width="2.6"/><path d="M10 -12Q5 -15 1 -9" fill="none" stroke-width="1.6"/></g></g></g>`,
-      port: { x: t === "left" ? -66 : 66, y: -22 }
+      front: `<g data-gesture="wave"${t === "right" ? ' transform="scale(-1 1)"' : ""}><g data-hand="wave" data-side="${t}" stroke-linejoin="round"><path data-wave-motion="true" d="${l}" fill="none" stroke="#586c8c" stroke-width="2.5"/><g data-palm="wave" transform="${a ? "translate(-62 8) rotate(-12) scale(.6)" : "translate(-66 -8) rotate(-8) scale(.82)"}"><path d="${js}" fill="${e.skin}" stroke-width="2.6"/><path d="M10 -12Q5 -15 1 -9" fill="none" stroke-width="1.6"/></g></g></g>`,
+      port: { x: t === "left" ? -66 : 66, y: a ? -12 : -22 }
     };
   }
   const s = !!e.sleeve, i = s ? Nr : Ps, r = s ? " scale(.72)" : "";
