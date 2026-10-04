@@ -553,12 +553,19 @@ test("the published three-person diagram story's transferred data stays complete
         );
       const isolated = root.cloneNode(true) as SVGSVGElement;
       const target = isolated.querySelector(selector)!;
+      // The giver's own thumb grips the data in front of it on purpose.
+      const grip = target.parentElement!.querySelector("[data-transfer-grip]");
       // Preserve the complete SVG viewport, ancestor transforms, inherited
       // colors and defs; remove only the paint unrelated to the transferred data.
       for (const node of isolated.querySelectorAll(
         "path,rect,circle,ellipse,line,polyline,polygon,text,image,foreignObject,use",
       ))
-        if (!target.contains(node) && !node.closest("defs")) node.remove();
+        if (
+          !target.contains(node) &&
+          !grip?.contains(node) &&
+          !node.closest("defs")
+        )
+          node.remove();
       const [actual, reference] = await Promise.all([
         sdk.exportPng(panel),
         sdk.exportPng({ ...panel, svg: isolated.outerHTML }),

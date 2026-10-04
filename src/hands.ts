@@ -8,8 +8,10 @@ export interface HandDrawing {
   back: string;
   front: string;
   port: { x: number; y: number };
-  /** Where a handed-over item rests on an open palm, when the hand offers one. */
+  /** Where a handed-over item sits in the giving hand, when the hand offers one. */
   rest?: { x: number; y: number };
+  /** Thumb drawn in front of the handed-over item, in character coordinates. */
+  overlay?: string;
 }
 
 // One original silhouette: a broad palm, four fanned fingers and an inward thumb.
@@ -116,31 +118,36 @@ export function drawGrip(
   };
 }
 
-// Giving and receiving use open hands so they never read as an empty fist.
-// Drawn for the right side; the left side mirrors around the character.
-const offeringPalm =
-  "M-7 -2Q-7 -6 -2 -6H12Q16 -6 18 -9Q20 -11 22 -9Q23 -7 21 -4Q17 3 9 4H-2Q-7 4 -7 0Z";
-const cuppedPalm =
-  "M-6 -3Q-7 6 3 6Q12 6 15 -3Q16 -7 13 -8Q10 -8 9 -4Q7 0 3 0Q-1 0 -1 -3Z";
+const gripThumb =
+  '<path d="M-7 -4Q-4 -8 0 -5L5 -1Q6 2 2 3L-4 1Q-8 0 -7 -4Z" stroke-width="2"/><path d="M1 6H6" fill="none" stroke-width="1.5"/>';
 
+// The giver grips the item and holds it out, like a held prop; the receiver
+// reaches toward it with an open five-finger hand. Both read at small sizes,
+// unlike a flat palm or a cupped hook.
 export function drawTransferHand(
   side: Side,
   style: HandStyle,
   kind: "transfer" | "receive",
 ): HandDrawing {
-  const x = side === "left" ? -60 : 60;
-  const mirrored = side === "left" ? ' transform="scale(-1 1)"' : "";
-  const details =
-    kind === "transfer"
-      ? `<path data-palm="offer" d="${offeringPalm}" fill="${style.skin}" stroke-width="2.4"/><path d="M2 0H12" fill="none" stroke-width="1.4"/>`
-      : `<path data-palm="cup" d="${cuppedPalm}" fill="${style.skin}" stroke-width="2.4"/><path d="M-6 -3Q-8 -10 -3 -10Q0 -10 -1 -3" fill="${style.skin}" stroke-width="2"/>`;
-  // The link leaves the giver's raised fingertips and stops just short of the receiver's.
-  const reach = kind === "transfer" ? 23 : 20;
   const inward = side === "left" ? -1 : 1;
+  const mirrored = side === "left" ? ' transform="scale(-1 1)"' : "";
+  if (kind === "transfer") {
+    const x = 62 * inward;
+    return {
+      back: arm(style, side, "grip"),
+      front: `<g data-hand="transfer" data-side="${side}" transform="translate(${x} 20)" stroke-linejoin="round"><g${mirrored}><path data-palm="grip" d="${closedPalm}" fill="${style.skin}" stroke-width="2.6"/></g></g>`,
+      // The link starts past the far edge of the item, so it never shows
+      // through a thin or hollow prop such as the key.
+      port: { x: x + 28 * inward, y: 12 },
+      rest: { x: x + 7.5 * inward, y: 6 },
+      overlay: `<g transform="translate(${x} 20)" stroke="#303341" stroke-linejoin="round" stroke-linecap="round" fill="${style.skin}"><g${mirrored}>${gripThumb}</g></g>`,
+    };
+  }
+  const x = 58 * inward;
   return {
     back: arm(style, side, "grip"),
-    front: `<g data-hand="${kind}" data-side="${side}" transform="translate(${x} 20)" stroke-linejoin="round"><g${mirrored}>${details}</g></g>`,
-    port: { x: x + inward * reach, y: 18 },
-    ...(kind === "transfer" ? { rest: { x: x + inward * 6, y: 14 } } : {}),
+    front: `<g data-hand="receive" data-side="${side}" transform="translate(${x} 18)" stroke-linejoin="round"><g${mirrored}><g data-palm="open" transform="rotate(62) scale(.5)"><path d="${openPalm}" fill="${style.skin}" stroke-width="5"/><path d="M10 -12Q5 -15 1 -9" fill="none" stroke-width="3.2"/></g></g></g>`,
+    // The arrow arrives just in front of the open palm.
+    port: { x: x + 26 * inward, y: 12 },
   };
 }

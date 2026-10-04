@@ -153,7 +153,12 @@ export function renderPanel(
     Partial<Record<"left" | "right", HandDrawing["port"]>>
   > = [];
   const handRests: Array<
-    Partial<Record<"left" | "right", NonNullable<HandDrawing["rest"]>>>
+    Partial<
+      Record<
+        "left" | "right",
+        NonNullable<HandDrawing["rest"]> & { overlay?: string }
+      >
+    >
   > = [];
   panel.actors.forEach((actor, index) => {
     const member = cast[actor.id];
@@ -213,9 +218,7 @@ export function renderPanel(
     };
     const drawings: HandDrawing[] = [];
     const ports: Partial<Record<"left" | "right", HandDrawing["port"]>> = {};
-    const rests: Partial<
-      Record<"left" | "right", NonNullable<HandDrawing["rest"]>>
-    > = {};
+    const rests: (typeof handRests)[number] = {};
     if (actor.gesture) {
       const drawing = drawGesture(actor.gesture, style, gestureSide);
       drawings.push(drawing);
@@ -267,7 +270,8 @@ export function renderPanel(
       );
       drawings.push(drawing);
       ports[side] = drawing.port;
-      if (drawing.rest) rests[side] = drawing.rest;
+      if (drawing.rest)
+        rests[side] = { ...drawing.rest, overlay: drawing.overlay };
     }
     handPorts.push(ports);
     handRests.push(rests);
@@ -384,11 +388,11 @@ export function renderPanel(
     const lift = spread ? 0 : 26 + 30 * order;
     const propX = onPalm ? from + rest.x * scales[fromIndex] : point.x;
     const propY = onPalm
-      ? actorYs[fromIndex] + (rest.y - 12) * scales[fromIndex]
+      ? actorYs[fromIndex] + rest.y * scales[fromIndex]
       : Math.max(24, point.y - lift);
     const angle = (Math.atan2(approachY, approachX) * 180) / Math.PI;
     links.push(
-      `<g data-transfer="${escapeXml(relation.from)}" data-to="${escapeXml(relation.to)}" stroke="#586c8c" stroke-width="2.5" stroke-linejoin="round"><path data-transfer-link="true" d="${path}" fill="none"/><path transform="translate(${end} ${endY}) rotate(${angle})" d="M-9 -5L0 0L-9 5" fill="none"/><g data-prop="${relation.prop}" transform="translate(${propX} ${propY})${onPalm ? ` scale(${scales[fromIndex]})` : ""}">${props[relation.prop]}</g></g>`,
+      `<g data-transfer="${escapeXml(relation.from)}" data-to="${escapeXml(relation.to)}" stroke="#586c8c" stroke-width="2.5" stroke-linejoin="round"><path data-transfer-link="true" d="${path}" fill="none"/><path transform="translate(${end} ${endY}) rotate(${angle})" d="M-9 -5L0 0L-9 5" fill="none"/><g data-prop="${relation.prop}" transform="translate(${propX} ${propY})${onPalm ? ` scale(${scales[fromIndex]})` : ""}">${props[relation.prop]}</g>${onPalm && rest.overlay ? `<g data-transfer-grip="true" transform="translate(${from} ${actorYs[fromIndex]}) scale(${scales[fromIndex]})">${rest.overlay}</g>` : ""}</g>`,
     );
   });
   // Links follow the characters so an item resting on a palm stays in front of the hand.
