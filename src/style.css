@@ -169,6 +169,9 @@ header nav a:hover,
   background: #edf3ff;
   border-radius: 12px;
 }
+.guide {
+  overflow-wrap: anywhere;
+}
 .guide a:not(.primary-link) {
   color: #4c64e8;
   text-decoration: underline;
@@ -176,6 +179,59 @@ header nav a:hover,
 .guide h3 {
   font-size: 17px;
   margin-top: 28px;
+}
+.guide-example {
+  margin: 22px 0;
+  padding: 20px;
+  border: 1px solid #dbe3ee;
+  border-radius: 14px;
+  background: white;
+  min-width: 0;
+}
+.guide-example h4 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  color: #344055;
+}
+.guide-example .gallery-preview {
+  max-width: 480px;
+  margin: 16px auto;
+}
+.guide-example .guide-reading-note {
+  margin: 14px 0;
+  padding: 12px 14px;
+  border-left: 3px solid #b7c5ec;
+  background: #f4f7fd;
+  color: #52627a;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.guide-example summary {
+  cursor: pointer;
+  font-size: 14px;
+  color: #4c64e8;
+}
+.guide-example pre {
+  margin-bottom: 0;
+  max-height: 420px;
+}
+.guide-story-links,
+.gallery-story-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  padding: 14px 16px;
+  background: #edf3ff;
+  border-radius: 10px;
+  font-size: 14px;
+}
+.gallery-story-links {
+  margin-bottom: 24px;
+  color: #4c64e8;
+}
+.gallery-story-links a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 .table-scroll {
   overflow: auto;
@@ -197,6 +253,9 @@ header nav a:hover,
   font-family: Consolas, monospace;
 }
 @media (max-width: 800px) {
+  .guide-example {
+    padding: 12px;
+  }
   .gallery-card {
     padding: 16px;
   }

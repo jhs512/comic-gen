@@ -77,7 +77,7 @@ export const syntaxValues = {
     sad: "슬픔",
     angry: "화남",
   },
-  gesture: { wave: "인사손", point: "가리키는손" },
+  gesture: { wave: "인사손", point: "가리키는손", "point-up": "위가리키는손" },
   prop: { request: "요청", data: "데이터", key: "열쇠" },
   mode: { full: "전체", before: "이전" },
   panelFormat: { compact: "기본", phone: "모바일" },

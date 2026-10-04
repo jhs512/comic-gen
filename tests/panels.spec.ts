@@ -82,7 +82,7 @@ test("gallery examples open in the phone playground and one panel downloads inde
   page,
 }) => {
   await page.goto("/gallery.html");
-  await expect(page.locator(".gallery-card")).toHaveCount(17);
+  await expect(page.locator(".gallery-card")).toHaveCount(22);
   await expect(page.locator(".gallery-preview[role=alert]")).toHaveCount(0);
   for (const card of await page.locator(".gallery-card").all())
     await expect(card.locator("svg").first()).toBeVisible();

@@ -91,6 +91,29 @@ const meetingCast = {
   },
 };
 
+const conversationCast = {
+  sora: {
+    asset: "human",
+    label: "소라",
+    appearance: {
+      hairStyle: "bob",
+      outfit: "shirt",
+      outfitColor: "#7b8fca",
+    },
+  },
+  jun: {
+    asset: "human",
+    label: "준",
+    appearance: {
+      hairStyle: "short",
+      outfit: "jacket",
+      outfitColor: "#5f9285",
+      skinColor: "#d6a279",
+      glasses: true,
+    },
+  },
+};
+
 // Keep every example as ordinary authoring code, using the same public renderer as the editor.
 function getExamples(): Example[] {
   return [
@@ -195,7 +218,7 @@ function getExamples(): Example[] {
         [
           {
             actors: [
-              { id: "kim", gesture: "point" },
+              { id: "kim", gesture: "point-up" },
               "leader",
               { id: "oh", expression: "confused" },
             ],
@@ -632,7 +655,7 @@ panels:
           },
           {
             actors: [{ id: "me", expression: "angry" }],
-            dialogue: [{ from: "me", text: "이번에는 꼭 원인을 찾겠어!" }],
+            dialogue: [{ from: "me", text: "같은 오류가 또 났어. 답답해!" }],
           },
         ],
       ),
@@ -776,6 +799,195 @@ panels:
           },
         ],
       ),
+    },
+    {
+      id: "welcome",
+      title: "인사한 뒤 서로 소개하기",
+      category: "몸짓·대화",
+      description:
+        "펼친 손으로 인사한 뒤 대화 상대를 가리킵니다. 같은 두 사람을 유지해 손 모양과 손이 향하는 상대를 비교합니다.",
+      features: ["인사 → 소개", "좌우 가리키기", "같은 외형"],
+      source: sourceFor("반가워요, 함께 시작해요", conversationCast, [
+        {
+          actors: [
+            { id: "sora", expression: "happy", gesture: "wave" },
+            { id: "jun", expression: "happy" },
+          ],
+          dialogue: [
+            { from: "sora", to: "jun", text: "안녕하세요! 저는 소라예요." },
+          ],
+        },
+        {
+          actors: [
+            { id: "sora", gesture: "point" },
+            { id: "jun", gesture: "point" },
+          ],
+          dialogue: [
+            { from: "sora", to: "jun", text: "준 씨가 오늘 설명을 맡았어요." },
+            { from: "jun", to: "sora", text: "소라 씨와 함께 준비했어요." },
+          ],
+        },
+      ]),
+    },
+    {
+      id: "question-answer",
+      title: "질문하고 자기 말로 이해하기",
+      category: "교육·대화",
+      description:
+        "질문, 설명, 이해한 결과를 세 컷으로 나눕니다. 마지막 컷에서 질문한 사람의 표정과 대사를 함께 바꿉니다.",
+      features: ["어리둥절 → 기쁨", "한 컷 한 단계", "3컷 문답"],
+      source: sourceFor("같은 숫자, 다른 뜻", conversationCast, [
+        {
+          actors: [{ id: "sora", expression: "confused" }, "jun"],
+          dialogue: [
+            {
+              from: "sora",
+              to: "jun",
+              text: "클릭이 늘면 주문도 늘지 않나요?",
+            },
+          ],
+        },
+        {
+          actors: ["sora", { id: "jun", gesture: "point" }],
+          dialogue: [
+            {
+              from: "jun",
+              to: "sora",
+              text: "클릭은 관심, 주문은 실제 구매예요.",
+            },
+          ],
+        },
+        {
+          actors: [
+            { id: "sora", expression: "happy" },
+            { id: "jun", expression: "happy" },
+          ],
+          dialogue: [
+            {
+              from: "sora",
+              to: "jun",
+              text: "아하! 주문까지 이어졌는지도 봐야겠네요.",
+            },
+          ],
+        },
+      ]),
+    },
+    {
+      id: "handoff",
+      title: "건네기 전·중·후를 구분하기",
+      category: "소품·이야기",
+      description:
+        "첫 컷에서는 소라가 열쇠를 들고, 둘째 컷에서 건네고, 마지막 컷에서는 준이 듭니다. 소품의 주인이 바뀐 결과까지 보여줍니다.",
+      features: ["든소품 → 전달 → 든소품", "소유권 변화", "3컷"],
+      source: sourceFor("회의실 열쇠를 건네요", conversationCast, [
+        {
+          actors: [{ id: "sora", holding: "key" }, "jun"],
+          dialogue: [
+            { from: "sora", to: "jun", text: "회의실 열쇠는 내가 갖고 있어." },
+          ],
+        },
+        {
+          actors: ["sora", "jun"],
+          dialogue: [
+            { from: "sora", to: "jun", text: "먼저 도착하니까 네게 건넬게." },
+          ],
+          transfer: [{ from: "sora", to: "jun", prop: "key" }],
+        },
+        {
+          actors: ["sora", { id: "jun", holding: "key", expression: "happy" }],
+          dialogue: [
+            { from: "jun", to: "sora", text: "받았어! 내가 문을 열어 둘게." },
+          ],
+        },
+      ]),
+    },
+    {
+      id: "listening",
+      title: "감정을 듣고 다음 행동을 정하기",
+      category: "감정·이야기",
+      description:
+        "불만에 바로 웃거나 손가락질하지 않고 차분하게 답합니다. 이유를 듣고 표정이 풀리는 과정을 대사와 함께 보여줍니다.",
+      features: ["화남 → 보통 → 기쁨", "경청", "3컷 대화"],
+      source: sourceFor("먼저 듣고 함께 해결해요", conversationCast, [
+        {
+          actors: [{ id: "sora", expression: "angry" }, "jun"],
+          dialogue: [
+            {
+              from: "sora",
+              to: "jun",
+              text: "변경된 일정을 왜 알려주지 않았어?",
+            },
+          ],
+        },
+        {
+          actors: ["sora", { id: "jun", expression: "sad" }],
+          dialogue: [
+            {
+              from: "jun",
+              to: "sora",
+              text: "미안해. 다음부터 바로 공유할게.",
+            },
+          ],
+        },
+        {
+          actors: [{ id: "sora", expression: "happy" }, "jun"],
+          dialogue: [
+            {
+              from: "sora",
+              to: "jun",
+              text: "좋아. 이번 일정부터 같이 정리하자.",
+            },
+          ],
+        },
+      ]),
+    },
+    {
+      id: "reading-order",
+      title: "자리를 바꿔도 누가 말하는지",
+      category: "배치·읽기",
+      description:
+        "짧은 질문과 답을 위에서 아래로 배치합니다. 다음 컷에서 좌우 자리를 바꿔도 이름표와 말풍선이 화자를 구분합니다.",
+      features: ["발화 순서", "좌우 자리 교환", "수동 배치"],
+      source: sourceFor("누가 묻고 누가 답할까요?", conversationCast, [
+        {
+          actors: [
+            { id: "sora", x: 0.22 },
+            { id: "jun", x: 0.78 },
+          ],
+          dialogue: [
+            { from: "sora", to: "jun", text: "준비됐어요?", x: 0.26, y: 0.05 },
+            {
+              from: "jun",
+              to: "sora",
+              text: "네, 시작하죠!",
+              x: 0.74,
+              y: 0.28,
+            },
+          ],
+        },
+        {
+          actors: [
+            { id: "sora", x: 0.78 },
+            { id: "jun", x: 0.22 },
+          ],
+          dialogue: [
+            {
+              from: "jun",
+              to: "sora",
+              text: "다음은 소라 씨 차례예요.",
+              x: 0.3,
+              y: 0.05,
+            },
+            {
+              from: "sora",
+              to: "jun",
+              text: "좋아요. 제가 이어갈게요.",
+              x: 0.7,
+              y: 0.28,
+            },
+          ],
+        },
+      ]),
     },
   ];
 }

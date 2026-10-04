@@ -17,7 +17,7 @@
 | ------------------- | -------------------------------------------------------------------------------------------------------------- |
 | 플레이그라운드      | [예제 선택 → 코드 수정 → 실시간 결과 → 저장](https://jhs512.github.io/comic-gen/)                              |
 | 문법 안내           | [튜토리얼·필드·기본값·오류 해결](https://jhs512.github.io/comic-gen/guide.html)                                |
-| 갤러리              | [17개 렌더링 예제와 코드](https://jhs512.github.io/comic-gen/gallery.html)                                     |
+| 갤러리              | [22개 렌더링 예제와 코드](https://jhs512.github.io/comic-gen/gallery.html)                                     |
 | 문서 삽입           | [여러 코드 블록을 렌더링하는 문서](https://jhs512.github.io/comic-gen/embed.html)                              |
 | CDN 실험            | [외부 CDN에서 SDK를 불러오는 화면](https://jhs512.github.io/comic-gen/cdn.html)                                |
 | 소스                | [GitHub 저장소](https://github.com/jhs512/comic-gen)                                                           |
@@ -30,18 +30,18 @@
 ## 최신 CDN과 버전 고정
 
 ```js
-import { 컷그리기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.7/cdn/comic-gen.render.js";
+import { 컷그리기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.8/cdn/comic-gen.render.js";
 ```
 
 `@main`은 주소 변경 없이 main에 게시한 최신 SDK를 사용합니다. `@latest`는 최신 정식 버전 태그를 의미하며 이 프로젝트의 기본 최신 주소는 `@main`으로 통일합니다. [jsDelivr 캐시 정책](https://github.com/jsdelivr/jsdelivr#caching)에 따라 브랜치 URL은 최대 12시간 캐시될 수 있어 모든 사용자에게 즉시 갱신되는 것은 아닙니다. 즉시 특정 수정 버전을 받아야 한다면 새 태그의 고정 URL을 사용하세요.
 
-렌더링 파일에는 YAML 파서와 기본 SVG 에셋이 포함되어 npm 설치가 필요 없습니다. 다이어그램 없는 만화는 이 한 파일로 그립니다. Mermaid 다이어그램을 그릴 때만 Mermaid 11.17.2와 고정 버전의 렌더링 모듈을 추가로 불러옵니다. npm에는 아직 게시하지 않았습니다. 한글 문법은 v0.3.0부터, 컷 안 다이어그램은 v0.4.0부터, 선택형 공용 뷰어는 v0.5.0부터, 사람·외형·페르소나는 v0.6.0부터, 독립적인 뷰어 옵션과 외부 상태 제어는 v0.7.0부터 지원합니다. 재현 가능한 문서에는 `@v0.7.7` 고정 주소를 사용하세요. 기존 태그는 덮어쓰지 않습니다.
+렌더링 파일에는 YAML 파서와 기본 SVG 에셋이 포함되어 npm 설치가 필요 없습니다. 다이어그램 없는 만화는 이 한 파일로 그립니다. Mermaid 다이어그램을 그릴 때만 Mermaid 11.17.2와 고정 버전의 렌더링 모듈을 추가로 불러옵니다. npm에는 아직 게시하지 않았습니다. 한글 문법은 v0.3.0부터, 컷 안 다이어그램은 v0.4.0부터, 선택형 공용 뷰어는 v0.5.0부터, 사람·외형·페르소나는 v0.6.0부터, 독립적인 뷰어 옵션과 외부 상태 제어는 v0.7.0부터 지원합니다. 재현 가능한 문서에는 `@v0.7.8` 고정 주소를 사용하세요. 기존 태그는 덮어쓰지 않습니다.
 
-| 사용할 기능                  | v0.7.7 파일                                                                                        | 포함하는 API                                                            |
+| 사용할 기능                  | v0.7.8 파일                                                                                        | 포함하는 API                                                            |
 | ---------------------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| 렌더링·SVG·PNG 저장          | [comic-gen.render.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.7/cdn/comic-gen.render.js) | `renderComic`, `renderPanels`, 비동기 함수, `createRenderer`, 저장 함수 |
-| 완성한 결과에 카드·뷰어 추가 | [comic-gen.viewer.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.7/cdn/comic-gen.viewer.js) | `mountComicCard`, `createComicViewer`                                   |
-| 기존 문서 삽입을 함께 사용   | [comic-gen.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.7/cdn/comic-gen.js)               | 위 API와 `renderCodeBlocks`, `renderCodeBlocksAsync`                    |
+| 렌더링·SVG·PNG 저장          | [comic-gen.render.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.8/cdn/comic-gen.render.js) | `renderComic`, `renderPanels`, 비동기 함수, `createRenderer`, 저장 함수 |
+| 완성한 결과에 카드·뷰어 추가 | [comic-gen.viewer.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.8/cdn/comic-gen.viewer.js) | `mountComicCard`, `createComicViewer`                                   |
+| 기존 문서 삽입을 함께 사용   | [comic-gen.js](https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.8/cdn/comic-gen.js)               | 위 API와 `renderCodeBlocks`, `renderCodeBlocksAsync`                    |
 
 렌더링과 뷰어 모듈은 각각 사용할 수 있습니다. 렌더링 모듈은 카드·대화상자·뷰어 스타일을 설치하지 않습니다. 뷰어 모듈은 렌더러나 YAML·Mermaid를 불러오지 않고 이미 완성된 결과만 받습니다. 기존 `comic-gen.js` 주소와 동기·비동기 API, 한글 별칭과 반환 구조는 유지합니다.
 
@@ -84,7 +84,7 @@ YAML의 `등장인물`은 인물 사전, `컷`은 순서가 있는 컷 목록입
 | 컷              | `제외인물`                           | 이전에서만 사용하는 제거 ID 목록                                              |
 | 인물 설정       | `식별자`                             | 필수, 등장인물에 선언한 인물 ID                                               |
 | 인물 설정       | `표정`                               | 보통(기본), 기쁨, 어리둥절, 슬픔, 화남                                        |
-| 인물 설정       | `손모양`                             | 선택: 인사손, 가리키는손. 생략하면 제스처 없음                                |
+| 인물 설정       | `손모양`                             | 선택: 인사손, 가리키는손, 위가리키는손. 생략하면 제스처 없음                  |
 | 인물 설정       | `든소품`                             | 선택: 요청, 데이터, 열쇠                                                      |
 | 인물 설정       | `가로위치` / `세로위치` / `배율`     | 가로위치/세로위치는 0~1, 기본 자동. 배율은 0.5~1.25, 기본 1                   |
 | 대사            | `화자` / `상대` / `내용`             | 화자와 내용 필수, 상대 선택. 화자·상대 모두 해당 컷에 있어야 함               |
@@ -141,6 +141,8 @@ v0.7.6에서 손·팔·표정·소품과 말풍선을 다시 그렸습니다. `�
 
 v0.7.7에서는 좁은 컷에서도 든 소품과 전달 소품을 떨어뜨려 표시합니다. 전달 경로에 다른 인물이 있으면 선과 소품을 그 인물 위로 배치해 전달 물건이 가려지지 않게 합니다.
 
+v0.7.8의 `가리키는손`은 대사에 지정한 상대의 실제 좌우 위치를 향합니다. 같은 컷에 여러 상대를 적으면 화자가 처음 지정한 상대를 향하고, 상대를 생략하면 기존처럼 왼쪽을 가리킵니다. `위가리키는손`은 팔과 검지를 들어 위의 칠판·그림을 가리킵니다. 오른손으로 상대를 가리키면서 소품도 들면 소품은 반대 손에 그립니다. 안내 페이지는 실제 그림과 같은 작성 코드를 함께 보여줍니다.
+
 ```yaml
 인물:
   - { 식별자: web, 표정: 기쁨, 손모양: 인사손, 든소품: 요청 }
@@ -149,7 +151,7 @@ v0.7.7에서는 좁은 컷에서도 든 소품과 전달 소품을 떨어뜨려 
   - { 주는인물: db, 받는인물: web, 소품: 데이터 }
 ```
 
-`든소품`은 인물이 들고 있는 물건, `전달`은 두 인물 사이의 정적인 전달 표현입니다. `손모양: 인사손`과 `손모양: 가리키는손`은 고정된 SVG 그림입니다. 두 손모양은 캐릭터 왼쪽에 표시되고 가리키는손은 왼쪽을 가리키며, 대화 상대의 위치에 따라 반전하거나 움직이지 않습니다. 사람은 생략한 쪽에 기본 손을 그리며 기존 아이콘은 손모양·든소품·전달이 있을 때 손을 표시합니다. 애니메이션이나 실제 네트워크 동작은 없습니다.
+`든소품`은 인물이 들고 있는 물건, `전달`은 두 인물 사이의 정적인 전달 표현입니다. `인사손`은 왼쪽에 펼친 손, `가리키는손`은 대화 상대 방향의 검지, `위가리키는손`은 왼쪽 팔을 들어 위를 가리키는 검지로 표현합니다. 사람은 생략한 쪽에 기본 손을 그리며 기존 아이콘은 손모양·든소품·전달이 있을 때 손을 표시합니다. SVG·PNG는 정적인 그림입니다.
 
 ### 네 컷과 이전 컷 상속
 
@@ -247,23 +249,30 @@ Mermaid는 임시 iframe에서 [v0.6.0 렌더링 모듈](https://cdn.jsdelivr.ne
 
 ## 활용 예제 지도
 
-| 갤러리 예제                                                               | 배울 수 있는 것                        |
-| ------------------------------------------------------------------------- | -------------------------------------- |
-| [네 컷 상속](https://jhs512.github.io/comic-gen/gallery.html#before)      | 이전 상태 유지, 부분 변경, null 초기화 |
-| [첫 대화](https://jhs512.github.io/comic-gen/gallery.html#basic)          | 이름표, 화자와 상대                    |
-| [요청·응답](https://jhs512.github.io/comic-gen/gallery.html#actions)      | 3명, 여러 컷, 요청/데이터 전달         |
-| [캐시](https://jhs512.github.io/comic-gen/gallery.html#cache)             | 3컷으로 설명하는 상태 변화             |
-| [인증](https://jhs512.github.io/comic-gen/gallery.html#auth)              | 열쇠, 든소품과 전달                    |
-| [재시도](https://jhs512.github.io/comic-gen/gallery.html#retry)           | 실패와 성공의 표정                     |
-| [교육 문답](https://jhs512.github.io/comic-gen/gallery.html#lesson)       | 학생·선생님·예제의 역할                |
-| [짧은 이야기](https://jhs512.github.io/comic-gen/gallery.html#story)      | 같은 에셋으로 다른 인물                |
-| [다섯 표정](https://jhs512.github.io/comic-gen/gallery.html#expressions)  | 5컷의 다섯 표정                        |
-| [손 제스처](https://jhs512.github.io/comic-gen/gallery.html#gestures)     | 인사손, 가리키는손과 손 생략           |
-| [한국어·영어](https://jhs512.github.io/comic-gen/gallery.html#languages)  | 여러 줄과 다국어                       |
-| [수동 배치](https://jhs512.github.io/comic-gen/gallery.html#manual)       | 가로위치/세로위치, 배율, 글자크기      |
-| [긴 설명](https://jhs512.github.io/comic-gen/gallery.html#long-text)      | 줄바꿈, 문서 삽입                      |
-| [클래스 관계](https://jhs512.github.io/comic-gen/gallery.html#uml-class)  | 한 컷의 칠판, 한글 클래스 라벨         |
-| [요청 순서](https://jhs512.github.io/comic-gen/gallery.html#uml-sequence) | 시퀀스 다이어그램과 인물 대사          |
+| 갤러리 예제                                                                           | 배울 수 있는 것                        |
+| ------------------------------------------------------------------------------------- | -------------------------------------- |
+| [네 컷 상속](https://jhs512.github.io/comic-gen/gallery.html#before)                  | 이전 상태 유지, 부분 변경, null 초기화 |
+| [첫 대화](https://jhs512.github.io/comic-gen/gallery.html#basic)                      | 이름표, 화자와 상대                    |
+| [페르소나 회의](https://jhs512.github.io/comic-gen/gallery.html#persona-meeting)      | 외형 유지, 질문·설명·이해의 역할       |
+| [페르소나 칠판 설명](https://jhs512.github.io/comic-gen/gallery.html#persona-diagram) | 칠판을 가리키기, 다이어그램과 대화     |
+| [인사와 소개](https://jhs512.github.io/comic-gen/gallery.html#welcome)                | 손 흔들기, 상대 위치에 따른 가리키기   |
+| [질문과 이해](https://jhs512.github.io/comic-gen/gallery.html#question-answer)        | 의문 → 설명 → 이해의 표정 변화         |
+| [열쇠 건네기](https://jhs512.github.io/comic-gen/gallery.html#handoff)                | 보유 → 전달 중 → 상대의 보유           |
+| [경청과 감정 변화](https://jhs512.github.io/comic-gen/gallery.html#listening)         | 불만을 듣고 답하기, 불필요한 손 생략   |
+| [대화 읽는 순서](https://jhs512.github.io/comic-gen/gallery.html#reading-order)       | 발화 순서와 실제 인물 위치             |
+| [요청·응답](https://jhs512.github.io/comic-gen/gallery.html#actions)                  | 3명, 여러 컷, 요청/데이터 전달         |
+| [캐시](https://jhs512.github.io/comic-gen/gallery.html#cache)                         | 3컷으로 설명하는 상태 변화             |
+| [인증](https://jhs512.github.io/comic-gen/gallery.html#auth)                          | 열쇠, 든소품과 전달                    |
+| [재시도](https://jhs512.github.io/comic-gen/gallery.html#retry)                       | 실패와 성공의 표정                     |
+| [교육 문답](https://jhs512.github.io/comic-gen/gallery.html#lesson)                   | 학생·선생님·예제의 역할                |
+| [짧은 이야기](https://jhs512.github.io/comic-gen/gallery.html#story)                  | 같은 에셋으로 다른 인물                |
+| [다섯 표정](https://jhs512.github.io/comic-gen/gallery.html#expressions)              | 5컷의 다섯 표정                        |
+| [손 제스처](https://jhs512.github.io/comic-gen/gallery.html#gestures)                 | 인사손, 가리키는손과 손 생략           |
+| [한국어·영어](https://jhs512.github.io/comic-gen/gallery.html#languages)              | 여러 줄과 다국어                       |
+| [수동 배치](https://jhs512.github.io/comic-gen/gallery.html#manual)                   | 가로위치/세로위치, 배율, 글자크기      |
+| [긴 설명](https://jhs512.github.io/comic-gen/gallery.html#long-text)                  | 줄바꿈, 문서 삽입                      |
+| [클래스 관계](https://jhs512.github.io/comic-gen/gallery.html#uml-class)              | 한 컷의 칠판, 한글 클래스 라벨         |
+| [요청 순서](https://jhs512.github.io/comic-gen/gallery.html#uml-sequence)             | 시퀀스 다이어그램과 인물 대사          |
 
 ## 브라우저 SDK: 컷별 SVG가 기본
 
@@ -275,7 +284,7 @@ import {
   렌더러만들기,
   exportPng,
   downloadBlob,
-} from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.7/cdn/comic-gen.render.js";
+} from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.8/cdn/comic-gen.render.js";
 await document.fonts.ready;
 const result = await 컷그리기비동기(source, { 너비: 720, 컷비율: "모바일" });
 if (result.diagnostics.length) {
@@ -320,8 +329,8 @@ async function saveFirstPanel() {
 렌더링 결과만 사용할 수도 있고, 필요할 때 별도 뷰어를 불러올 수도 있습니다. 페이지에 `<div id="comic-card"></div>`를 준비하세요.
 
 ```js
-import { renderPanelsAsync } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.7/cdn/comic-gen.render.js";
-import { mountComicCard } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.7/cdn/comic-gen.viewer.js";
+import { renderPanelsAsync } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.8/cdn/comic-gen.render.js";
+import { mountComicCard } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.8/cdn/comic-gen.viewer.js";
 
 const result = await renderPanelsAsync(source, { panelFormat: "compact" });
 if (result.diagnostics.length) throw new Error(result.diagnostics.join("\n"));
@@ -335,7 +344,7 @@ const cleanup = mountComicCard(document.querySelector("#comic-card"), result);
 자체 미리보기나 버튼에 연결하려면 뷰어 컨트롤러를 사용하세요.
 
 ```js
-import { createComicViewer } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.7/cdn/comic-gen.viewer.js";
+import { createComicViewer } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.8/cdn/comic-gen.viewer.js";
 
 const viewer = createComicViewer();
 const trigger = document.querySelector("#read-comic");
@@ -413,7 +422,7 @@ CodePen의 HTML 영역에 아래 내용을 그대로 넣을 수 있습니다. Ja
     전달: [ { 주는인물: db, 받는인물: web, 소품: 데이터 } ]
 </code></pre>
 <script type="module">
-  import { 코드블록그리기비동기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.7/cdn/comic-gen.js";
+  import { 코드블록그리기비동기 } from "https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.8/cdn/comic-gen.js";
   await document.fonts.ready;
   await 코드블록그리기비동기();
 </script>

@@ -8,7 +8,7 @@
   <body>
     <div id="navigation"></div>
     <main class="document guide">
-      <span class="eyebrow">작성 문법 · v0.7.7</span>
+      <span class="eyebrow">작성 문법 · v0.7.8</span>
       <h1>첫 대사부터,<br />나만의 설명까지.</h1>
       <p>
         Comic Gen은 준비된 SVG 에셋을 YAML로 조합하는 브라우저 렌더러입니다.
@@ -22,21 +22,17 @@
         ><a href="#viewer">선택형 뷰어</a><a href="#embed">문서 삽입</a
         ><a href="#errors">오류 해결</a>
       </nav>
+      <p>
+        아래 예제는 작성 코드와 같은 소스로 그린 실제 만화입니다. 컷을 넘겨
+        변화와 결과를 비교하고, 크게 보기로 읽거나 직접 수정해 보세요.
+      </p>
       <h2 id="start">1. 두 캐릭터의 대화 만들기</h2>
       <p>
         <a class="text-link" href="./?example=basic#workspace"
           >플레이그라운드에서 이 예제 열기 →</a
         >
       </p>
-      <pre><code>제목: 요청과 응답
-등장인물:
-  web: { 그림: 서버, 이름표: 웹 서버 }
-  db: { 그림: 데이터베이스, 이름표: DB }
-컷:
-  - 인물: [ web, db ]
-    대사:
-      - { 화자: web, 상대: db, 내용: "데이터를 부탁해!" }
-      - { 화자: db, 상대: web, 내용: "좋아, 바로 찾아볼게!" }</code></pre>
+      <section class="guide-example" data-guide-example="basic"></section>
       <p>
         <code>등장인물</code>은 인물 사전, <code>컷</code>은 컷 목록입니다. 각
         컷의 <code>인물</code>에 등장하는 인물을 적고 <code>대사</code>에
@@ -127,7 +123,8 @@
               <td>인물 설정</td>
               <td><code>손모양</code> / <code>든소품</code></td>
               <td>
-                선택. 손모양: 인사손, 가리키는손. 든소품: 요청, 데이터, 열쇠.
+                선택. 손모양: 인사손, 가리키는손, 위가리키는손. 든소품: 요청,
+                데이터, 열쇠.
               </td>
             </tr>
             <tr>
@@ -180,17 +177,10 @@
         참조하고 표정·손·소품만 바꾸세요. 직무·성격을 적어도 대사와 표정은 자동
         생성되지 않습니다.
       </p>
-      <pre><code>페르소나:
-  분석가: { 직무: 빅데이터 전문가, 성격: 차분하게 근거를 확인한다, 말투: 짧은 질문으로 설명한다 }
-등장인물:
-  김대리:
-    그림: 사람
-    이름표: 김대리
-    페르소나: 분석가
-    외형: { 옷: 재킷, 옷색: "#5379a7", 안경: true }
-컷:
-  - 인물: [김대리]
-    대사: [{ 화자: 김대리, 내용: "클릭과 구매 전환을 나눠서 보죠." }]</code></pre>
+      <section
+        class="guide-example"
+        data-guide-example="persona-meeting"
+      ></section>
       <p>
         최상위 <code>페르소나</code> 사전의 ID를 참조하거나 인물 안에
         <code>페르소나: {직무: 마케팅 팀장, 말투: 결론부터 질문한다}</code>처럼
@@ -255,29 +245,12 @@
       </p>
       <h2 id="actions">3. 표정·손·소품과 전달</h2>
       <p>
-        v0.7.2부터 사람의 가리키는손은 옷색 팔·손바닥·손가락을 연결해 그립니다.
+        표정과 대사의 감정을 맞추고, 손은 그 컷에서 필요한 행동에 사용하세요.
+        인사에는 펼친 손, 소개에는 상대를 가리키는 손이 어울립니다. 물건을 건넬
+        때는 들고 있는 상태와 건네는 순간, 받은 결과를 나누면 이해하기 쉽습니다.
+        사람의 손과 팔은 피부색·소매색을 반영합니다.
       </p>
-      <p>
-        v0.7.3부터 도형 캐릭터도 흰색 손바닥·엄지·두께 있는 손가락을 연결해
-        그립니다. 인사손은 펼친 손, 가리키는손은 왼쪽으로 뻗은 손가락으로
-        구분합니다. 단순한 그림체와 기존 문법·동작 방향은 유지합니다.
-      </p>
-      <p>
-        v0.7.6의 인사손은 넓은 손바닥, 길이와 각도가 다른 다섯 손가락, 연결된
-        팔과 손목, 손 바깥의 곡선으로 인사를 표현합니다. 사람은 피부색과
-        소매색을 반영합니다. 든소품과 전달이 같은 쪽 손을 사용하면 손 하나를
-        공유합니다. 표정·소품·말풍선도 개선했으며, SVG·PNG에 같은 정적인
-        모습으로 저장됩니다. 갤러리에서는 컷 이동과 크게 보기를 제공합니다.
-      </p>
-      <p>
-        v0.7.7에서는 든 소품과 전달 소품을 떨어뜨려 표시합니다. 전달 경로에 다른
-        인물이 있으면 선과 소품을 그 인물 위로 배치해 가려지지 않게 합니다.
-      </p>
-      <pre><code>인물:
-  - { 식별자: web, 표정: 기쁨, 손모양: 인사손, 든소품: 요청 }
-  - { 식별자: db, 표정: 어리둥절 }
-전달:
-  - { 주는인물: db, 받는인물: web, 소품: 데이터 }</code></pre>
+      <section class="guide-example" data-guide-example="handoff"></section>
       <p>
         <code>든소품</code>은 인물이 들고 있는 물건, <code>전달</code>은 인물
         사이의 정적인 전달 표현입니다. 전달의 두 끝은 인물 근처에 붙습니다.
@@ -287,9 +260,11 @@
         수도 있습니다.
       </p>
       <p>
-        <code>손모양: 인사손</code>과 <code>손모양: 가리키는손</code>은 고정된
-        SVG 그림입니다. 두 손모양은 캐릭터 왼쪽에 표시되고 가리키는손은 왼쪽을
-        가리킵니다. 대화 상대의 위치에 따라 방향이 바뀌거나 움직이지 않습니다.
+        <code>손모양: 인사손</code>은 펼친 손으로 인사하고,
+        <code>손모양: 가리키는손</code>은 그 컷에서 자신이 말하는 대화 상대의
+        좌우 위치를 향합니다. 상대가 없으면 왼쪽을 가리킵니다.
+        <code>손모양: 위가리키는손</code>은 위쪽 칠판을 짚는 표현에 사용하세요.
+        손 모양은 SVG·PNG에 저장되는 정적인 그림입니다.
       </p>
       <p>
         <a class="text-link" href="./gallery.html#auth">인증 예제</a> ·
@@ -298,6 +273,11 @@
           >다섯 표정 비교</a
         >
       </p>
+      <div class="guide-story-links" aria-label="상황별 대화 예제">
+        <a href="./gallery.html#welcome">인사 뒤 서로 소개하기 →</a>
+        <a href="./gallery.html#question-answer">질문에서 이해까지 →</a>
+        <a href="./gallery.html#listening">감정을 듣고 답하기 →</a>
+      </div>
       <h2 id="placement">4. 여러 컷과 수동 배치</h2>
       <p>
         같은 ID를 다음 컷의 인물에도 넣으면 이름표와 에셋을 재사용합니다.
@@ -307,11 +287,10 @@
         가로위치는 말풍선 중심, 세로위치는 상단의 비율입니다. 배율은 좁은 폭에
         맞춘 기본 크기에 대한 배율입니다.
       </p>
-      <pre><code>인물:
-  - { 식별자: web, 가로위치: 0.25, 세로위치: 0.85, 배율: 0.8 }
-  - { 식별자: db, 가로위치: 0.75 }
-대사:
-  - { 화자: web, 상대: db, 내용: "조금 작게 말할게!", 가로위치: 0.35, 글자크기: 16 }</code></pre>
+      <section
+        class="guide-example"
+        data-guide-example="reading-order"
+      ></section>
       <p>
         인물끼리 겹치면 오류를 표시합니다. 수동 말풍선끼리의 겹침이나 전달 선이
         다른 인물을 지나는 경우를 모두 자동 회피하지는 않습니다. 자동 배치부터
@@ -338,21 +317,7 @@
         대사와 전달, 다이어그램은 상속하지 않고 각 컷에 새로 적습니다. 첫 컷은
         완전히 정의하세요.
       </p>
-      <pre><code>등장인물:
-  web: { 그림: 서버, 이름표: 웹 서버 }
-  db: { 그림: 데이터베이스, 이름표: DB }
-컷:
-  - 인물: [ { 식별자: web, 표정: 어리둥절 }, db ]
-    대사: [ { 화자: web, 상대: db, 내용: "데이터가 있니?" } ]
-  - 구성: 이전
-    인물: [ { 식별자: db, 표정: 기쁨, 든소품: 데이터 } ]
-    대사: [ { 화자: db, 상대: web, 내용: "찾았어!" } ]
-  - 구성: 이전
-    인물: [ { 식별자: db, 든소품: null }, { 식별자: web, 표정: 기쁨 } ]
-    전달: [ { 주는인물: db, 받는인물: web, 소품: 데이터 } ]
-  - 구성: 이전
-    인물: [ { 식별자: web, 든소품: 데이터, 손모양: 인사손 } ]
-    대사: [ { 화자: web, 상대: db, 내용: "다음에도 함께하자!" } ]</code></pre>
+      <section class="guide-example" data-guide-example="before"></section>
       <p>
         <a class="text-link" href="./?example=before#workspace"
           >네 컷 예제 수정 →</a
@@ -394,22 +359,10 @@
         <code>높이</code>는 칠판 높이 160~1200px입니다. 생략하면 그림의 비율에
         맞춰 정합니다. 다이어그램은 이전 컷에서 상속하지 않습니다.
       </p>
-      <pre><code>제목: 요청의 순서
-등장인물:
-  안내자: { 그림: 서버, 이름표: 안내자 }
-컷:
-  - 인물: [안내자]
-    대사: [{ 화자: 안내자, 내용: "요청을 받으면 응답을 돌려줘요." }]
-    다이어그램:
-      종류: 머메이드
-      제목: 요청에서 응답까지
-      높이: 300
-      원문: |
-        sequenceDiagram
-          participant 방문자
-          participant 서버
-          방문자-&gt;&gt;서버: 데이터 요청
-          서버--&gt;&gt;방문자: 응답</code></pre>
+      <section
+        class="guide-example"
+        data-guide-example="persona-diagram"
+      ></section>
       <p>
         원문은 Mermaid 문법 그대로입니다. 첫 줄에서 classDiagram,
         sequenceDiagram, flowchart 같은 종류를 고르세요. Mermaid의
@@ -438,11 +391,11 @@
       <h2 id="sdk">5. 브라우저 SDK와 SVG·PNG 저장</h2>
       <p>
         최신 주소는 main 브랜치를 따르며 CDN 캐시로 반영이 지연될 수 있습니다.
-        한글 문법은 v0.3.0부터 지원합니다. 재현 가능한 문서에는 v0.7.7 고정
+        한글 문법은 v0.3.0부터 지원합니다. 재현 가능한 문서에는 v0.7.8 고정
         SDK를 사용하세요. v0.2.1 고정 SDK는 영어 문법 전용입니다.
       </p>
       <pre><code>import { 컷그리기비동기, exportPng, downloadBlob }
-  from 'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.7/cdn/comic-gen.render.js';
+  from 'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.8/cdn/comic-gen.render.js';
 await document.fonts.ready;
 const result = await 컷그리기비동기(source, {너비: 720, 컷비율: '모바일'});
 if (result.diagnostics.length) {
@@ -494,9 +447,9 @@ if (result.diagnostics.length) {
         </table>
       </div>
       <pre><code>import { renderPanelsAsync } from
-  'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.7/cdn/comic-gen.render.js';
+  'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.8/cdn/comic-gen.render.js';
 import { mountComicCard } from
-  'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.7/cdn/comic-gen.viewer.js';
+  'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.8/cdn/comic-gen.viewer.js';
 const result = await renderPanelsAsync(source, {panelFormat: 'compact'});
 if (result.diagnostics.length) throw new Error(result.diagnostics.join('\n'));
 const cleanup = mountComicCard(document.querySelector('#comic-card'), result);
@@ -536,7 +489,7 @@ const cleanup = mountComicCard(document.querySelector('#comic-card'), result);
 &lt;/code&gt;&lt;/pre&gt;
 &lt;script type="module"&gt;
   import { 코드블록그리기비동기 } from
-    'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.7/cdn/comic-gen.js';
+    'https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.8/cdn/comic-gen.js';
   await document.fonts.ready;
   await 코드블록그리기비동기();
 &lt;/script&gt;</code></pre>

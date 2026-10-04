@@ -172,18 +172,18 @@ export function renderPanel(
         ];
       }),
     );
-    const restingHands = asset.restingHands
-      ? (actor.gesture || transferredSides.has("left")
-          ? ""
-          : asset.restingHands.left) +
-        (actor.holding || transferredSides.has("right")
-          ? ""
-          : asset.restingHands.right)
-      : "";
     const other = panel.dialogue.find(
       (line) => line.from === actor.id && line.to,
     )?.to;
     const targetIndex = panel.actors.findIndex((item) => item.id === other);
+    const gestureSide =
+      actor.gesture === "point" &&
+      targetIndex >= 0 &&
+      centers[targetIndex] > centers[index]
+        ? "right"
+        : "left";
+    const holdingSide =
+      actor.gesture && gestureSide === "right" ? "left" : "right";
     const faceX =
       targetIndex < 0
         ? 0
@@ -204,13 +204,13 @@ export function renderPanel(
     const drawings: HandDrawing[] = [];
     const ports: Partial<Record<"left" | "right", HandDrawing["port"]>> = {};
     if (actor.gesture) {
-      const drawing = drawGesture(actor.gesture, style);
+      const drawing = drawGesture(actor.gesture, style, gestureSide);
       drawings.push(drawing);
-      ports.left = drawing.port;
+      ports[gestureSide] = drawing.port;
     }
     if (actor.holding) {
       const drawing = drawGrip(
-        "right",
+        holdingSide,
         style,
         "holding",
         `<g data-prop="${actor.holding}">${props[actor.holding]}</g>`,
@@ -219,7 +219,7 @@ export function renderPanel(
         ...drawing,
         front: `<g data-holding="${actor.holding}">${drawing.front}</g>`,
       });
-      ports.right = drawing.port;
+      ports[holdingSide] = drawing.port;
     }
     for (const side of transferredSides) {
       if (ports[side]) continue;
@@ -251,6 +251,10 @@ export function renderPanel(
       ports[side] = drawing.port;
     }
     handPorts.push(ports);
+    const restingHands = asset.restingHands
+      ? (ports.left ? "" : asset.restingHands.left) +
+        (ports.right ? "" : asset.restingHands.right)
+      : "";
     markup.push(
       `<g data-character="${escapeXml(actor.id)}" transform="translate(${centers[index]} ${actorYs[index]}) scale(${scales[index]})" stroke="#303341" stroke-width="2.8" stroke-linecap="round"><ellipse cy="69" rx="51" ry="7" fill="#e8edf3" stroke="none"/>${drawings.map((drawing) => drawing.back).join("")}${asset.body}<g data-face="${actor.expression}" transform="translate(${faceX} ${asset.faceY})" fill="#303341">${expressions[actor.expression]}</g>${restingHands}${drawings.map((drawing) => drawing.front).join("")}<text y="94" text-anchor="middle" stroke="none" fill="#303341" font-size="16">${labelLines.map((part, row) => `<tspan x="0" dy="${row ? 18 : 0}">${escapeXml(part)}</tspan>`).join("")}</text></g>`,
     );

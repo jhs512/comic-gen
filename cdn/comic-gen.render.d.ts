@@ -40,7 +40,7 @@ export declare const renderPanelsAsync: (source: string, options?: RenderOptions
 export declare function downloadBlob(blob: Blob, filename: string): void;
 export declare function exportPng(result: RenderResult, scale?: number): Promise<Blob>;
 
-export declare const assetVersion = "8";
+export declare const assetVersion = "9";
 /** The authored Korean surface normalizes into the existing resolved English model. */
 declare const syntaxFields: {
     readonly comic: {
@@ -139,6 +139,7 @@ declare const syntaxValues: {
     readonly gesture: {
         readonly wave: "인사손";
         readonly point: "가리키는손";
+        readonly "point-up": "위가리키는손";
     };
     readonly prop: {
         readonly request: "요청";
