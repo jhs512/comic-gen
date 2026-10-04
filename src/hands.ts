@@ -39,11 +39,11 @@ function arm(
   const human = !!style.sleeve;
   const paths = human
     ? {
-        wave: "M-47 42Q-61 45 -65 34Q-72 19 -70 -8L-63 -9Q-64 17 -58 28Q-55 35 -42 36Z",
+        wave: "M-50 46Q-62 42 -65 -2L-53 -3Q-52 30 -40 37Z",
         point: "M-47 43Q-60 39 -68 25L-62 20Q-55 31 -40 35Z",
-        // Elbow out, forearm upright: the raised hand stays near head height.
-        "point-up":
-          "M-47 42Q-66 43 -70 26L-68 -8L-60 -8L-62 24Q-60 34 -42 36Z",
+        // A bust shows only the forearm: it rises thick and short from the
+        // shoulder edge, so the raised hand stands at cheek height.
+        "point-up": "M-50 46Q-61 42 -62 1L-50 0Q-50 30 -40 37Z",
         grip: "M42 36Q56 36 61 17L67 20Q63 44 47 44Z",
       }
     : {
@@ -70,12 +70,12 @@ export function drawGesture(
     // Its motion lines sit outside and above the hand, clear of the head.
     const human = !!style.sleeve;
     const motion = human
-      ? "M-86 -30Q-88 -42 -80 -48M-72 -48Q-64 -53 -56 -50"
+      ? "M-83 -22Q-86 -34 -78 -40M-70 -41Q-62 -46 -54 -43"
       : "M-90 -46Q-90 -59 -81 -64M-40 -41Q-36 -32 -41 -25";
     // A right wave mirrors the whole left drawing, motion lines included.
     return {
       back: arm(style, side, "wave"),
-      front: `<g data-gesture="wave"${side === "right" ? ' transform="scale(-1 1)"' : ""}><g data-hand="wave" data-side="${side}" stroke-linejoin="round"><path data-wave-motion="true" d="${motion}" fill="none" stroke="#586c8c" stroke-width="2.5"/><g data-palm="wave" transform="translate(-66 -8) rotate(-8) scale(${human ? 0.6 : 0.82})"><path d="${openPalm}" fill="${style.skin}" stroke-width="2.6"/><path d="M10 -12Q5 -15 1 -9" fill="none" stroke-width="1.6"/></g></g></g>`,
+      front: `<g data-gesture="wave"${side === "right" ? ' transform="scale(-1 1)"' : ""}><g data-hand="wave" data-side="${side}" stroke-linejoin="round"><path data-wave-motion="true" d="${motion}" fill="none" stroke="#586c8c" stroke-width="2.5"/><g data-palm="wave" transform="${human ? "translate(-63 -2) rotate(-12) scale(.6)" : "translate(-66 -8) rotate(-8) scale(.82)"}"><path d="${openPalm}" fill="${style.skin}" stroke-width="2.6"/><path d="M10 -12Q5 -15 1 -9" fill="none" stroke-width="1.6"/></g></g></g>`,
       port: { x: side === "left" ? -66 : 66, y: -22 },
     };
   }
@@ -86,8 +86,8 @@ export function drawGesture(
   if (gesture === "point-up" && human)
     return {
       back: arm(style, "left", "point-up"),
-      front: `<g data-gesture="point-up"><g data-hand="point-up" data-side="left" transform="translate(-64 -16) scale(.8)" stroke-linejoin="round"><path data-palm="point-up" d="${humanRaisedIndex}" fill="${style.skin}" stroke-width="2.8"/><path d="M-9 1Q-3 -1 3 2Q5 4 2 6H-6" fill="${style.skin}" stroke-width="2.2"/><path d="M-5 -7Q-6 -3 -2 -3" fill="none" stroke-width="1.6"/></g></g>`,
-      port: { x: -64, y: -35 },
+      front: `<g data-gesture="point-up"><g data-hand="point-up" data-side="left" transform="translate(-56 -4) scale(.85)" stroke-linejoin="round"><path data-palm="point-up" d="${humanRaisedIndex}" fill="${style.skin}" stroke-width="2.8"/><path d="M-9 1Q-3 -1 3 2Q5 4 2 6H-6" fill="${style.skin}" stroke-width="2.2"/><path d="M-5 -7Q-6 -3 -2 -3" fill="none" stroke-width="1.6"/></g></g>`,
+      port: { x: -52, y: -24 },
     };
   if (gesture === "point-up")
     return {
