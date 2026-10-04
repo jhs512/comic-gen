@@ -1,4 +1,4 @@
-/*! Comic Gen browser SDK v0.8.2
+/*! Comic Gen browser SDK v0.8.3
 Bundled yaml license:
 Copyright Eemeli Aro <eemeli@gmail.com>
 
@@ -5049,7 +5049,7 @@ function Ce(n, e, t) {
     wave: "M-47 42Q-61 45 -65 34Q-72 19 -70 -8L-63 -9Q-64 17 -58 28Q-55 35 -42 36Z",
     point: "M-47 43Q-60 39 -68 25L-62 20Q-55 31 -40 35Z",
     // Elbow out, forearm upright: the raised hand stays near head height.
-    "point-up": "M-47 42Q-66 43 -70 22L-68 -34L-60 -34L-62 20Q-60 34 -42 36Z",
+    "point-up": "M-47 42Q-66 43 -70 26L-68 -8L-60 -8L-62 24Q-60 34 -42 36Z",
     grip: "M42 36Q56 36 61 17L67 20Q63 44 47 44Z"
   } : {
     wave: "M-48 20Q-62 24 -66 13Q-71 2 -70 -8L-63 -9Q-63 4 -60 11Q-57 18 -47 15Z",
@@ -5072,8 +5072,8 @@ function Ar(n, e, t = "left") {
   if (n === "point-up" && s)
     return {
       back: Ce(e, "left", "point-up"),
-      front: `<g data-gesture="point-up"><g data-hand="point-up" data-side="left" transform="translate(-64 -39) scale(.8)" stroke-linejoin="round"><path data-palm="point-up" d="${Or}" fill="${e.skin}" stroke-width="2.8"/><path d="M-9 1Q-3 -1 3 2Q5 4 2 6H-6" fill="${e.skin}" stroke-width="2.2"/><path d="M-5 -7Q-6 -3 -2 -3" fill="none" stroke-width="1.6"/></g></g>`,
-      port: { x: -64, y: -57 }
+      front: `<g data-gesture="point-up"><g data-hand="point-up" data-side="left" transform="translate(-64 -16) scale(.8)" stroke-linejoin="round"><path data-palm="point-up" d="${Or}" fill="${e.skin}" stroke-width="2.8"/><path d="M-9 1Q-3 -1 3 2Q5 4 2 6H-6" fill="${e.skin}" stroke-width="2.2"/><path d="M-5 -7Q-6 -3 -2 -3" fill="none" stroke-width="1.6"/></g></g>`,
+      port: { x: -64, y: -35 }
     };
   if (n === "point-up")
     return {

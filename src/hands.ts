@@ -43,7 +43,7 @@ function arm(
         point: "M-47 43Q-60 39 -68 25L-62 20Q-55 31 -40 35Z",
         // Elbow out, forearm upright: the raised hand stays near head height.
         "point-up":
-          "M-47 42Q-66 43 -70 22L-68 -34L-60 -34L-62 20Q-60 34 -42 36Z",
+          "M-47 42Q-66 43 -70 26L-68 -8L-60 -8L-62 24Q-60 34 -42 36Z",
         grip: "M42 36Q56 36 61 17L67 20Q63 44 47 44Z",
       }
     : {
@@ -86,8 +86,8 @@ export function drawGesture(
   if (gesture === "point-up" && human)
     return {
       back: arm(style, "left", "point-up"),
-      front: `<g data-gesture="point-up"><g data-hand="point-up" data-side="left" transform="translate(-64 -39) scale(.8)" stroke-linejoin="round"><path data-palm="point-up" d="${humanRaisedIndex}" fill="${style.skin}" stroke-width="2.8"/><path d="M-9 1Q-3 -1 3 2Q5 4 2 6H-6" fill="${style.skin}" stroke-width="2.2"/><path d="M-5 -7Q-6 -3 -2 -3" fill="none" stroke-width="1.6"/></g></g>`,
-      port: { x: -64, y: -57 },
+      front: `<g data-gesture="point-up"><g data-hand="point-up" data-side="left" transform="translate(-64 -16) scale(.8)" stroke-linejoin="round"><path data-palm="point-up" d="${humanRaisedIndex}" fill="${style.skin}" stroke-width="2.8"/><path d="M-9 1Q-3 -1 3 2Q5 4 2 6H-6" fill="${style.skin}" stroke-width="2.2"/><path d="M-5 -7Q-6 -3 -2 -3" fill="none" stroke-width="1.6"/></g></g>`,
+      port: { x: -64, y: -35 },
     };
   if (gesture === "point-up")
     return {

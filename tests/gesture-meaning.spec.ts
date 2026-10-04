@@ -341,11 +341,12 @@ function expectMeaningfulHands(
   for (const result of results) {
     const context = JSON.stringify(result);
     expect(result.sign, context).not.toBe(0);
-    // A person's hands are drawn smaller than the large icon bodies' hands, but
-    // the index still reaches past the head top or well beyond the shoulder.
+    // A person's hands are drawn smaller than the large icon bodies' hands. A
+    // raised index stands beside the face, above the eyes (the face center is
+    // at -16); a sideways index still reaches well beyond the shoulder.
     const human = result.asset === "human";
     expect(result.far * result.sign, context).toBeGreaterThan(
-      human && result.axis === "y" ? 55 : 60,
+      human && result.axis === "y" ? 30 : 60,
     );
     expect(result.span, context).toBeGreaterThan(human ? 18 : 28);
     expect(result.indexThickness, context).toBeGreaterThan(4);
