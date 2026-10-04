@@ -92,7 +92,7 @@ test("speech bubble has no painted border across its actual tail entrance", asyn
   for (const pixel of result.pixels) expect(pixel).toEqual(result.fill);
 });
 
-test("transfer endpoints touch the characters' existing palms after placement and shared actions", async ({
+test("transfer endpoints meet a hand or an icon's body edge after placement and shared actions", async ({
   page,
 }) => {
   await openDocument(page);
@@ -205,20 +205,45 @@ test("transfer endpoints touch the characters' existing palms after placement an
               const endpoint = matrix.transformPoint(
                 link.getPointAtLength(length),
               );
-              const matchingHands = [
+              // Distance from the endpoint to an element's box, in the link's
+              // coordinates. Links are drawn over the characters, so an end
+              // sits in a small gap beside a hand rather than inside it.
+              const gap = (node: SVGGraphicsElement) => {
+                const box = node.getBBox();
+                const toRoot = DOMMatrix.fromMatrix(node.getCTM()!);
+                const corners = [
+                  [box.x, box.y],
+                  [box.x + box.width, box.y + box.height],
+                ].map(([x, y]) => toRoot.transformPoint(new DOMPoint(x, y)));
+                const [left, right] = [corners[0].x, corners[1].x].sort(
+                  (a, b) => a - b,
+                );
+                const [top, bottom] = [corners[0].y, corners[1].y].sort(
+                  (a, b) => a - b,
+                );
+                return Math.hypot(
+                  Math.max(left - endpoint.x, 0, endpoint.x - right),
+                  Math.max(top - endpoint.y, 0, endpoint.y - bottom),
+                );
+              };
+              const nearHands = [
                 ...actor.querySelectorAll<SVGGElement>("[data-hand]"),
-              ].filter((hand) => {
-                const node = hand.querySelector<SVGElement>("[data-palm]")!;
-                const palm =
-                  node instanceof SVGPathElement
-                    ? node
-                    : node.querySelector<SVGPathElement>("path")!;
-                const point = DOMMatrix.fromMatrix(palm.getCTM()!)
-                  .inverse()
-                  .transformPoint(endpoint);
-                return palm.isPointInFill(point);
-              });
-              return { id, matches: matchingHands.length };
+              ].filter((hand) => gap(hand) <= 12).length;
+              // An icon without a hand on that side passes items as a plain
+              // flow: the end stops just outside its body.
+              const icon = !actor.querySelector("[data-human]");
+              const body = [
+                ...actor.querySelectorAll<SVGGraphicsElement>(
+                  ":scope > rect, :scope > circle, :scope > path",
+                ),
+              ];
+              const bodyGap = Math.min(...body.map(gap));
+              return {
+                id,
+                attached:
+                  nearHands === 1 ||
+                  (icon && nearHands === 0 && bodyGap > 0 && bodyGap <= 16),
+              };
             });
           });
           const hands = actors.map((actor) => {
@@ -399,7 +424,7 @@ test("transfer endpoints touch the characters' existing palms after placement an
     );
     expect(result.externalHands, context).toBe(0);
     for (const endpoint of result.endpoints)
-      expect(endpoint.matches, context).toBe(1);
+      expect(endpoint.attached, context).toBe(true);
     for (const hand of result.hands) {
       expect(hand.physicalCount, context).toBeLessThanOrEqual(2);
       expect(
@@ -421,101 +446,77 @@ test("transfer endpoints touch the characters' existing palms after placement an
   }
 });
 
-test("the published auth story keeps held and transferred key outlines separate at 480px", async ({
+test("published examples hand over one item at a time and never aim a link at a gesture hand", async ({
   page,
 }) => {
   await openDocument(page);
-  const result = await page.evaluate(async () => {
+  const issues = await page.evaluate(async () => {
     const rendererModule = "/cdn/comic-gen.render.js",
-      examplesModule = "/src/examples.ts";
+      examplesModule = "/src/examples.ts",
+      parserModule = "/src/parse.ts";
     const sdk = await import(rendererModule),
-      { examples } = await import(examplesModule);
-    const fixture: { source: string } | undefined = examples.find(
-      (example: { id: string }) => example.id === "auth",
-    );
-    if (!fixture) throw new Error("Missing published auth fixture");
-    const output = sdk.renderPanels(fixture.source, {
-      width: 480,
-      panelFormat: "compact",
-    });
-    if (output.diagnostics.length)
-      throw new Error(output.diagnostics.join("\n"));
-    document.querySelector("main")!.innerHTML = output.panels[0].svg;
-    const held = [
-      ...document.querySelectorAll<SVGGElement>(
-        '[data-character="visitor"] [data-holding="key"] [data-prop="key"]',
-      ),
+      { examples, starter, actionExample } = await import(examplesModule),
+      { readComic } = await import(parserModule);
+    const sources: Array<{ id: string; source: string }> = [
+      ...examples,
+      { id: "starter", source: starter },
+      { id: "actionExample", source: actionExample },
     ];
-    const transferred = [
-      ...document.querySelectorAll<SVGGElement>(
-        '[data-transfer="visitor"][data-to="gate"] [data-prop="key"]',
-      ),
-    ];
-    const bounds = (group: SVGGElement) => {
-      const box = {
-        left: Infinity,
-        right: -Infinity,
-        top: Infinity,
-        bottom: -Infinity,
-      };
-      // Measure this axis-aligned example's contour and each leaf's actual stroke.
-      for (const shape of group.querySelectorAll<SVGGeometryElement>(
-        "path,circle,ellipse,rect",
-      )) {
-        const matrix = DOMMatrix.fromMatrix(shape.getCTM()!);
-        const scale = Math.max(
-          Math.hypot(matrix.a, matrix.b),
-          Math.hypot(matrix.c, matrix.d),
-        );
-        const stroke =
-          getComputedStyle(shape).stroke === "none"
-            ? 0
-            : (parseFloat(getComputedStyle(shape).strokeWidth) / 2) * scale;
-        const length = shape.getTotalLength(),
-          guard = stroke + 0.125 * scale;
-        for (let distance = 0; distance <= length + 0.25; distance += 0.25) {
-          const point = matrix.transformPoint(
-            shape.getPointAtLength(Math.min(distance, length)),
+    const issues: string[] = [];
+    for (const { id, source } of sources) {
+      const comic = readComic(source);
+      const output = await sdk.renderPanelsAsync(source, {
+        width: 480,
+        panelFormat: "compact",
+      });
+      if (output.diagnostics.length)
+        throw new Error(`${id}: ${output.diagnostics.join("\n")}`);
+      comic.panels.forEach((panel, index) => {
+        for (const relation of panel.transfer) {
+          // Holding and handing over the same item in one cut draws it twice.
+          const giver = panel.actors.find(
+            (actor) => actor.id === relation.from,
           );
-          box.left = Math.min(box.left, point.x - guard);
-          box.right = Math.max(box.right, point.x + guard);
-          box.top = Math.min(box.top, point.y - guard);
-          box.bottom = Math.max(box.bottom, point.y + guard);
+          if (giver?.holding === relation.prop)
+            issues.push(
+              `${id} cut ${index + 1}: ${relation.from} holds and hands over ${relation.prop}`,
+            );
         }
-      }
-      return box;
-    };
-    const heldBox = held[0] ? bounds(held[0]) : null,
-      transferBox = transferred[0] ? bounds(transferred[0]) : null;
-    return {
-      heldCount: held.length,
-      transferCount: transferred.length,
-      heldBox,
-      transferBox,
-      overlap:
-        heldBox && transferBox
-          ? {
-              x:
-                Math.min(heldBox.right, transferBox.right) -
-                Math.max(heldBox.left, transferBox.left),
-              y:
-                Math.min(heldBox.bottom, transferBox.bottom) -
-                Math.max(heldBox.top, transferBox.top),
-            }
-          : null,
-    };
+      });
+      output.panels.forEach((rendered: { svg: string }, index: number) => {
+        document.querySelector("main")!.innerHTML = rendered.svg;
+        for (const relation of document.querySelectorAll("[data-transfer]")) {
+          const link = relation.querySelector<SVGPathElement>(
+            "[data-transfer-link]",
+          )!;
+          const matrix = link.getScreenCTM()!;
+          const ends = [
+            [relation.getAttribute("data-transfer"), 0],
+            [relation.getAttribute("data-to"), link.getTotalLength()],
+          ] as const;
+          for (const [actor, length] of ends) {
+            const point = link.getPointAtLength(length).matrixTransform(matrix);
+            const gesture = document.querySelector(
+              `[data-character="${actor}"] [data-gesture]`,
+            );
+            if (!gesture) continue;
+            const box = gesture.getBoundingClientRect();
+            if (
+              point.x > box.left - 6 &&
+              point.x < box.right + 6 &&
+              point.y > box.top - 6 &&
+              point.y < box.bottom + 6
+            )
+              issues.push(
+                `${id} cut ${index + 1}: link meets ${actor}'s gesture hand`,
+              );
+          }
+        }
+      });
+    }
+    return issues;
   });
-  const context = JSON.stringify(result);
-  expect(result.heldCount, context).toBe(1);
-  expect(result.transferCount, context).toBe(1);
-  expect(result.heldBox, context).not.toBeNull();
-  expect(result.transferBox, context).not.toBeNull();
-  for (const box of [result.heldBox!, result.transferBox!]) {
-    expect(Object.values(box).every(Number.isFinite), context).toBe(true);
-    expect(box.right, context).toBeGreaterThan(box.left);
-    expect(box.bottom, context).toBeGreaterThan(box.top);
-  }
-  expect(result.overlap!.x > 0 && result.overlap!.y > 0, context).toBe(false);
+  expect(issues).toEqual([]);
 });
 
 test("the published three-person diagram story's transferred data stays completely painted in PNG", async ({

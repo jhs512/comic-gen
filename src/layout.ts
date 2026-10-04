@@ -1,5 +1,10 @@
 import { getCharacterAsset, expressions, props, escapeXml } from "./assets";
-import { drawGesture, drawGrip, type HandDrawing } from "./hands";
+import {
+  drawGesture,
+  drawGrip,
+  drawTransferHand,
+  type HandDrawing,
+} from "./hands";
 import type { Panel, Comic } from "./model";
 import type { DiagramSvg } from "./diagram";
 const clamp = (value: number, min: number, max: number) =>
@@ -147,6 +152,9 @@ export function renderPanel(
   const handPorts: Array<
     Partial<Record<"left" | "right", HandDrawing["port"]>>
   > = [];
+  const handRests: Array<
+    Partial<Record<"left" | "right", NonNullable<HandDrawing["rest"]>>>
+  > = [];
   panel.actors.forEach((actor, index) => {
     const member = cast[actor.id];
     const asset = getCharacterAsset(member);
@@ -205,6 +213,9 @@ export function renderPanel(
     };
     const drawings: HandDrawing[] = [];
     const ports: Partial<Record<"left" | "right", HandDrawing["port"]>> = {};
+    const rests: Partial<
+      Record<"left" | "right", NonNullable<HandDrawing["rest"]>>
+    > = {};
     if (actor.gesture) {
       const drawing = drawGesture(actor.gesture, style, gestureSide);
       drawings.push(drawing);
@@ -225,6 +236,11 @@ export function renderPanel(
     }
     for (const side of transferredSides) {
       if (ports[side]) continue;
+      // Icons pass items as a plain flow: the link leaves a small gap at the body edge.
+      if (!human) {
+        ports[side] = { x: side === "left" ? -60 : 60, y: 20 };
+        continue;
+      }
       const relation = panel.transfer.find((relation) => {
         const partner =
           relation.from === actor.id
@@ -244,15 +260,17 @@ export function renderPanel(
             : "right")
         );
       })!;
-      const drawing = drawGrip(
+      const drawing = drawTransferHand(
         side,
         style,
         relation.from === actor.id ? "transfer" : "receive",
       );
       drawings.push(drawing);
       ports[side] = drawing.port;
+      if (drawing.rest) rests[side] = drawing.rest;
     }
     handPorts.push(ports);
+    handRests.push(rests);
     const restingHands = asset.restingHands
       ? (ports.left ? "" : asset.restingHands.left) +
         (ports.right ? "" : asset.restingHands.right)
@@ -262,7 +280,19 @@ export function renderPanel(
     );
   });
   const links: string[] = [];
-  panel.transfer.forEach((relation, index) => {
+  // Items ride on their link. Relations between the same pair share one segment,
+  // so their items are spread along it.
+  const pairOf = (relation: (typeof panel.transfer)[number]) =>
+    JSON.stringify([relation.from, relation.to].sort());
+  const pairTotals = new Map<string, number>();
+  for (const relation of panel.transfer)
+    pairTotals.set(
+      pairOf(relation),
+      (pairTotals.get(pairOf(relation)) ?? 0) + 1,
+    );
+  const pairSeen = new Map<string, number>();
+  const usedRests = new Set<string>();
+  panel.transfer.forEach((relation) => {
     const fromIndex = panel.actors.findIndex(
       (actor) => actor.id === relation.from,
     );
@@ -270,15 +300,37 @@ export function renderPanel(
     const from = centers[fromIndex];
     const to = centers[toIndex];
     const direction = Math.sign(to - from) || Math.sign(toIndex - fromIndex);
-    const fromPort = handPorts[fromIndex][direction > 0 ? "right" : "left"]!;
+    const fromSide = direction > 0 ? "right" : "left";
+    const fromPort = handPorts[fromIndex][fromSide]!;
+    const rest = handRests[fromIndex][fromSide];
     const toPort = handPorts[toIndex][direction > 0 ? "left" : "right"]!;
-    const start = from + fromPort.x * scales[fromIndex];
-    const end = to + toPort.x * scales[toIndex];
-    const startY = actorYs[fromIndex] + fromPort.y * scales[fromIndex];
-    const endY = actorYs[toIndex] + toPort.y * scales[toIndex];
-    const propX = (start + end) / 2;
-    let propY = Math.min(startY, endY) - 54 - index * 24;
+    // Links are drawn over the characters, so they must not cover a hand: a
+    // link leaves a gripping or gesturing hand from its edge and its arrowhead
+    // stops just short of the receiving side. An offering palm's port is
+    // already at its fingertips.
+    const startGap = rest ? 0 : 10 * scales[fromIndex];
+    const endGap = 6;
+    const horizontal = Math.abs(to - from) >= 1;
+    const start =
+      from +
+      fromPort.x * scales[fromIndex] +
+      (horizontal ? direction * startGap : 0);
+    const end =
+      to + toPort.x * scales[toIndex] - (horizontal ? direction * endGap : 0);
+    const vertical = Math.sign(actorYs[toIndex] - actorYs[fromIndex]) || 1;
+    const startY =
+      actorYs[fromIndex] +
+      fromPort.y * scales[fromIndex] +
+      (horizontal ? 0 : vertical * startGap);
+    const endY =
+      actorYs[toIndex] +
+      toPort.y * scales[toIndex] -
+      (horizontal ? 0 : vertical * endGap);
     let path = `M${start} ${startY}L${end} ${endY}`;
+    let pointAt = (t: number) => ({
+      x: start + (end - start) * t,
+      y: startY + (endY - startY) * t,
+    });
     let approachX = end - start;
     let approachY = endY - startY;
     const blockers = panel.actors.flatMap((actor, actorIndex) =>
@@ -296,23 +348,51 @@ export function renderPanel(
         startY,
         endY,
         ...blockers.map(
-          (actorIndex) => actorYs[actorIndex] - 70 * scales[actorIndex] - 12,
+          (actorIndex) => actorYs[actorIndex] - 70 * scales[actorIndex] - 30,
         ),
       );
       const controlY = (4 * bendY - (startY + endY) / 2) / 3;
       const step = (end - start) / 3;
       path = `M${start} ${startY}C${start + step} ${controlY} ${end - step} ${controlY} ${end} ${endY}`;
-      propY = Math.min(propY, bendY - 26 - index * 24);
+      pointAt = (t: number) => {
+        const u = 1 - t;
+        return {
+          x:
+            u ** 3 * start +
+            3 * u * u * t * (start + step) +
+            3 * u * t * t * (end - step) +
+            t ** 3 * end,
+          y: u ** 3 * startY + 3 * u * t * (u + t) * controlY + t ** 3 * endY,
+        };
+      };
       approachX = step;
       approachY = endY - controlY;
     }
-    propY = Math.max(24, propY);
+    const pair = pairOf(relation);
+    const total = pairTotals.get(pair)!;
+    const order = pairSeen.get(pair) ?? 0;
+    pairSeen.set(pair, order + 1);
+    // A person's offering palm carries the first item it hands over. Other
+    // items ride on their link, spread when several share it; a link too short
+    // to carry an item clear of both ends lifts it just above its middle.
+    const restKey = `${fromIndex}:${fromSide}`;
+    const onPalm = !!rest && !usedRests.has(restKey);
+    if (onPalm) usedRests.add(restKey);
+    const length = Math.hypot(end - start, endY - startY);
+    const spread = length / (total + 1) >= 34;
+    const point = pointAt(spread ? (order + 1) / (total + 1) : 0.5);
+    const lift = spread ? 0 : 26 + 30 * order;
+    const propX = onPalm ? from + rest.x * scales[fromIndex] : point.x;
+    const propY = onPalm
+      ? actorYs[fromIndex] + (rest.y - 12) * scales[fromIndex]
+      : Math.max(24, point.y - lift);
     const angle = (Math.atan2(approachY, approachX) * 180) / Math.PI;
     links.push(
-      `<g data-transfer="${escapeXml(relation.from)}" data-to="${escapeXml(relation.to)}" stroke="#586c8c" stroke-width="2.5" stroke-linejoin="round"><path data-transfer-link="true" d="${path}" fill="none"/><path transform="translate(${end} ${endY}) rotate(${angle})" d="M-16 -5L-8 0L-16 5" fill="none"/><g data-prop="${relation.prop}" transform="translate(${propX} ${propY})">${props[relation.prop]}</g></g>`,
+      `<g data-transfer="${escapeXml(relation.from)}" data-to="${escapeXml(relation.to)}" stroke="#586c8c" stroke-width="2.5" stroke-linejoin="round"><path data-transfer-link="true" d="${path}" fill="none"/><path transform="translate(${end} ${endY}) rotate(${angle})" d="M-9 -5L0 0L-9 5" fill="none"/><g data-prop="${relation.prop}" transform="translate(${propX} ${propY})${onPalm ? ` scale(${scales[fromIndex]})` : ""}">${props[relation.prop]}</g></g>`,
     );
   });
-  markup.splice(1, 0, ...links);
+  // Links follow the characters so an item resting on a palm stays in front of the hand.
+  markup.push(...links);
   let content = markup.slice(1).join("");
   let panelHeight = height;
   if (diagram && panel.diagram) {

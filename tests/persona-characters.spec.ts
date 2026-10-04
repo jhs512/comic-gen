@@ -737,20 +737,29 @@ test("released icon stories preserve cut order, dimensions, identities, expressi
                 const palm = hand?.querySelector(
                   "path[data-palm], [data-palm] path",
                 );
-                if (!link || !palm || !link.getScreenCTM()) return false;
+                if (!link || !actor || !link.getScreenCTM()) return false;
                 const local = link.getPointAtLength(
                   end ? link.getTotalLength() : 0,
                 );
+                const screen = link.getScreenCTM()!;
                 const point = new DOMPoint(local.x, local.y).matrixTransform(
-                  link.getScreenCTM()!,
+                  screen,
                 );
-                const bounds = palm.getBoundingClientRect();
-                return (
-                  point.x >= bounds.left - 1 &&
-                  point.x <= bounds.right + 1 &&
-                  point.y >= bounds.top - 1 &&
-                  point.y <= bounds.bottom + 1
-                );
+                const near = (bounds: DOMRect, gap: number) =>
+                  point.x >= bounds.left - gap &&
+                  point.x <= bounds.right + gap &&
+                  point.y >= bounds.top - gap &&
+                  point.y <= bounds.bottom + gap;
+                // Links stop in a small gap beside a hand; an icon without a
+                // hand on that side receives at the edge of its body.
+                if (palm)
+                  return near(palm.getBoundingClientRect(), 14 * screen.a);
+                const body = actor
+                  .querySelector(
+                    ":scope > rect, :scope > circle, :scope > path",
+                  )!
+                  .getBoundingClientRect();
+                return near(body, 16 * screen.a) && !near(body, 0);
               };
               return {
                 from,
@@ -1029,13 +1038,7 @@ test("released icon stories preserve cut order, dimensions, identities, expressi
           fill: "white",
           visiblePalm: true,
         },
-        {
-          id: "c",
-          kind: "receive",
-          side: "left",
-          fill: "white",
-          visiblePalm: true,
-        },
+        // Icons receive at the body edge without drawing an empty fist.
       ],
       [],
     ]);

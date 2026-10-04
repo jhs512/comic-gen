@@ -8,6 +8,8 @@ export interface HandDrawing {
   back: string;
   front: string;
   port: { x: number; y: number };
+  /** Where a handed-over item rests on an open palm, when the hand offers one. */
+  rest?: { x: number; y: number };
 }
 
 // One original silhouette: a broad palm, four fanned fingers and an inward thumb.
@@ -15,6 +17,15 @@ const openPalm =
   "M-10 4Q-12 -3 -17 -9L-23 -22Q-26 -27 -22 -30Q-18 -33 -15 -28L-10 -21L-15 -35Q-16 -40 -12 -42Q-8 -44 -6 -38L-2 -28L-4 -43Q-4 -48 0 -48Q4 -48 4 -43L6 -28L8 -38Q9 -43 13 -42Q17 -41 16 -37L14 -22Q14 -16 18 -19L22 -24Q25 -27 28 -24Q31 -21 27 -17L19 -5Q15 2 8 4L7 7Z";
 const pointingPalm =
   "M-5 -7H-20Q-24 -7 -24 -3Q-24 1 -20 1H-8Q-11 4 -8 7L-5 10Q-2 13 3 11L9 8Q12 6 11 1L10 -6Q9 -11 5 -12L0 -14Q-4 -15 -6 -12Q-8 -9 -5 -7Z";
+// A person's index finger is shorter so it reads as a finger, not a stick.
+const humanPointingPalm = pointingPalm.replace(
+  "H-20Q-24 -7 -24 -3Q-24 1 -20 1H",
+  "H-15Q-19 -7 -19 -3Q-19 1 -15 1H",
+);
+// An upright ☝ for a person's screen-left hand: the index rises from the fist's
+// head-side edge and the thumb crosses the front, so it never reads as another finger.
+const humanRaisedIndex =
+  "M-9 -3Q-9 -7 -5 -7H2V-21Q2 -24 5 -24Q8 -24 8 -21V-6Q10 -4 10 0V5Q10 11 3 11H-3Q-9 11 -9 5Z";
 const closedPalm =
   "M-8 -5Q-8 -10 -2 -10H5Q10 -9 10 -4V4Q10 9 4 10H-3Q-9 9 -10 3Z";
 
@@ -28,8 +39,9 @@ function arm(
     ? {
         wave: "M-47 42Q-61 45 -65 34Q-72 19 -70 -8L-63 -9Q-64 17 -58 28Q-55 35 -42 36Z",
         point: "M-47 43Q-60 39 -68 25L-62 20Q-55 31 -40 35Z",
+        // Elbow out, forearm upright: the raised hand stays near head height.
         "point-up":
-          "M-47 42Q-63 45 -68 28Q-74 3 -68 -38L-61 -38Q-65 2 -60 23Q-57 35 -42 36Z",
+          "M-47 42Q-66 43 -70 22L-68 -34L-60 -34L-62 20Q-60 34 -42 36Z",
         grip: "M42 36Q56 36 61 17L67 20Q63 44 47 44Z",
       }
     : {
@@ -51,23 +63,40 @@ export function drawGesture(
   style: HandStyle,
   side: Side = "left",
 ): HandDrawing {
-  if (gesture === "wave")
+  if (gesture === "wave") {
+    // A person's hand stays smaller than half the face; icon bodies are larger.
+    // Its motion lines sit outside and above the hand, clear of the head.
+    const human = !!style.sleeve;
+    const motion = human
+      ? "M-86 -30Q-88 -42 -80 -48M-72 -48Q-64 -53 -56 -50"
+      : "M-90 -46Q-90 -59 -81 -64M-40 -41Q-36 -32 -41 -25";
     // A right wave mirrors the whole left drawing, motion lines included.
     return {
       back: arm(style, side, "wave"),
-      front: `<g data-gesture="wave"${side === "right" ? ' transform="scale(-1 1)"' : ""}><g data-hand="wave" data-side="${side}" stroke-linejoin="round"><path data-wave-motion="true" d="M-90 -46Q-90 -59 -81 -64M-40 -41Q-36 -32 -41 -25" fill="none" stroke="#586c8c" stroke-width="2.5"/><g data-palm="wave" transform="translate(-66 -8) rotate(-8) scale(.82)"><path d="${openPalm}" fill="${style.skin}" stroke-width="2.6"/><path d="M10 -12Q5 -15 1 -9" fill="none" stroke-width="1.6"/></g></g></g>`,
+      front: `<g data-gesture="wave"${side === "right" ? ' transform="scale(-1 1)"' : ""}><g data-hand="wave" data-side="${side}" stroke-linejoin="round"><path data-wave-motion="true" d="${motion}" fill="none" stroke="#586c8c" stroke-width="2.5"/><g data-palm="wave" transform="translate(-66 -8) rotate(-8) scale(${human ? 0.6 : 0.82})"><path d="${openPalm}" fill="${style.skin}" stroke-width="2.6"/><path d="M10 -12Q5 -15 1 -9" fill="none" stroke-width="1.6"/></g></g></g>`,
       port: { x: side === "left" ? -66 : 66, y: -22 },
+    };
+  }
+  // People get a smaller pointing hand than the large icon bodies.
+  const human = !!style.sleeve;
+  const palm = human ? humanPointingPalm : pointingPalm;
+  const size = human ? " scale(.72)" : "";
+  if (gesture === "point-up" && human)
+    return {
+      back: arm(style, "left", "point-up"),
+      front: `<g data-gesture="point-up"><g data-hand="point-up" data-side="left" transform="translate(-64 -39) scale(.8)" stroke-linejoin="round"><path data-palm="point-up" d="${humanRaisedIndex}" fill="${style.skin}" stroke-width="2.8"/><path d="M-9 1Q-3 -1 3 2Q5 4 2 6H-6" fill="${style.skin}" stroke-width="2.2"/><path d="M-5 -7Q-6 -3 -2 -3" fill="none" stroke-width="1.6"/></g></g>`,
+      port: { x: -64, y: -57 },
     };
   if (gesture === "point-up")
     return {
       back: arm(style, "left", "point-up"),
-      front: `<g data-gesture="point-up"><g data-hand="point-up" data-side="left" transform="translate(-64 -39) rotate(90)" stroke-linejoin="round"><path data-palm="point-up" d="${pointingPalm}" fill="${style.skin}" stroke-width="2.6"/><path d="M-3 -6Q1 -3 6 -4M1 5L7 3" fill="none" stroke-width="1.6"/></g></g>`,
+      front: `<g data-gesture="point-up"><g data-hand="point-up" data-side="left" transform="translate(-64 -39) rotate(90)${size}" stroke-linejoin="round"><path data-palm="point-up" d="${palm}" fill="${style.skin}" stroke-width="2.6"/><path d="M-3 -6Q1 -3 6 -4M1 5L7 3" fill="none" stroke-width="1.6"/></g></g>`,
       port: { x: -64, y: -39 },
     };
   const x = side === "left" ? -64 : 64;
   return {
     back: arm(style, side, "point"),
-    front: `<g data-gesture="point"><g data-hand="point" data-side="${side}" transform="translate(${x} 20)${side === "right" ? " scale(-1 1)" : ""}" stroke-linejoin="round"><path data-palm="point" d="${pointingPalm}" fill="${style.skin}" stroke-width="2.6"/><path d="M-3 -6Q1 -3 6 -4M1 5L7 3" fill="none" stroke-width="1.6"/></g></g>`,
+    front: `<g data-gesture="point"><g data-hand="point" data-side="${side}" transform="translate(${x} 20)${side === "right" ? " scale(-1 1)" : ""}${size}" stroke-linejoin="round"><path data-palm="point" d="${palm}" fill="${style.skin}" stroke-width="2.6"/><path d="M-3 -6Q1 -3 6 -4M1 5L7 3" fill="none" stroke-width="1.6"/></g></g>`,
     port: { x: side === "left" ? -66 : 66, y: 20 },
   };
 }
@@ -75,7 +104,7 @@ export function drawGesture(
 export function drawGrip(
   side: Side,
   style: HandStyle,
-  kind: "holding" | "transfer" | "receive",
+  kind: "holding",
   prop = "",
 ): HandDrawing {
   const x = side === "left" ? -62 : 62;
@@ -84,5 +113,34 @@ export function drawGrip(
     back: arm(style, side, "grip"),
     front: `<g data-hand="${kind}" data-side="${side}" transform="translate(${x} 20)" stroke-linejoin="round"><g${mirrored}><path data-palm="grip" d="${closedPalm}" fill="${style.skin}" stroke-width="2.6"/>${prop ? `<g transform="translate(7.5 -14)">${prop}</g>` : ""}<path d="M-7 -4Q-4 -8 0 -5L5 -1Q6 2 2 3L-4 1Q-8 0 -7 -4Z" fill="${style.skin}" stroke-width="2"/><path d="M1 6H6" fill="none" stroke-width="1.5"/></g></g>`,
     port: { x, y: 20 },
+  };
+}
+
+// Giving and receiving use open hands so they never read as an empty fist.
+// Drawn for the right side; the left side mirrors around the character.
+const offeringPalm =
+  "M-7 -2Q-7 -6 -2 -6H12Q16 -6 18 -9Q20 -11 22 -9Q23 -7 21 -4Q17 3 9 4H-2Q-7 4 -7 0Z";
+const cuppedPalm =
+  "M-6 -3Q-7 6 3 6Q12 6 15 -3Q16 -7 13 -8Q10 -8 9 -4Q7 0 3 0Q-1 0 -1 -3Z";
+
+export function drawTransferHand(
+  side: Side,
+  style: HandStyle,
+  kind: "transfer" | "receive",
+): HandDrawing {
+  const x = side === "left" ? -60 : 60;
+  const mirrored = side === "left" ? ' transform="scale(-1 1)"' : "";
+  const details =
+    kind === "transfer"
+      ? `<path data-palm="offer" d="${offeringPalm}" fill="${style.skin}" stroke-width="2.4"/><path d="M2 0H12" fill="none" stroke-width="1.4"/>`
+      : `<path data-palm="cup" d="${cuppedPalm}" fill="${style.skin}" stroke-width="2.4"/><path d="M-6 -3Q-8 -10 -3 -10Q0 -10 -1 -3" fill="${style.skin}" stroke-width="2"/>`;
+  // The link leaves the giver's raised fingertips and stops just short of the receiver's.
+  const reach = kind === "transfer" ? 23 : 20;
+  const inward = side === "left" ? -1 : 1;
+  return {
+    back: arm(style, side, "grip"),
+    front: `<g data-hand="${kind}" data-side="${side}" transform="translate(${x} 20)" stroke-linejoin="round"><g${mirrored}>${details}</g></g>`,
+    port: { x: x + inward * reach, y: 18 },
+    ...(kind === "transfer" ? { rest: { x: x + inward * 6, y: 14 } } : {}),
   };
 }

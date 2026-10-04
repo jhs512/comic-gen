@@ -9,10 +9,10 @@ cast:
   db: {asset: database, label: DB}
 panels:
   - actors:
-      - {id: web, expression: confused}
+      - {id: web}
       - {id: db, expression: happy}
     dialogue:
-      - {from: web, to: db, text: "데이터를 부탁해!"}
+      - {from: web, to: db, text: "주문 목록 데이터를 부탁해!"}
       - {from: db, to: web, text: "좋아, 바로 찾아볼게!"}
 `);
 
@@ -252,7 +252,7 @@ function getExamples(): Example[] {
               {
                 from: "leader",
                 to: "oh",
-                text: "어느 단계가 달라졌는지 함께 보고해주세요.",
+                text: "김대리 자료로 어느 단계가 달라졌는지 보고해 주세요.",
               },
               {
                 from: "oh",
@@ -354,15 +354,15 @@ function getExamples(): Example[] {
       title: "변화만 적는 네 컷 이야기",
       category: "여러 컷·상속",
       description:
-        "첫 컷을 정의하고 이전 구성로 표정·소품만 바꿉니다. 대사는 매 컷 새로 작성합니다.",
+        "첫 컷을 정의하고 이전 구성으로 표정·소품만 바꿉니다. 대사는 매 컷 새로 작성합니다.",
       features: ["4컷", "구성: 이전", "상태 초기화"],
       source: `title: 데이터가 도착하기까지
 cast:
   web: {asset: server, label: 웹 서버}
   db: {asset: database, label: DB}
 panels:
-  - actors: [{id: web, expression: confused}, db]
-    dialogue: [{from: web, to: db, text: "내가 요청한 데이터가 있니?"}]
+  - actors: [web, db]
+    dialogue: [{from: web, to: db, text: "주문 목록 데이터 좀 찾아 줄래?"}]
   - mode: before
     actors: [{id: db, expression: happy, holding: data}]
     dialogue: [{from: db, to: web, text: "찾았어! 이 데이터를 가져가."}]
@@ -371,7 +371,7 @@ panels:
     dialogue: [{from: web, to: db, text: "고마워, 이제 응답할 수 있어!"}]
     transfer: [{from: db, to: web, prop: data}]
   - mode: before
-    actors: [{id: web, holding: data, gesture: wave}]
+    actors: [{id: web, holding: data, gesture: wave, gestureDirection: right}]
     dialogue: [{from: web, to: db, text: "다음 요청에서도 함께하자!"}]
 `,
     },
@@ -389,7 +389,7 @@ panels:
       title: "요청에서 데이터 응답까지",
       category: "IT 설명",
       description:
-        "클라이언트의 요청을 서버가 받고, 다음 컷에서 DB의 데이터를 받습니다.",
+        "클라이언트가 들고 온 요청을 서버에 건네고, 서버는 DB에서 받은 데이터로 응답합니다.",
       features: ["여러 컷", "손 제스처", "소품 전달"],
       source: actionExample,
     },
@@ -398,8 +398,8 @@ panels:
       title: "캐시 적중과 캐시 미스",
       category: "IT 설명",
       description:
-        "같은 질문을 다시 받으면 저장한 데이터를 재사용하는 캐시의 원리를 설명합니다.",
-      features: ["3컷", "같은 인물 재사용", "소품"],
+        "처음에는 원본에서 가져오고, 같은 요청을 다시 받으면 저장해 둔 데이터를 바로 주는 캐시의 원리를 설명합니다.",
+      features: ["3컷", "캐시 미스 → 적중", "소품 전달"],
       source: sourceFor(
         "캐시는 어떻게 도와줄까?",
         {
@@ -408,27 +408,14 @@ panels:
         },
         [
           {
-            actors: ["user", "cache"],
+            actors: ["user", { id: "cache", expression: "confused" }],
             dialogue: [
-              {
-                from: "user",
-                to: "cache",
-                text: "처음 요청한 데이터가 있나요?",
-              },
+              { from: "user", to: "cache", text: "상품 목록 좀 보여 줄래?" },
               {
                 from: "cache",
                 to: "user",
-                text: "아직 없어. 원본에서 가져와 저장할게!",
+                text: "처음 찾는 거라 아직 없어. 원본에서 가져올게!",
               },
-            ],
-          },
-          {
-            actors: [
-              "user",
-              { id: "cache", expression: "happy", holding: "data" },
-            ],
-            dialogue: [
-              { from: "cache", to: "user", text: "이제 결과를 기억해 뒀어." },
             ],
           },
           {
@@ -437,8 +424,27 @@ panels:
               { id: "cache", expression: "happy" },
             ],
             dialogue: [
-              { from: "user", to: "cache", text: "같은 데이터를 다시 부탁해!" },
-              { from: "cache", to: "user", text: "저장한 결과를 바로 줄게." },
+              {
+                from: "cache",
+                to: "user",
+                text: "가져왔어! 다음을 위해 저장도 해 뒀어.",
+              },
+            ],
+            transfer: [{ from: "cache", to: "user", prop: "data" }],
+          },
+          {
+            actors: ["user", { id: "cache", expression: "happy" }],
+            dialogue: [
+              {
+                from: "user",
+                to: "cache",
+                text: "아까 그 목록, 한 번 더 볼 수 있어?",
+              },
+              {
+                from: "cache",
+                to: "user",
+                text: "저장해 둔 게 있어. 바로 줄게!",
+              },
             ],
             transfer: [{ from: "cache", to: "user", prop: "data" }],
           },
@@ -474,6 +480,16 @@ panels:
                 from: "visitor",
                 to: "gate",
                 text: "여기 내 인증 정보가 있어!",
+              },
+            ],
+          },
+          {
+            actors: ["visitor", "gate"],
+            dialogue: [
+              {
+                from: "gate",
+                to: "visitor",
+                text: "좋아, 열쇠를 확인해 볼게.",
               },
             ],
             transfer: [{ from: "visitor", to: "gate", prop: "key" }],
@@ -519,7 +535,7 @@ panels:
             ],
           },
           {
-            actors: [{ id: "client", expression: "confused" }, "server"],
+            actors: ["client", "server"],
             dialogue: [
               {
                 from: "client",
@@ -575,12 +591,12 @@ panels:
               {
                 from: "teacher",
                 to: "student",
-                text: "규칙이 두 배로 만들기라면 6이 나와요.",
+                text: "규칙이 '두 배로 만들기'라면 6이 나와요.",
               },
               {
                 from: "example",
                 to: "student",
-                text: "입력은 3, 출력은 6. 규칙은 같아요!",
+                text: "3을 넣으면 6, 5를 넣으면 10이 나와요!",
               },
             ],
           },
@@ -639,7 +655,7 @@ panels:
         [
           {
             actors: ["me"],
-            dialogue: [{ from: "me", text: "오늘도 차근차근 시작해요." }],
+            dialogue: [{ from: "me", text: "오늘도 차근차근 시작해 보자." }],
           },
           {
             actors: [{ id: "me", expression: "happy" }],
@@ -677,7 +693,12 @@ panels:
         [
           {
             actors: [
-              { id: "hello", gesture: "wave", expression: "happy" },
+              {
+                id: "hello",
+                gesture: "wave",
+                gestureDirection: "right",
+                expression: "happy",
+              },
               { id: "guide", gesture: "point" },
               "listener",
             ],
@@ -763,7 +784,7 @@ panels:
               {
                 from: "b",
                 to: "a",
-                text: "나는 조금 더 크게 말할게!",
+                text: "저는 조금 더 크게 말할게요!",
                 x: 0.65,
                 y: 0.25,
                 fontSize: 22,
@@ -785,7 +806,7 @@ panels:
         { guide: { asset: "server", label: "설명자" } },
         [
           {
-            actors: [{ id: "guide", gesture: "point" }],
+            actors: ["guide"],
             dialogue: [
               {
                 from: "guide",
@@ -810,7 +831,12 @@ panels:
       source: sourceFor("반가워요, 함께 시작해요", conversationCast, [
         {
           actors: [
-            { id: "sora", expression: "happy", gesture: "wave" },
+            {
+              id: "sora",
+              expression: "happy",
+              gesture: "wave",
+              gestureDirection: "right",
+            },
             { id: "jun", expression: "happy" },
           ],
           dialogue: [
@@ -823,8 +849,8 @@ panels:
             { id: "jun", gesture: "point" },
           ],
           dialogue: [
-            { from: "sora", to: "jun", text: "준 씨가 오늘 설명을 맡았어요." },
-            { from: "jun", to: "sora", text: "소라 씨와 함께 준비했어요." },
+            { from: "sora", to: "jun", text: "준 씨, 오늘 설명 부탁드려요!" },
+            { from: "jun", to: "sora", text: "네! 소라 씨와 함께 준비했어요." },
           ],
         },
       ]),
@@ -889,7 +915,11 @@ panels:
         {
           actors: ["sora", "jun"],
           dialogue: [
-            { from: "sora", to: "jun", text: "먼저 도착하니까 네게 건넬게." },
+            {
+              from: "sora",
+              to: "jun",
+              text: "네가 먼저 도착하니까 너한테 줄게.",
+            },
           ],
           transfer: [{ from: "sora", to: "jun", prop: "key" }],
         },
@@ -1006,21 +1036,33 @@ cast:
   db: {asset: database, label: DB}
 panels:
   - actors:
-      - {id: browser, expression: confused, holding: request}
+      - {id: browser, holding: request}
       - {id: web, expression: happy, gesture: wave}
-      - {id: db, expression: neutral}
+      - {id: db}
     dialogue:
+      - {from: web, to: browser, text: "어서 와! 무엇을 도와줄까?"}
       - {from: browser, to: web, text: "이 요청을 처리해 줄래?"}
-      - {from: web, to: db, text: "DB, 필요한 데이터를 찾아줘!"}
+  - mode: before
+    actors:
+      - {id: browser, holding: null}
+      - {id: web, gesture: null, expression: neutral}
+    dialogue:
+      - {from: web, to: db, text: "DB, 필요한 데이터를 찾아 줘!"}
     transfer:
       - {from: browser, to: web, prop: request}
-  - actors:
-      - {id: web, expression: happy}
-      - {id: db, expression: happy, holding: data}
+  - mode: before
+    actors:
+      - {id: db, expression: happy}
     dialogue:
       - {from: db, to: web, text: "여기 데이터야. 응답에 사용해!"}
     transfer:
       - {from: db, to: web, prop: data}
+  - mode: before
+    actors:
+      - {id: browser, expression: happy}
+      - {id: web, expression: happy, holding: data}
+    dialogue:
+      - {from: web, to: browser, text: "찾았어! 응답을 보낼게."}
 `);
 
 export const examples = getExamples().map((example) => ({
